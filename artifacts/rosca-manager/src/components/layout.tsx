@@ -107,7 +107,10 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex-1 flex flex-col min-h-[100dvh] min-w-0">
 
         {/* Mobile top bar (hidden on desktop) */}
-        <header className="md:hidden sticky top-0 z-30 bg-sidebar shadow-md flex items-center justify-between px-4 py-3 shrink-0">
+        <header
+          className="md:hidden sticky top-0 z-30 bg-sidebar shadow-md flex items-center justify-between px-4 pb-3 shrink-0"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+        >
           {/* Left: back to all circles */}
           <Link href="~/">
             <div className="flex items-center gap-1 text-sidebar-foreground/70 active:text-sidebar-foreground transition-colors">
