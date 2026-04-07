@@ -3,20 +3,28 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Rosca Manager API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: roscas
+    description: Rosca group management
+  - name: members
+    description: Member management
+  - name: payments
+    description: Payment tracking
+  - name: dashboard
+    description: Dashboard summaries
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +32,297 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /roscas:
+    get:
+      operationId: listRoscas
+      tags: [roscas]
+      summary: List all roscas
+      responses:
+        "200":
+          description: List of roscas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rosca"
+    post:
+      operationId: createRosca
+      tags: [roscas]
+      summary: Create a new rosca
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoscaBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rosca"
+
+  /roscas/{id}:
+    get:
+      operationId: getRosca
+      tags: [roscas]
+      summary: Get a rosca by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rosca details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rosca"
+        "404":
+          description: Not found
+    put:
+      operationId: updateRosca
+      tags: [roscas]
+      summary: Update a rosca
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoscaBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rosca"
+    delete:
+      operationId: deleteRosca
+      tags: [roscas]
+      summary: Delete a rosca
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /roscas/{id}/members:
+    get:
+      operationId: listMembers
+      tags: [members]
+      summary: List all members of a rosca
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Member"
+    post:
+      operationId: addMember
+      tags: [members]
+      summary: Add a member to a rosca
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMemberBody"
+      responses:
+        "201":
+          description: Member added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+
+  /roscas/{id}/members/{memberId}:
+    put:
+      operationId: updateMember
+      tags: [members]
+      summary: Update a member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMemberBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+    delete:
+      operationId: deleteMember
+      tags: [members]
+      summary: Remove a member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed
+
+  /roscas/{id}/payments:
+    get:
+      operationId: listPayments
+      tags: [payments]
+      summary: List payments for a rosca cycle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cycle
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+    post:
+      operationId: recordPayment
+      tags: [payments]
+      summary: Record a payment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordPaymentBody"
+      responses:
+        "201":
+          description: Payment recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+
+  /roscas/{id}/payments/{paymentId}:
+    delete:
+      operationId: deletePayment
+      tags: [payments]
+      summary: Delete a payment record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /roscas/{id}/dashboard:
+    get:
+      operationId: getRoscaDashboard
+      tags: [dashboard]
+      summary: Get rosca dashboard summary
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /roscas/{id}/member-ratings:
+    get:
+      operationId: getMemberRatings
+      tags: [dashboard]
+      summary: Get payment reliability ratings for all members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Member ratings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MemberRating"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +333,278 @@ components:
       required:
         - status
 
+    Rosca:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [weekly, biweekly, monthly]
+        contributionAmount:
+          type: number
+        currentCycle:
+          type: integer
+        totalCycles:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - startDate
+        - frequency
+        - contributionAmount
+        - currentCycle
+        - totalCycles
+        - isActive
+        - createdAt
+
+    CreateRoscaBody:
+      type: object
+      properties:
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [weekly, biweekly, monthly]
+        contributionAmount:
+          type: number
+        totalCycles:
+          type: integer
+      required:
+        - name
+        - startDate
+        - frequency
+        - contributionAmount
+        - totalCycles
+
+    Member:
+      type: object
+      properties:
+        id:
+          type: integer
+        roscaId:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        shares:
+          type: integer
+        turnOrder:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - roscaId
+        - name
+        - shares
+        - createdAt
+
+    CreateMemberBody:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        shares:
+          type: integer
+        turnOrder:
+          type: integer
+          nullable: true
+      required:
+        - name
+        - shares
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        roscaId:
+          type: integer
+        memberId:
+          type: integer
+        memberName:
+          type: string
+        cycle:
+          type: integer
+        amount:
+          type: number
+        paidAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date
+        isLate:
+          type: boolean
+        notes:
+          type: string
+          nullable: true
+      required:
+        - id
+        - roscaId
+        - memberId
+        - memberName
+        - cycle
+        - amount
+        - paidAt
+        - dueDate
+        - isLate
+
+    RecordPaymentBody:
+      type: object
+      properties:
+        memberId:
+          type: integer
+        cycle:
+          type: integer
+        amount:
+          type: number
+        paidAt:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          nullable: true
+      required:
+        - memberId
+        - cycle
+        - amount
+        - paidAt
+
+    DashboardSummary:
+      type: object
+      properties:
+        rosca:
+          $ref: "#/components/schemas/Rosca"
+        currentCycle:
+          type: integer
+        cycleStartDate:
+          type: string
+          format: date
+        cycleDueDate:
+          type: string
+          format: date
+        totalExpected:
+          type: number
+        totalCollected:
+          type: number
+        collectionRate:
+          type: number
+        paidCount:
+          type: integer
+        unpaidCount:
+          type: integer
+        lateCount:
+          type: integer
+        memberStatuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/MemberStatus"
+        potAmount:
+          type: number
+        potRecipient:
+          type: string
+          nullable: true
+      required:
+        - rosca
+        - currentCycle
+        - cycleStartDate
+        - cycleDueDate
+        - totalExpected
+        - totalCollected
+        - collectionRate
+        - paidCount
+        - unpaidCount
+        - lateCount
+        - memberStatuses
+        - potAmount
+
+    MemberStatus:
+      type: object
+      properties:
+        memberId:
+          type: integer
+        memberName:
+          type: string
+        shares:
+          type: integer
+        amountDue:
+          type: number
+        amountPaid:
+          type: number
+        isPaid:
+          type: boolean
+        isLate:
+          type: boolean
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - memberId
+        - memberName
+        - shares
+        - amountDue
+        - amountPaid
+        - isPaid
+        - isLate
+
+    MemberRating:
+      type: object
+      properties:
+        memberId:
+          type: integer
+        memberName:
+          type: string
+        shares:
+          type: integer
+        totalPayments:
+          type: integer
+        onTimePayments:
+          type: integer
+        latePayments:
+          type: integer
+        missedPayments:
+          type: integer
+        reliabilityScore:
+          type: number
+        rating:
+          type: string
+          enum: [excellent, good, fair, poor]
+      required:
+        - memberId
+        - memberName
+        - shares
+        - totalPayments
+        - onTimePayments
+        - latePayments
+        - missedPayments
+        - reliabilityScore
+        - rating
