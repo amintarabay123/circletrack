@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1060"/>
+      <stop offset="100%" style="stop-color:#0a0f2e"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34d399"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="ring2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="115" ry="115" fill="url(#bgGrad)"/>
+
+  <!-- Subtle star/dot pattern bg decoration -->
+  <circle cx="400" cy="80" r="3" fill="#ffffff" opacity="0.12"/>
+  <circle cx="450" cy="140" r="2" fill="#ffffff" opacity="0.08"/>
+  <circle cx="70" cy="380" r="3" fill="#ffffff" opacity="0.10"/>
+  <circle cx="110" cy="430" r="2" fill="#ffffff" opacity="0.07"/>
+  <circle cx="440" cy="380" r="2.5" fill="#34d399" opacity="0.15"/>
+  <circle cx="80" cy="130" r="2" fill="#34d399" opacity="0.15"/>
+
+  <!-- Outer faint decorative ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#34d399" stroke-width="1.5" opacity="0.12" stroke-dasharray="14 8"/>
+
+  <!-- Main teal ring — thick bold circle -->
+  <circle cx="256" cy="256" r="156" fill="none" stroke="url(#ringGrad)" stroke-width="38" filter="url(#glow)"/>
+
+  <!-- Ring shine arc at top-left -->
+  <path d="M 148 188 A 125 125 0 0 1 330 145" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" opacity="0.22"/>
+
+  <!-- Inner dark circle for the symbol background -->
+  <circle cx="256" cy="256" r="96" fill="#0d1129" opacity="0.85"/>
+
+  <!-- Dollar sign — clean geometric approach -->
+  <!-- Vertical bar -->
+  <line x1="256" y1="148" x2="256" y2="364" stroke="white" stroke-width="20" stroke-linecap="round"/>
+
+  <!-- Top half S curve (upper bump, opens downward) -->
+  <!-- Approximated as a smooth bezier: from right side, curves left and up, then back right -->
+  <path d="M 300 195 C 300 165, 212 165, 212 205 C 212 235, 300 235, 300 268" 
+        fill="none" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Bottom half S curve (lower bump, opens upward) -->
+  <path d="M 212 317 C 212 347, 300 347, 300 307 C 300 277, 212 277, 212 244"
+        fill="none" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Accent dots on ring at cardinal points -->
+  <circle cx="256" cy="64" r="10" fill="#34d399" opacity="0.85" filter="url(#glow)"/>
+  <circle cx="256" cy="448" r="10" fill="#34d399" opacity="0.85" filter="url(#glow)"/>
+  <circle cx="64" cy="256" r="10" fill="#34d399" opacity="0.85" filter="url(#glow)"/>
+  <circle cx="448" cy="256" r="10" fill="#34d399" opacity="0.85" filter="url(#glow)"/>
+</svg>
