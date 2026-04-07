@@ -1,8 +1,12 @@
-import { useListRoscas } from "@workspace/api-client-react";
+import { useState } from "react";
+import { useListRoscas, getListRoscasQueryKey } from "@workspace/api-client-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Plus, ArrowRight, CircleDollarSign, Globe, TrendingUp, Users } from "lucide-react";
+import { Plus, ArrowRight, CircleDollarSign, Globe, TrendingUp, Users, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
 import type { Rosca } from "@workspace/api-zod";
 
@@ -10,31 +14,40 @@ function formatAmount(n: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(n);
 }
 
-function CircleCard({ rosca }: { rosca: Rosca }) {
+function CircleCard({ rosca, onDelete }: { rosca: Rosca; onDelete: (rosca: Rosca) => void }) {
   const { t } = useLang();
   const progress = rosca.totalCycles > 0 ? Math.round((rosca.currentCycle / rosca.totalCycles) * 100) : 0;
   const freqLabel = t[rosca.frequency as "weekly" | "biweekly" | "monthly"] ?? rosca.frequency;
   const freqEmoji = { weekly: "📅", biweekly: "🗓️", monthly: "📆" }[rosca.frequency] ?? "📆";
 
   return (
-    <Link href={`/rosca/${rosca.id}`}>
-      <div className="group relative bg-white rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer hover:-translate-y-0.5">
-        <div className="h-1.5 w-full bg-gradient-to-r from-primary via-chart-2 to-chart-5" />
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-lg text-foreground truncate">{rosca.name}</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {freqEmoji} {freqLabel} · {t.started} {new Date(rosca.startDate).toLocaleDateString()}
-              </p>
-            </div>
+    <div className="group relative bg-white rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden hover:-translate-y-0.5">
+      <div className="h-1.5 w-full bg-gradient-to-r from-primary via-chart-2 to-chart-5" />
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <Link href={`/rosca/${rosca.id}`} className="flex-1 min-w-0 cursor-pointer">
+            <h3 className="font-bold text-lg text-foreground truncate">{rosca.name}</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {freqEmoji} {freqLabel} · {t.started} {new Date(rosca.startDate).toLocaleDateString()}
+            </p>
+          </Link>
+          <div className="flex items-center gap-2 ml-3 shrink-0">
             <Badge
               variant={rosca.isActive ? "default" : "secondary"}
-              className={`ml-3 shrink-0 ${rosca.isActive ? "bg-emerald-100 text-emerald-700 border-emerald-200 border" : ""}`}
+              className={rosca.isActive ? "bg-emerald-100 text-emerald-700 border-emerald-200 border" : ""}
             >
               {rosca.isActive ? t.active : t.completed}
             </Badge>
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(rosca); }}
+              className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-red-500 hover:bg-red-50 transition-colors"
+              title={t.deleteCircle}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
+        </div>
+        <Link href={`/rosca/${rosca.id}`} className="block cursor-pointer">
           <div className="mb-4">
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="text-muted-foreground font-medium">{t.cycle} {rosca.currentCycle} {t.of} {rosca.totalCycles}</span>
@@ -52,15 +65,30 @@ function CircleCard({ rosca }: { rosca: Rosca }) {
               {t.viewLedger} <ArrowRight className="w-3.5 h-3.5" />
             </span>
           </div>
-        </div>
+        </Link>
       </div>
-    </Link>
+    </div>
   );
 }
 
 export function Home() {
   const { t, lang, setLang } = useLang();
   const { data: roscas = [], isLoading } = useListRoscas();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [deleteTarget, setDeleteTarget] = useState<Rosca | null>(null);
+
+  const deleteCircle = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/roscas/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(await res.text());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getListRoscasQueryKey() });
+      toast({ title: t.deleteCircle });
+      setDeleteTarget(null);
+    },
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -140,11 +168,37 @@ export function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {roscas.map(r => <CircleCard key={r.id} rosca={r} />)}
+              {roscas.map(r => (
+                <CircleCard key={r.id} rosca={r} onDelete={setDeleteTarget} />
+              ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t.deleteCircleConfirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-semibold text-foreground">{deleteTarget?.name}</span>
+              {" — "}{t.deleteCircleConfirmDesc}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">{t.cancel}</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => deleteTarget && deleteCircle.mutate(deleteTarget.id)}
+              disabled={deleteCircle.isPending}
+            >
+              {deleteCircle.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {t.delete}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { useParams, Link } from "wouter";
 import { useGetRoscaDashboard, getGetRoscaDashboardQueryKey } from "@workspace/api-client-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Loader2, TrendingUp, DollarSign, Calendar, Crown, CheckCircle2, Clock, AlertCircle, ChevronRight } from "lucide-react";
+import { Loader2, TrendingUp, DollarSign, Calendar, Crown, CheckCircle2, Clock, AlertCircle, ChevronRight, ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
 
@@ -33,6 +35,8 @@ export function RoscaDashboard() {
   const queryClient = useQueryClient();
   const { t } = useLang();
 
+  const [rollbackOpen, setRollbackOpen] = useState(false);
+
   const { data: dashboard, isLoading } = useGetRoscaDashboard(roscaId, {
     query: { enabled: !!roscaId, queryKey: getGetRoscaDashboardQueryKey(roscaId) },
   });
@@ -46,6 +50,19 @@ export function RoscaDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(roscaId) });
       toast({ title: t.cycleAdvanced });
+    },
+  });
+
+  const rollbackCycle = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/roscas/${roscaId}/rollback`, { method: "PATCH" });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(roscaId) });
+      toast({ title: t.cycleRolledBack });
+      setRollbackOpen(false);
     },
   });
 
@@ -72,17 +89,51 @@ export function RoscaDashboard() {
             <span className="text-sm text-muted-foreground capitalize">{freqLabel}</span>
           </div>
         </div>
-        {rosca.isActive && currentCycle < rosca.totalCycles && (
-          <Button
-            onClick={() => advanceCycle.mutate()}
-            disabled={advanceCycle.isPending}
-            className="shrink-0 rounded-xl font-bold shadow-md gap-2"
-          >
-            {advanceCycle.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
-            {t.advanceToCycle} {currentCycle + 1}
-          </Button>
-        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {rosca.isActive && currentCycle > 1 && (
+            <Button
+              variant="outline"
+              onClick={() => setRollbackOpen(true)}
+              disabled={rollbackCycle.isPending}
+              className="shrink-0 rounded-xl font-semibold gap-2 border-muted-foreground/30 text-muted-foreground hover:text-foreground"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              {t.rollbackCycle}
+            </Button>
+          )}
+          {rosca.isActive && currentCycle < rosca.totalCycles && (
+            <Button
+              onClick={() => advanceCycle.mutate()}
+              disabled={advanceCycle.isPending}
+              className="shrink-0 rounded-xl font-bold shadow-md gap-2"
+            >
+              {advanceCycle.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
+              {t.advanceToCycle} {currentCycle + 1}
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* Rollback confirmation dialog */}
+      <AlertDialog open={rollbackOpen} onOpenChange={setRollbackOpen}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t.rollbackCycleConfirmTitle} {currentCycle - 1}?</AlertDialogTitle>
+            <AlertDialogDescription>{t.rollbackCycleConfirmDesc}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">{t.cancel}</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => rollbackCycle.mutate()}
+              disabled={rollbackCycle.isPending}
+            >
+              {rollbackCycle.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {t.rollbackCycleConfirm}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Pot recipient banner */}
       {potRecipient && (

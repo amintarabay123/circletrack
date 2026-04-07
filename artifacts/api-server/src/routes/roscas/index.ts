@@ -105,6 +105,21 @@ router.patch("/roscas/:id/advance", async (req, res): Promise<void> => {
   res.json(formatRosca(updated));
 });
 
+// Roll back rosca cycle by one
+router.patch("/roscas/:id/rollback", async (req, res): Promise<void> => {
+  const id = parseId(req.params.id);
+  if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
+  const [rosca] = await db.select().from(roscasTable).where(eq(roscasTable.id, id));
+  if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
+  if (rosca.currentCycle <= 1) {
+    res.status(400).json({ error: "Already at first cycle" }); return;
+  }
+  const [updated] = await db.update(roscasTable)
+    .set({ currentCycle: rosca.currentCycle - 1 })
+    .where(eq(roscasTable.id, id)).returning();
+  res.json(formatRosca(updated));
+});
+
 // Delete a rosca
 router.delete("/roscas/:id", async (req, res): Promise<void> => {
   const id = parseId(req.params.id);
