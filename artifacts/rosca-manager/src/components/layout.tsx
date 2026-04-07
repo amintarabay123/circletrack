@@ -34,13 +34,14 @@ export function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="flex min-h-[100dvh] w-full flex-col md:flex-row">
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-sidebar shrink-0 md:h-screen md:sticky md:top-0 overflow-y-auto shadow-xl">
-        <div className="p-6 flex flex-col h-full min-h-[100dvh] md:min-h-screen">
+    <div className="flex min-h-[100dvh] w-full">
+
+      {/* ── DESKTOP SIDEBAR (hidden on mobile) ── */}
+      <aside className="hidden md:flex md:w-64 bg-sidebar shrink-0 h-screen sticky top-0 overflow-y-auto shadow-xl flex-col">
+        <div className="p-6 flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="bg-sidebar-primary text-sidebar-primary-foreground w-10 h-10 rounded-xl flex items-center justify-center shadow-lg font-bold text-lg">
+            <div className="bg-sidebar-primary text-sidebar-primary-foreground w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
               <CircleDollarSign className="w-6 h-6" />
             </div>
             <div>
@@ -102,12 +103,72 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-background">
-        <div className="flex-1 p-6 md:p-10 max-w-6xl w-full mx-auto">
-          {children}
-        </div>
-      </main>
+      {/* ── MOBILE + DESKTOP CONTENT COLUMN ── */}
+      <div className="flex-1 flex flex-col min-h-[100dvh] min-w-0">
+
+        {/* Mobile top bar (hidden on desktop) */}
+        <header className="md:hidden sticky top-0 z-30 bg-sidebar shadow-md flex items-center justify-between px-4 py-3 shrink-0">
+          {/* Left: back to all circles */}
+          <Link href="~/">
+            <div className="flex items-center gap-1 text-sidebar-foreground/70 active:text-sidebar-foreground transition-colors">
+              <ChevronLeft className="w-5 h-5" />
+              <span className="text-sm font-medium">{t.allCircles}</span>
+            </div>
+          </Link>
+
+          {/* Center: logo */}
+          <div className="flex items-center gap-2">
+            <div className="bg-sidebar-primary text-sidebar-primary-foreground w-7 h-7 rounded-lg flex items-center justify-center">
+              <CircleDollarSign className="w-4 h-4" />
+            </div>
+            <span className="text-sidebar-foreground font-bold text-base">{t.appName}</span>
+          </div>
+
+          {/* Right: language toggle */}
+          <button
+            onClick={() => setLang(lang === "en" ? "es" : "en")}
+            className="flex items-center gap-1 text-sidebar-foreground/70 active:text-sidebar-foreground transition-colors text-sm font-medium"
+          >
+            <Globe className="w-4 h-4" />
+          </button>
+        </header>
+
+        {/* Main scrollable content */}
+        <main className="flex-1 overflow-y-auto bg-background">
+          {/* Extra bottom padding on mobile so content isn't hidden behind bottom tab bar */}
+          <div className="p-5 md:p-10 max-w-6xl w-full mx-auto pb-28 md:pb-10">
+            {children}
+          </div>
+        </main>
+
+        {/* ── MOBILE BOTTOM TAB BAR (hidden on desktop) ── */}
+        {roscaId && (
+          <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-sidebar border-t border-sidebar-border/30 shadow-2xl">
+            {/* Safe-area padding for iOS home indicator */}
+            <div className="flex items-stretch pb-safe">
+              {navItems.map((item) => {
+                const active = isActive(item.path);
+                return (
+                  <Link key={item.path} href={item.path} className="flex-1">
+                    <div className={`flex flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
+                      active
+                        ? "text-sidebar-primary"
+                        : "text-sidebar-foreground/50 active:text-sidebar-foreground"
+                    }`}>
+                      {/* Active indicator pill */}
+                      <div className={`mb-0.5 h-0.5 w-8 rounded-full transition-all ${active ? "bg-sidebar-primary" : "bg-transparent"}`} />
+                      <item.icon className={`w-5 h-5 ${active ? "stroke-[2.5]" : "stroke-[1.5]"}`} />
+                      <span className={`text-[10px] font-semibold tracking-wide mt-0.5 ${active ? "text-sidebar-primary" : ""}`}>
+                        {item.label}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+        )}
+      </div>
     </div>
   );
 }
