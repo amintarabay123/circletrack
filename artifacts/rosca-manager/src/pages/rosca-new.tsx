@@ -113,7 +113,6 @@ export function RoscaNew() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="weekly">{t.weekly}</SelectItem>
-                        <SelectItem value="biweekly">{t.biweekly}</SelectItem>
                         <SelectItem value="monthly">{t.monthly}</SelectItem>
                         <SelectItem value="semimonthly">{t.semimonthly}</SelectItem>
                       </SelectContent>
