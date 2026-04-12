@@ -32,17 +32,23 @@ function getCycleDueDateLocal(startDate: string, frequency: string, cycle: numbe
   } else if (frequency === "biweekly") {
     due = addWeeks(start, cycle * 2);
   } else if (frequency === "semimonthly") {
-    const day = start.getDate();
+    const startDay = start.getDate();
     let year = start.getFullYear();
     let month = start.getMonth();
+    const lastDay = (y: number, m: number) => new Date(y, m + 1, 0).getDate();
+    const secondHalfDay = (y: number, m: number) => Math.min(30, lastDay(y, m));
+    let half: "first" | "second";
     let dueDay: number;
-    if (day <= 1) { dueDay = 1; }
-    else if (day <= 15) { dueDay = 15; }
-    else { dueDay = 1; month += 1; if (month > 11) { month = 0; year += 1; } }
+    if (startDay <= 15) {
+      half = "first"; dueDay = 15;
+    } else {
+      half = "second"; dueDay = secondHalfDay(year, month);
+      if (startDay > dueDay) { half = "first"; month += 1; if (month > 11) { month = 0; year += 1; } dueDay = 15; }
+    }
     let advances = cycle - 1;
     while (advances > 0) {
-      if (dueDay === 1) { dueDay = 15; }
-      else { dueDay = 1; month += 1; if (month > 11) { month = 0; year += 1; } }
+      if (half === "first") { half = "second"; dueDay = secondHalfDay(year, month); }
+      else { half = "first"; month += 1; if (month > 11) { month = 0; year += 1; } dueDay = 15; }
       advances -= 1;
     }
     due = new Date(year, month, dueDay);

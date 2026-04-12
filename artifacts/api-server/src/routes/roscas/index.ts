@@ -18,33 +18,48 @@ function parseId(raw: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
-// Returns the Nth semimonthly date (1st or 15th) on or after the start date,
-// advancing N-1 more periods. cycle=1 → first 1st-or-15th on/after start.
+// Returns the Nth semimonthly date (15th or 30th/last-of-month) on or after the
+// start date, advancing N-1 more periods. cycle=1 → first due on/after start.
 function getSemimonthlyDate(startDate: string, cycle: number): Date {
   const start = parseISO(startDate.slice(0, 10));
-  const day = start.getDate();
+  const startDay = start.getDate();
   let year = start.getFullYear();
   let month = start.getMonth();
+
+  function lastDay(y: number, m: number): number {
+    return new Date(y, m + 1, 0).getDate();
+  }
+  function secondHalfDay(y: number, m: number): number {
+    return Math.min(30, lastDay(y, m));
+  }
+
+  let half: "first" | "second";
   let dueDay: number;
 
-  if (day <= 1) {
-    dueDay = 1;
-  } else if (day <= 15) {
+  if (startDay <= 15) {
+    half = "first";
     dueDay = 15;
   } else {
-    dueDay = 1;
-    month += 1;
-    if (month > 11) { month = 0; year += 1; }
+    half = "second";
+    dueDay = secondHalfDay(year, month);
+    if (startDay > dueDay) {
+      half = "first";
+      month += 1;
+      if (month > 11) { month = 0; year += 1; }
+      dueDay = 15;
+    }
   }
 
   let advances = cycle - 1;
   while (advances > 0) {
-    if (dueDay === 1) {
-      dueDay = 15;
+    if (half === "first") {
+      half = "second";
+      dueDay = secondHalfDay(year, month);
     } else {
-      dueDay = 1;
+      half = "first";
       month += 1;
       if (month > 11) { month = 0; year += 1; }
+      dueDay = 15;
     }
     advances -= 1;
   }
