@@ -70,7 +70,7 @@ export function RoscaDashboard() {
   if (!dashboard) return <div className="text-center py-16 text-muted-foreground">Circle not found.</div>;
 
   const { rosca, currentCycle, cycleStartDate, cycleDueDate, totalExpected, totalCollected, collectionRate, paidCount, unpaidCount, lateCount, memberStatuses, potAmount, potRecipient } = dashboard;
-  const freqLabel = t[rosca.frequency as "weekly" | "biweekly" | "monthly"] ?? rosca.frequency;
+  const freqLabel = t[rosca.frequency as "weekly" | "biweekly" | "monthly" | "semimonthly"] ?? rosca.frequency;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">

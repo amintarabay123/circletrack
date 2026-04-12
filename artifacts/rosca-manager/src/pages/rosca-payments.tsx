@@ -50,8 +50,10 @@ export function RoscaPayments() {
   });
 
   const currentCycle = dashboard?.rosca.currentCycle ?? 1;
+  const totalCycles = dashboard?.rosca.totalCycles ?? currentCycle;
   const contributionAmount = dashboard?.rosca.contributionAmount ?? 0;
-  const cycleOptions = Array.from({ length: currentCycle }, (_, i) => currentCycle - i);
+  // Allow all cycles up to totalCycles so payments can be recorded retroactively
+  const cycleOptions = Array.from({ length: totalCycles }, (_, i) => i + 1);
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: getListPaymentsQueryKey(roscaId) });

@@ -16,7 +16,7 @@ import { useLang } from "@/lib/i18n";
 const createRoscaSchema = z.object({
   name: z.string().min(2),
   startDate: z.string().min(1),
-  frequency: z.enum(["weekly", "biweekly", "monthly"]),
+  frequency: z.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
   contributionAmount: z.coerce.number().positive(),
   totalCycles: z.coerce.number().int().positive(),
 });
@@ -115,6 +115,7 @@ export function RoscaNew() {
                         <SelectItem value="weekly">{t.weekly}</SelectItem>
                         <SelectItem value="biweekly">{t.biweekly}</SelectItem>
                         <SelectItem value="monthly">{t.monthly}</SelectItem>
+                        <SelectItem value="semimonthly">{t.semimonthly}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

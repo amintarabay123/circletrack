@@ -18,16 +18,54 @@ function parseId(raw: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
+// Returns the Nth semimonthly date (1st or 15th) on or after the start date,
+// advancing N-1 more periods. cycle=1 → first 1st-or-15th on/after start.
+function getSemimonthlyDate(startDate: string, cycle: number): Date {
+  const start = parseISO(startDate.slice(0, 10));
+  const day = start.getDate();
+  let year = start.getFullYear();
+  let month = start.getMonth();
+  let dueDay: number;
+
+  if (day <= 1) {
+    dueDay = 1;
+  } else if (day <= 15) {
+    dueDay = 15;
+  } else {
+    dueDay = 1;
+    month += 1;
+    if (month > 11) { month = 0; year += 1; }
+  }
+
+  let advances = cycle - 1;
+  while (advances > 0) {
+    if (dueDay === 1) {
+      dueDay = 15;
+    } else {
+      dueDay = 1;
+      month += 1;
+      if (month > 11) { month = 0; year += 1; }
+    }
+    advances -= 1;
+  }
+  return new Date(year, month, dueDay);
+}
+
 function getCycleDueDate(startDate: string, frequency: string, cycle: number): string {
   const start = parseISO(startDate.slice(0, 10));
   let due: Date;
   if (frequency === "weekly") due = addWeeks(start, cycle);
   else if (frequency === "biweekly") due = addWeeks(start, cycle * 2);
+  else if (frequency === "semimonthly") due = getSemimonthlyDate(startDate, cycle);
   else due = addMonths(start, cycle);
   return format(due, "yyyy-MM-dd");
 }
 
 function getCycleStartDate(startDate: string, frequency: string, cycle: number): string {
+  if (frequency === "semimonthly") {
+    if (cycle === 1) return startDate.slice(0, 10);
+    return format(getSemimonthlyDate(startDate, cycle - 1), "yyyy-MM-dd");
+  }
   const start = parseISO(startDate.slice(0, 10));
   let s: Date;
   if (frequency === "weekly") s = addWeeks(start, cycle - 1);

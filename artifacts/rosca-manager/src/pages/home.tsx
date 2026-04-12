@@ -17,8 +17,8 @@ function formatAmount(n: number) {
 function CircleCard({ rosca, onDelete }: { rosca: Rosca; onDelete: (rosca: Rosca) => void }) {
   const { t } = useLang();
   const progress = rosca.totalCycles > 0 ? Math.round((rosca.currentCycle / rosca.totalCycles) * 100) : 0;
-  const freqLabel = t[rosca.frequency as "weekly" | "biweekly" | "monthly"] ?? rosca.frequency;
-  const freqEmoji = { weekly: "📅", biweekly: "🗓️", monthly: "📆" }[rosca.frequency] ?? "📆";
+  const freqLabel = t[rosca.frequency as "weekly" | "biweekly" | "monthly" | "semimonthly"] ?? rosca.frequency;
+  const freqEmoji = ({ weekly: "📅", biweekly: "🗓️", monthly: "📆", semimonthly: "🗓️" } as Record<string, string>)[rosca.frequency] ?? "📆";
 
   return (
     <div className="group relative bg-white rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden hover:-translate-y-0.5">
