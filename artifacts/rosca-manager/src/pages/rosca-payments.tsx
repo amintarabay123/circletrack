@@ -7,7 +7,7 @@ import {
   useGetRoscaDashboard, getGetRoscaDashboardQueryKey
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, addWeeks, addMonths } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,6 +21,40 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
+
+// Mirrors the server-side getCycleDueDate so the form can auto-fill paidAt
+function getCycleDueDateLocal(startDate: string, frequency: string, cycle: number): string {
+  const start = new Date(startDate + "T00:00:00");
+  let due: Date;
+
+  if (frequency === "weekly") {
+    due = addWeeks(start, cycle);
+  } else if (frequency === "biweekly") {
+    due = addWeeks(start, cycle * 2);
+  } else if (frequency === "semimonthly") {
+    const day = start.getDate();
+    let year = start.getFullYear();
+    let month = start.getMonth();
+    let dueDay: number;
+    if (day <= 1) { dueDay = 1; }
+    else if (day <= 15) { dueDay = 15; }
+    else { dueDay = 1; month += 1; if (month > 11) { month = 0; year += 1; } }
+    let advances = cycle - 1;
+    while (advances > 0) {
+      if (dueDay === 1) { dueDay = 15; }
+      else { dueDay = 1; month += 1; if (month > 11) { month = 0; year += 1; } }
+      advances -= 1;
+    }
+    due = new Date(year, month, dueDay);
+  } else {
+    due = addMonths(start, cycle);
+  }
+  // Return as "YYYY-MM-DDThh:mm" for datetime-local input (noon to avoid DST edge cases)
+  const y = due.getFullYear();
+  const m = String(due.getMonth() + 1).padStart(2, "0");
+  const d = String(due.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}T12:00`;
+}
 
 const paymentSchema = z.object({
   memberId: z.coerce.number().int().positive(),
@@ -76,13 +110,41 @@ export function RoscaPayments() {
     defaultValues: { memberId: 0, cycle: currentCycle, amount: contributionAmount, paidAt: new Date().toISOString().slice(0, 16), notes: "" },
   });
 
+  const startDate = dashboard?.rosca.startDate ?? "";
+  const frequency = dashboard?.rosca.frequency ?? "monthly";
+
   const watchMemberId = form.watch("memberId");
+  const watchCycle = form.watch("cycle");
   const selectedMember = members?.find(m => m.id === Number(watchMemberId));
+
+  // Compute the due date label for the selected cycle to show as a hint
+  const cycleDueDateHint = startDate ? getCycleDueDateLocal(startDate, frequency, watchCycle).slice(0, 10) : "";
+
+  function getDefaultPaidAt(cycle: number) {
+    if (startDate) return getCycleDueDateLocal(startDate, frequency, cycle);
+    return new Date().toISOString().slice(0, 16);
+  }
+
+  function onCycleChange(cycle: number) {
+    form.setValue("cycle", cycle);
+    form.setValue("paidAt", getDefaultPaidAt(cycle));
+  }
 
   function onMemberChange(memberId: number) {
     form.setValue("memberId", memberId);
     const member = members?.find(m => m.id === memberId);
     if (member) form.setValue("amount", contributionAmount * member.shares);
+  }
+
+  function openAddDialog() {
+    form.reset({
+      memberId: 0,
+      cycle: currentCycle,
+      amount: contributionAmount,
+      paidAt: getDefaultPaidAt(currentCycle),
+      notes: "",
+    });
+    setAddOpen(true);
   }
 
   function onSubmit(data: PaymentFormValues) {
@@ -96,7 +158,7 @@ export function RoscaPayments() {
           <h1 className="text-2xl font-extrabold text-foreground">{t.payments}</h1>
           <p className="text-sm text-muted-foreground mt-1">{payments?.length ?? 0} {t.payments.toLowerCase()}</p>
         </div>
-        <Button onClick={() => { form.reset({ memberId: 0, cycle: currentCycle, amount: contributionAmount, paidAt: new Date().toISOString().slice(0, 16), notes: "" }); setAddOpen(true); }} className="rounded-xl font-bold shadow-sm gap-2">
+        <Button onClick={openAddDialog} className="rounded-xl font-bold shadow-sm gap-2">
           <Plus className="w-4 h-4" />
           {t.recordPayment}
         </Button>
@@ -133,7 +195,7 @@ export function RoscaPayments() {
             <p className="font-bold text-foreground text-lg mb-1">{t.noPayments}</p>
             <p className="text-muted-foreground text-sm">{t.noPaymentsDesc}</p>
           </div>
-          <Button onClick={() => setAddOpen(true)} className="rounded-xl font-bold gap-2">
+          <Button onClick={openAddDialog} className="rounded-xl font-bold gap-2">
             <Plus className="w-4 h-4" /> {t.recordFirstPayment}
           </Button>
         </div>
@@ -221,7 +283,7 @@ export function RoscaPayments() {
                 <FormField control={form.control} name="cycle" render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-semibold">{t.cycle}</FormLabel>
-                    <Select onValueChange={(v) => field.onChange(parseInt(v, 10))} value={String(field.value)}>
+                    <Select onValueChange={(v) => onCycleChange(parseInt(v, 10))} value={String(field.value)}>
                       <FormControl><SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {cycleOptions.map(c => <SelectItem key={c} value={String(c)}>{t.cycle} {c}</SelectItem>)}
@@ -245,6 +307,11 @@ export function RoscaPayments() {
                 <FormItem>
                   <FormLabel className="font-semibold">{t.dateTimePaid}</FormLabel>
                   <FormControl><Input type="datetime-local" className="rounded-xl" {...field} /></FormControl>
+                  {cycleDueDateHint && (
+                    <p className="text-xs text-muted-foreground">
+                      {t.cycle} {watchCycle} — {t.dueDate}: <span className="font-semibold text-foreground">{cycleDueDateHint}</span>
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               )} />
