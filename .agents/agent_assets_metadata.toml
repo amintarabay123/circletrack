@@ -11,3 +11,45 @@ id = "l8SWY_y5n0o89wrNt9IOU"
 uri = "file://Shirley_San_2026.json"
 type = "unspecified"
 title = "Shirley San 2026 — Circle Export"
+
+[[outputs]]
+id = "MUnxi_uN7RJ5Tynqg9pb3"
+uri = "file://screenshots/01_sign_in.jpg"
+type = "image"
+title = "Screenshot 1 — Sign In"
+
+[[outputs]]
+id = "iM9-3xI9SC1Bqt9nEzSeD"
+uri = "file://screenshots/02_circles_list.jpg"
+type = "image"
+title = "Screenshot 2 — My Circles"
+
+[[outputs]]
+id = "cyOvgGGG114tPdtsA7fzj"
+uri = "file://screenshots/03_circle_detail.jpg"
+type = "image"
+title = "Screenshot 3 — Circle Dashboard"
+
+[[outputs]]
+id = "p2xq9zHvgvr_VuCF52WXd"
+uri = "file://screenshots/04_member_ratings.jpg"
+type = "image"
+title = "Screenshot 4 — Member Ratings"
+
+[[outputs]]
+id = "tnAwsZe0ICiJVlYCIIlrk"
+uri = "file://screenshots/05_record_payment.jpg"
+type = "image"
+title = "Screenshot 5 — Record Payment"
+
+[[outputs]]
+id = "J0CIG1syczBMDaBcqgd7w"
+uri = "file://screenshots/06_settings.jpg"
+type = "image"
+title = "Screenshot 6 — Settings"
+
+[[outputs]]
+id = "fNaRXytJ2qr46AIdUcCb6"
+uri = "file://app-store-listing.md"
+type = "text"
+title = "App Store Listing — Descriptions, Keywords & Captions"
