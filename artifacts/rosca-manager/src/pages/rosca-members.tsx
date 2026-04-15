@@ -182,11 +182,44 @@ export function RoscaMembers() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+          {/* Mobile card list — shown below sm breakpoint */}
+          <ul className="sm:hidden divide-y divide-border">
+            {members.map((member, i) => (
+              <li key={member.id} className="flex items-center gap-3 px-4 py-3 animate-in fade-in" style={{ animationDelay: `${i * 40}ms` }}>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  {member.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-foreground text-sm truncate">{member.name}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <Badge variant={member.shares === 2 ? "default" : "secondary"} className={`text-xs font-bold ${member.shares === 2 ? "bg-chart-2/15 text-chart-2 border-chart-2/30 border" : ""}`}>
+                      {member.shares === 2 ? t.doubleShareBadge : t.singleShareBadge}
+                    </Badge>
+                    {member.turnOrder && <span className="text-xs text-muted-foreground">#{member.turnOrder}</span>}
+                    {member.phone && <span className="text-xs text-muted-foreground truncate">{member.phone}</span>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Button size="icon" variant="ghost" className="h-9 w-9 rounded-lg text-primary hover:text-primary hover:bg-primary/10" onClick={() => navigate(`~/rosca/${roscaId}/report/${member.id}`)}>
+                    <FileText className="w-4 h-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-9 w-9 rounded-lg" onClick={() => setEditMember(member)}>
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-9 w-9 rounded-lg text-destructive hover:text-destructive" onClick={() => setDeleteMemberId(member.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* Desktop table — hidden below sm breakpoint */}
+          <table className="w-full text-sm hidden sm:table">
             <thead className="bg-muted/30 border-b border-border">
               <tr>
                 <th className="text-left px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.name}</th>
-                <th className="text-left px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden sm:table-cell">{t.contact}</th>
+                <th className="text-left px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">{t.contact}</th>
                 <th className="text-center px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.share}</th>
                 <th className="text-center px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">{t.turn}</th>
                 <th className="text-right px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.actions}</th>
@@ -203,7 +236,7 @@ export function RoscaMembers() {
                       <span className="font-bold text-foreground">{member.name}</span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-muted-foreground hidden sm:table-cell">
+                  <td className="px-5 py-4 text-muted-foreground hidden md:table-cell">
                     {member.phone ?? member.email ?? <span className="text-muted-foreground/40 italic">—</span>}
                   </td>
                   <td className="px-5 py-4 text-center">
