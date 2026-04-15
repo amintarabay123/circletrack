@@ -53,3 +53,15 @@ id = "fNaRXytJ2qr46AIdUcCb6"
 uri = "file://app-store-listing.md"
 type = "text"
 title = "App Store Listing — Descriptions, Keywords & Captions"
+
+[[outputs]]
+id = "bhbJwFzyMLnmCLiuOeM5K"
+uri = "file://screenshots/07_circles_list_en.jpg"
+type = "image"
+title = "English - Circles List"
+
+[[outputs]]
+id = "CPq6JyW4B0Q_ubuWY3OZs"
+uri = "file://screenshots/08_circle_detail_en.jpg"
+type = "image"
+title = "English - Circle Detail"
