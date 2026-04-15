@@ -244,8 +244,8 @@ export function MemberReport() {
   return (
     <div className="min-h-screen bg-background">
       {/* Toolbar — hidden on print */}
-      <div className="print:hidden sticky top-0 z-10 bg-white border-b border-border px-4 py-3 flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => navigate(`/rosca/${roscaId}/members`)}>
+      <div className="print:hidden sticky top-0 z-10 bg-white border-b border-border px-4 flex items-center gap-3" style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)", paddingBottom: "0.75rem" }}>
+        <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => navigate(`~/rosca/${roscaId}/members`)}>
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div className="flex-1 min-w-0">
