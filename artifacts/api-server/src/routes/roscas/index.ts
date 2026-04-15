@@ -358,30 +358,44 @@ router.get("/roscas/:id/dashboard", async (req, res): Promise<void> => {
     .where(and(eq(paymentsTable.roscaId, id), eq(paymentsTable.cycle, currentCycle)));
   const cycleStartDate = getCycleStartDate(rosca.startDate, rosca.frequency, currentCycle);
   const cycleDueDate = getCycleDueDate(rosca.startDate, rosca.frequency, currentCycle);
-  const paymentByMember = new Map<number, { amount: number; paidAt: Date; isLate: boolean }>();
+  // Sum ALL payments per member for the cycle (supports multiple partial payments)
+  const paymentByMember = new Map<number, { totalPaid: number; lastPaidAt: Date; isLate: boolean }>();
   for (const p of cyclePayments) {
-    paymentByMember.set(p.memberId, { amount: parseFloat(p.amount), paidAt: p.paidAt, isLate: p.isLate });
+    const existing = paymentByMember.get(p.memberId);
+    if (existing) {
+      existing.totalPaid += parseFloat(p.amount);
+      if (p.paidAt > existing.lastPaidAt) existing.lastPaidAt = p.paidAt;
+      if (p.isLate) existing.isLate = true;
+    } else {
+      paymentByMember.set(p.memberId, { totalPaid: parseFloat(p.amount), lastPaidAt: p.paidAt, isLate: p.isLate });
+    }
   }
   const memberStatuses = members.map(m => {
     const amountDue = contributionAmount * m.shares;
-    const payment = paymentByMember.get(m.id);
+    const info = paymentByMember.get(m.id);
+    const amountPaid = info ? info.totalPaid : 0;
+    const isPaid = amountPaid >= amountDue - 0.001;
+    const isPartial = amountPaid > 0 && !isPaid;
+    const balance = Math.max(0, amountDue - amountPaid);
     return {
       memberId: m.id, memberName: m.name, shares: m.shares,
-      amountDue, amountPaid: payment ? payment.amount : 0,
-      isPaid: !!payment, isLate: payment ? payment.isLate : false,
-      paidAt: payment ? payment.paidAt.toISOString() : null,
+      amountDue, amountPaid, balance,
+      isPaid, isPartial,
+      isLate: info ? info.isLate : false,
+      paidAt: info ? info.lastPaidAt.toISOString() : null,
     };
   });
   const totalExpected = memberStatuses.reduce((sum, m) => sum + m.amountDue, 0);
   const totalCollected = memberStatuses.reduce((sum, m) => sum + m.amountPaid, 0);
   const paidCount = memberStatuses.filter(m => m.isPaid).length;
-  const unpaidCount = memberStatuses.filter(m => !m.isPaid).length;
+  const partialCount = memberStatuses.filter(m => m.isPartial).length;
+  const unpaidCount = memberStatuses.filter(m => !m.isPaid && !m.isPartial).length;
   const lateCount = memberStatuses.filter(m => m.isLate).length;
   const collectionRate = totalExpected > 0 ? (totalCollected / totalExpected) * 100 : 0;
   const potMember = members.find(m => m.turnOrder === currentCycle) ?? members[currentCycle - 1] ?? null;
   res.json({
     rosca: formatRosca(rosca), currentCycle, cycleStartDate, cycleDueDate,
-    totalExpected, totalCollected, collectionRate, paidCount, unpaidCount, lateCount,
+    totalExpected, totalCollected, collectionRate, paidCount, partialCount, unpaidCount, lateCount,
     memberStatuses, potAmount: totalExpected, potRecipient: potMember ? potMember.name : null,
   });
 });

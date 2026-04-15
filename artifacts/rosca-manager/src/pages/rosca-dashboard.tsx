@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
 
-function StatusPill({ isPaid, isLate, t }: { isPaid: boolean; isLate: boolean; t: ReturnType<typeof useLang>["t"] }) {
+function StatusPill({ isPaid, isPartial, isLate, t }: { isPaid: boolean; isPartial?: boolean; isLate: boolean; t: ReturnType<typeof useLang>["t"] }) {
   if (isPaid && !isLate) return (
     <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
       <CheckCircle2 className="w-3 h-3" /> {t.paid}
@@ -19,6 +19,11 @@ function StatusPill({ isPaid, isLate, t }: { isPaid: boolean; isLate: boolean; t
   if (isPaid && isLate) return (
     <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
       <Clock className="w-3 h-3" /> {t.lateBadge}
+    </span>
+  );
+  if (isPartial) return (
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full">
+      <AlertCircle className="w-3 h-3" /> {t.partialBadge ?? "Parcial"}
     </span>
   );
   return (
@@ -192,7 +197,11 @@ export function RoscaDashboard() {
             <span className="text-xs font-semibold text-red-500 uppercase tracking-widest">{t.unpaid}</span>
           </div>
           <p className="text-2xl font-extrabold text-red-700">{unpaidCount}</p>
-          <p className="text-xs text-red-500 mt-1">{unpaidCount === 0 ? t.everyonePaid : t.outstanding}</p>
+          <p className="text-xs text-red-500 mt-1">
+            {unpaidCount === 0 && (dashboard as typeof dashboard & { partialCount?: number })?.partialCount === 0 ? t.everyonePaid
+              : (dashboard as typeof dashboard & { partialCount?: number })?.partialCount ? `${(dashboard as typeof dashboard & { partialCount?: number })?.partialCount} ${t.partialBadge ?? "parcial"}`
+              : t.outstanding}
+          </p>
         </div>
       </div>
 
@@ -219,38 +228,57 @@ export function RoscaDashboard() {
           </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {memberStatuses.map((ms, i) => (
-            <div
-              key={ms.memberId}
-              className={`rounded-2xl border p-4 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-3 ${
-                ms.isPaid && !ms.isLate ? "border-emerald-200 bg-emerald-50/60"
-                : ms.isPaid && ms.isLate ? "border-amber-200 bg-amber-50/60"
-                : "border-red-200 bg-red-50/40"
-              }`}
-              style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-                    ms.isPaid && !ms.isLate ? "bg-emerald-200 text-emerald-800"
-                    : ms.isPaid && ms.isLate ? "bg-amber-200 text-amber-800"
-                    : "bg-red-200 text-red-800"
-                  }`}>
-                    {ms.memberName.charAt(0).toUpperCase()}
+          {memberStatuses.map((ms, i) => {
+            const isPartial = (ms as typeof ms & { isPartial?: boolean }).isPartial;
+            const balance = (ms as typeof ms & { balance?: number }).balance ?? 0;
+            const amountPaid = ms.amountPaid ?? 0;
+            const cardClass = ms.isPaid && !ms.isLate ? "border-emerald-200 bg-emerald-50/60"
+              : ms.isPaid && ms.isLate ? "border-amber-200 bg-amber-50/60"
+              : isPartial ? "border-orange-200 bg-orange-50/50"
+              : "border-red-200 bg-red-50/40";
+            const avatarClass = ms.isPaid && !ms.isLate ? "bg-emerald-200 text-emerald-800"
+              : ms.isPaid && ms.isLate ? "bg-amber-200 text-amber-800"
+              : isPartial ? "bg-orange-200 text-orange-800"
+              : "bg-red-200 text-red-800";
+            return (
+              <div
+                key={ms.memberId}
+                className={`rounded-2xl border p-4 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-3 ${cardClass}`}
+                style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${avatarClass}`}>
+                      {ms.memberName.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="font-bold text-foreground truncate text-sm">{ms.memberName}</span>
                   </div>
-                  <span className="font-bold text-foreground truncate text-sm">{ms.memberName}</span>
+                  <StatusPill isPaid={ms.isPaid} isPartial={isPartial} isLate={ms.isLate} t={t} />
                 </div>
-                <StatusPill isPaid={ms.isPaid} isLate={ms.isLate} t={t} />
+                <div className="flex items-center justify-between text-sm pt-1">
+                  <span className="text-muted-foreground">{ms.shares > 1 ? `${ms.shares} shares` : "1 share"}</span>
+                  <div className="text-right">
+                    {isPartial ? (
+                      <>
+                        <span className="font-bold text-foreground">${amountPaid.toLocaleString()}</span>
+                        <span className="text-muted-foreground text-xs"> / ${ms.amountDue.toLocaleString()}</span>
+                      </>
+                    ) : (
+                      <span className="font-bold text-foreground">${ms.amountDue.toLocaleString()}</span>
+                    )}
+                  </div>
+                </div>
+                {isPartial && balance > 0 && (
+                  <p className="text-xs font-semibold text-orange-700">
+                    {t.balanceLabel ?? "Saldo"}: <span className="font-extrabold">${balance.toLocaleString()}</span> {t.outstanding ?? "pendiente"}
+                  </p>
+                )}
+                {ms.paidAt && (
+                  <p className="text-xs text-muted-foreground">{t.paidOn} {format(new Date(ms.paidAt), "MMM d, h:mm a")}</p>
+                )}
               </div>
-              <div className="flex items-center justify-between text-sm pt-1">
-                <span className="text-muted-foreground">{ms.shares > 1 ? `${ms.shares} shares` : "1 share"}</span>
-                <span className="font-bold text-foreground">${ms.amountDue.toLocaleString()}</span>
-              </div>
-              {ms.paidAt && (
-                <p className="text-xs text-muted-foreground">{t.paidOn} {format(new Date(ms.paidAt), "MMM d, h:mm a")}</p>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
