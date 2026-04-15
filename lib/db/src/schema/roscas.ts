@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 export const roscasTable = pgTable("roscas", {
   id: serial("id").primaryKey(),
+  userId: text("user_id"),
   name: text("name").notNull(),
   startDate: text("start_date").notNull(),
   frequency: text("frequency").notNull(), // 'weekly' | 'biweekly' | 'monthly'

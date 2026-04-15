@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import { db, roscasTable, membersTable, paymentsTable } from "@workspace/db";
 import {
   CreateRoscaBody,
@@ -10,12 +10,34 @@ import {
   RecordPaymentBody,
 } from "@workspace/api-zod";
 import { addWeeks, addMonths, isAfter, parseISO, format } from "date-fns";
+import { getAuth } from "@clerk/express";
 
 const router: IRouter = Router();
 
 function parseId(raw: unknown): number | null {
   const n = parseInt(String(raw), 10);
   return isNaN(n) ? null : n;
+}
+
+function getUserId(req: any): string | null {
+  const auth = getAuth(req);
+  return auth?.userId ?? null;
+}
+
+const requireAuth = (req: any, res: any, next: any) => {
+  const userId = getUserId(req);
+  if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+  req.userId = userId;
+  next();
+};
+
+router.use(requireAuth);
+
+async function checkRoscaOwnership(id: number, userId: string, res: any): Promise<typeof roscasTable.$inferSelect | null> {
+  const [rosca] = await db.select().from(roscasTable).where(eq(roscasTable.id, id));
+  if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return null; }
+  if (rosca.userId && rosca.userId !== userId) { res.status(403).json({ error: "Forbidden" }); return null; }
+  return rosca;
 }
 
 // Returns the Nth semimonthly date (15th or 30th/last-of-month) on or after the
@@ -95,16 +117,22 @@ function formatRosca(r: typeof roscasTable.$inferSelect) {
 }
 
 // List all roscas
-router.get("/roscas", async (_req, res): Promise<void> => {
-  const roscas = await db.select().from(roscasTable).orderBy(roscasTable.createdAt);
+router.get("/roscas", async (req: any, res): Promise<void> => {
+  const userId = req.userId;
+  // Auto-claim any unowned roscas on first login
+  await db.update(roscasTable).set({ userId }).where(isNull(roscasTable.userId));
+  const roscas = await db.select().from(roscasTable)
+    .where(eq(roscasTable.userId, userId))
+    .orderBy(roscasTable.createdAt);
   res.json(roscas.map(formatRosca));
 });
 
 // Create a rosca
-router.post("/roscas", async (req, res): Promise<void> => {
+router.post("/roscas", async (req: any, res): Promise<void> => {
   const parsed = CreateRoscaBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
   const [rosca] = await db.insert(roscasTable).values({
+    userId: req.userId,
     name: parsed.data.name,
     startDate: parsed.data.startDate,
     frequency: parsed.data.frequency,
@@ -117,18 +145,19 @@ router.post("/roscas", async (req, res): Promise<void> => {
 });
 
 // Get a single rosca
-router.get("/roscas/:id", async (req, res): Promise<void> => {
+router.get("/roscas/:id", async (req: any, res): Promise<void> => {
   const id = parseId(req.params.id);
   if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
-  const [rosca] = await db.select().from(roscasTable).where(eq(roscasTable.id, id));
-  if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
+  const rosca = await checkRoscaOwnership(id, req.userId, res);
+  if (!rosca) return;
   res.json(formatRosca(rosca));
 });
 
 // Update a rosca
-router.put("/roscas/:id", async (req, res): Promise<void> => {
+router.put("/roscas/:id", async (req: any, res): Promise<void> => {
   const id = parseId(req.params.id);
   if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
+  if (!await checkRoscaOwnership(id, req.userId, res)) return;
   const parsed = UpdateRoscaBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
   const [rosca] = await db.update(roscasTable).set({
@@ -143,11 +172,11 @@ router.put("/roscas/:id", async (req, res): Promise<void> => {
 });
 
 // Advance rosca cycle
-router.patch("/roscas/:id/advance", async (req, res): Promise<void> => {
+router.patch("/roscas/:id/advance", async (req: any, res): Promise<void> => {
   const id = parseId(req.params.id);
   if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
-  const [rosca] = await db.select().from(roscasTable).where(eq(roscasTable.id, id));
-  if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
+  const rosca = await checkRoscaOwnership(id, req.userId, res);
+  if (!rosca) return;
   if (rosca.currentCycle >= rosca.totalCycles) {
     res.status(400).json({ error: "Already at final cycle" }); return;
   }
@@ -158,11 +187,11 @@ router.patch("/roscas/:id/advance", async (req, res): Promise<void> => {
 });
 
 // Roll back rosca cycle by one
-router.patch("/roscas/:id/rollback", async (req, res): Promise<void> => {
+router.patch("/roscas/:id/rollback", async (req: any, res): Promise<void> => {
   const id = parseId(req.params.id);
   if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
-  const [rosca] = await db.select().from(roscasTable).where(eq(roscasTable.id, id));
-  if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
+  const rosca = await checkRoscaOwnership(id, req.userId, res);
+  if (!rosca) return;
   if (rosca.currentCycle <= 1) {
     res.status(400).json({ error: "Already at first cycle" }); return;
   }
@@ -173,11 +202,75 @@ router.patch("/roscas/:id/rollback", async (req, res): Promise<void> => {
 });
 
 // Delete a rosca
-router.delete("/roscas/:id", async (req, res): Promise<void> => {
+router.delete("/roscas/:id", async (req: any, res): Promise<void> => {
   const id = parseId(req.params.id);
   if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
+  if (!await checkRoscaOwnership(id, req.userId, res)) return;
   await db.delete(roscasTable).where(eq(roscasTable.id, id));
   res.sendStatus(204);
+});
+
+// Export a rosca as JSON (full data backup)
+router.get("/roscas/:id/export", async (req: any, res): Promise<void> => {
+  const id = parseId(req.params.id);
+  if (!id) { res.status(400).json({ error: "Invalid id" }); return; }
+  const rosca = await checkRoscaOwnership(id, req.userId, res);
+  if (!rosca) return;
+  const members = await db.select().from(membersTable).where(eq(membersTable.roscaId, id)).orderBy(membersTable.turnOrder, membersTable.createdAt);
+  const payments = await db.select().from(paymentsTable).where(eq(paymentsTable.roscaId, id)).orderBy(paymentsTable.cycle, paymentsTable.paidAt);
+  const exportData = {
+    exportVersion: 1,
+    exportedAt: new Date().toISOString(),
+    rosca: formatRosca(rosca),
+    members: members.map(m => ({ name: m.name, phone: m.phone, email: m.email, shares: m.shares, turnOrder: m.turnOrder })),
+    payments: payments.map(p => ({
+      memberName: members.find(m => m.id === p.memberId)?.name ?? "",
+      cycle: p.cycle, amount: parseFloat(p.amount), paidAt: p.paidAt.toISOString(),
+      dueDate: p.dueDate, isLate: p.isLate, notes: p.notes,
+    })),
+  };
+  res.setHeader("Content-Disposition", `attachment; filename="${rosca.name.replace(/[^a-z0-9]/gi, "_")}.json"`);
+  res.json(exportData);
+});
+
+// Import a rosca from JSON
+router.post("/roscas/import", async (req: any, res): Promise<void> => {
+  const { rosca: r, members: ms, payments: ps } = req.body;
+  if (!r || !r.name) { res.status(400).json({ error: "Invalid import data" }); return; }
+  const mode = req.body.mode ?? "archive"; // 'archive' = keep dates, 'template' = reset to today
+  const startDate = mode === "template" ? new Date().toISOString().split("T")[0] : (r.startDate?.slice(0, 10) ?? new Date().toISOString().split("T")[0]);
+  const [newRosca] = await db.insert(roscasTable).values({
+    userId: req.userId,
+    name: r.name,
+    startDate,
+    frequency: r.frequency ?? "monthly",
+    contributionAmount: String(r.contributionAmount ?? 0),
+    totalCycles: r.totalCycles ?? 1,
+    currentCycle: mode === "template" ? 1 : (r.currentCycle ?? 1),
+    isActive: mode === "template" ? true : (r.isActive ?? true),
+  }).returning();
+  const memberMap = new Map<string, number>();
+  if (Array.isArray(ms)) {
+    for (const m of ms) {
+      const [newMember] = await db.insert(membersTable).values({
+        roscaId: newRosca.id, name: m.name, phone: m.phone ?? null, email: m.email ?? null,
+        shares: m.shares ?? 1, turnOrder: m.turnOrder ?? null,
+      }).returning();
+      memberMap.set(m.name, newMember.id);
+    }
+  }
+  if (mode === "archive" && Array.isArray(ps)) {
+    for (const p of ps) {
+      const memberId = memberMap.get(p.memberName);
+      if (!memberId) continue;
+      await db.insert(paymentsTable).values({
+        roscaId: newRosca.id, memberId, cycle: p.cycle,
+        amount: String(p.amount), paidAt: new Date(p.paidAt),
+        dueDate: p.dueDate ?? startDate, isLate: p.isLate ?? false, notes: p.notes ?? null,
+      });
+    }
+  }
+  res.status(201).json(formatRosca(newRosca));
 });
 
 // List members

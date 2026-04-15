@@ -2,7 +2,14 @@
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+CircleTrack — ROSCA/Tanda Manager. pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+
+## Features
+- Clerk authentication (Google, Apple, email) — Face ID works automatically via Apple Sign-In on iOS
+- Full ROSCA/Tanda management: members, payments, ratings, PDF reports
+- Export circles as JSON / Import JSON archives or as fresh templates
+- English/Spanish toggle (Spanish default)
+- PWA-ready, mobile-first design
 
 ## Stack
 

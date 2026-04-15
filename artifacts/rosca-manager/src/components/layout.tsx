@@ -8,9 +8,11 @@ import {
   ChevronLeft,
   Globe,
   CircleDollarSign,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
+import { useUser, useClerk } from "@clerk/react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +22,10 @@ export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const { id: roscaId } = useParams<{ id: string }>();
   const { t, lang, setLang } = useLang();
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const userName = user?.firstName ?? user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] ?? t.organizer;
+  const userInitial = userName.charAt(0).toUpperCase();
 
   const navItems = roscaId ? [
     { path: "/", label: t.dashboard, icon: LayoutDashboard },
@@ -92,12 +98,15 @@ export function Layout({ children }: LayoutProps) {
             </button>
             <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-sidebar-accent/30">
               <div className="w-8 h-8 rounded-full bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-bold text-sm shrink-0">
-                O
+                {userInitial}
               </div>
-              <div>
-                <p className="text-sm font-semibold text-sidebar-foreground leading-none">{t.organizer}</p>
-                <p className="text-xs text-sidebar-foreground/50 mt-0.5">{t.admin}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-sidebar-foreground leading-none truncate">{userName}</p>
+                <p className="text-xs text-sidebar-foreground/50 mt-0.5">{t.organizer}</p>
               </div>
+              <button onClick={() => signOut({ redirectUrl: "/" })} title={t.signOut} className="p-1 rounded-lg text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
