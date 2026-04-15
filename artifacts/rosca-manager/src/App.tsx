@@ -27,17 +27,21 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/rosca/new" component={RoscaNew} />
-      <Route path="/rosca/:id/report/:memberId" component={MemberReport} />
       <Route path="/rosca/:id" nest>
-        <Layout>
-          <Switch>
-            <Route path="/" component={RoscaDashboard} />
-            <Route path="/members" component={RoscaMembers} />
-            <Route path="/payments" component={RoscaPayments} />
-            <Route path="/ratings" component={RoscaRatings} />
-            <Route component={NotFound} />
-          </Switch>
-        </Layout>
+        <Switch>
+          <Route path="/report/:memberId" component={MemberReport} />
+          <Route>
+            <Layout>
+              <Switch>
+                <Route path="/" component={RoscaDashboard} />
+                <Route path="/members" component={RoscaMembers} />
+                <Route path="/payments" component={RoscaPayments} />
+                <Route path="/ratings" component={RoscaRatings} />
+                <Route component={NotFound} />
+              </Switch>
+            </Layout>
+          </Route>
+        </Switch>
       </Route>
       <Route component={NotFound} />
     </Switch>
