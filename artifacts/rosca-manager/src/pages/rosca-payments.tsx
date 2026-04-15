@@ -84,10 +84,11 @@ export function RoscaPayments() {
 
   const { data: dashboard } = useGetRoscaDashboard(roscaId, { query: { enabled: !!roscaId, queryKey: getGetRoscaDashboardQueryKey(roscaId) } });
   const { data: members } = useListMembers(roscaId, { query: { enabled: !!roscaId, queryKey: getListMembersQueryKey(roscaId) } });
-  const { data: payments, isLoading } = useListPayments(roscaId, {
-    params: { query: { cycle: cycleFilter } },
-    query: { enabled: !!roscaId, queryKey: getListPaymentsQueryKey(roscaId, { cycle: cycleFilter }) }
-  });
+  const { data: payments, isLoading } = useListPayments(
+    roscaId,
+    { cycle: cycleFilter },
+    { query: { enabled: !!roscaId, queryKey: getListPaymentsQueryKey(roscaId, { cycle: cycleFilter }) } }
+  );
 
   const currentCycle = dashboard?.rosca.currentCycle ?? 1;
   const totalCycles = dashboard?.rosca.totalCycles ?? currentCycle;
