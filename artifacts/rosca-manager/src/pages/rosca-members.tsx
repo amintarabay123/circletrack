@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, UserPlus, Pencil, Trash2, Users } from "lucide-react";
+import { Loader2, UserPlus, Pencil, Trash2, Users, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
@@ -19,6 +19,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
+import { useLocation } from "wouter";
 
 const memberSchema = z.object({
   name: z.string().min(1),
@@ -123,6 +124,7 @@ export function RoscaMembers() {
   const queryClient = useQueryClient();
   const { t } = useLang();
 
+  const [, navigate] = useLocation();
   const [addOpen, setAddOpen] = useState(false);
   const [editMember, setEditMember] = useState<{ id: number; name: string; phone?: string | null; email?: string | null; shares: number; turnOrder?: number | null } | null>(null);
   const [deleteMemberId, setDeleteMemberId] = useState<number | null>(null);
@@ -214,6 +216,9 @@ export function RoscaMembers() {
                   </td>
                   <td className="px-5 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
+                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-primary hover:text-primary hover:bg-primary/10" title={t.memberReport ?? "Reporte"} onClick={() => navigate(`/rosca/${roscaId}/report/${member.id}`)}>
+                        <FileText className="w-3.5 h-3.5" />
+                      </Button>
                       <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => setEditMember(member)}>
                         <Pencil className="w-3.5 h-3.5" />
                       </Button>

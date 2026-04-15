@@ -11,7 +11,7 @@ import { format, addWeeks, addMonths } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Plus, Trash2, CreditCard, CheckCircle2, Clock } from "lucide-react";
+import { Loader2, Plus, Trash2, CreditCard, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -232,19 +232,38 @@ export function RoscaPayments() {
                   <td className="px-5 py-4 text-center">
                     <span className="font-bold text-xs bg-muted px-2.5 py-1 rounded-full text-muted-foreground">{t.cycle} {payment.cycle}</span>
                   </td>
-                  <td className="px-5 py-4 text-right font-extrabold text-foreground">
-                    ${Number(payment.amount).toLocaleString()}
+                  <td className="px-5 py-4 text-right">
+                    <div className="flex flex-col items-end">
+                      <span className="font-extrabold text-foreground">${Number(payment.amount).toLocaleString()}</span>
+                      {(() => {
+                        const expected = contributionAmount * ((payment as typeof payment & { memberShares?: number }).memberShares ?? 1);
+                        const balance = expected - Number(payment.amount);
+                        return balance > 0.01 ? (
+                          <span className="text-xs text-red-500 font-semibold">-${balance.toLocaleString()} saldo</span>
+                        ) : null;
+                      })()}
+                    </div>
                   </td>
                   <td className="px-5 py-4 text-center">
-                    {payment.isLate ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
-                        <Clock className="w-3 h-3" /> {t.lateBadge}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
-                        <CheckCircle2 className="w-3 h-3" /> {t.onTimeBadge}
-                      </span>
-                    )}
+                    <div className="flex flex-col items-center gap-1">
+                      {payment.isLate ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+                          <Clock className="w-3 h-3" /> {t.lateBadge}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                          <CheckCircle2 className="w-3 h-3" /> {t.onTimeBadge}
+                        </span>
+                      )}
+                      {(() => {
+                        const expected = contributionAmount * ((payment as typeof payment & { memberShares?: number }).memberShares ?? 1);
+                        return Number(payment.amount) < expected - 0.01 ? (
+                          <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full">
+                            <AlertCircle className="w-3 h-3" /> {t.partialBadge ?? "Parcial"}
+                          </span>
+                        ) : null;
+                      })()}
+                    </div>
                   </td>
                   <td className="px-5 py-4 text-muted-foreground text-xs hidden md:table-cell">
                     {format(new Date(payment.paidAt), "MMM d, yyyy h:mm a")}

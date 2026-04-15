@@ -249,6 +249,7 @@ router.get("/roscas/:id/payments", async (req, res): Promise<void> => {
     roscaId: paymentsTable.roscaId,
     memberId: paymentsTable.memberId,
     memberName: membersTable.name,
+    memberShares: membersTable.shares,
     cycle: paymentsTable.cycle,
     amount: paymentsTable.amount,
     paidAt: paymentsTable.paidAt,
@@ -297,6 +298,44 @@ router.delete("/roscas/:id/payments/:paymentId", async (req, res): Promise<void>
   await db.delete(paymentsTable)
     .where(and(eq(paymentsTable.id, paymentId), eq(paymentsTable.roscaId, id)));
   res.sendStatus(204);
+});
+
+// Member payment report
+router.get("/roscas/:id/members/:memberId/report", async (req, res): Promise<void> => {
+  const id = parseId(req.params.id);
+  const memberId = parseId(req.params.memberId);
+  if (!id || !memberId) { res.status(400).json({ error: "Invalid id" }); return; }
+  const [rosca] = await db.select().from(roscasTable).where(eq(roscasTable.id, id));
+  if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
+  const [member] = await db.select().from(membersTable)
+    .where(and(eq(membersTable.id, memberId), eq(membersTable.roscaId, id)));
+  if (!member) { res.status(404).json({ error: "Member not found" }); return; }
+  const allPayments = await db.select().from(paymentsTable)
+    .where(and(eq(paymentsTable.roscaId, id), eq(paymentsTable.memberId, memberId)))
+    .orderBy(paymentsTable.cycle, paymentsTable.paidAt);
+  const contributionAmount = parseFloat(rosca.contributionAmount);
+  const expectedPerCycle = contributionAmount * member.shares;
+  const cycles = Array.from({ length: rosca.totalCycles }, (_, i) => {
+    const cycle = i + 1;
+    const dueDate = getCycleDueDate(rosca.startDate, rosca.frequency, cycle);
+    const cyclePayments = allPayments.filter(p => p.cycle === cycle);
+    const totalPaid = cyclePayments.reduce((s, p) => s + parseFloat(p.amount), 0);
+    const balance = Math.max(0, expectedPerCycle - totalPaid);
+    const isUpcoming = cycle > rosca.currentCycle;
+    const status = isUpcoming ? "upcoming" : totalPaid === 0 ? "missed" : balance > 0 ? "partial" : "paid";
+    const isLate = cyclePayments.some(p => p.isLate);
+    return { cycle, dueDate, expectedAmount: expectedPerCycle, totalPaid, balance, status, isLate, payments: cyclePayments.map(p => ({ id: p.id, amount: parseFloat(p.amount), paidAt: p.paidAt.toISOString(), isLate: p.isLate, notes: p.notes })) };
+  });
+  const pastCycles = cycles.filter(c => c.status !== "upcoming");
+  const summary = {
+    totalExpected: pastCycles.reduce((s, c) => s + c.expectedAmount, 0),
+    totalPaid: pastCycles.reduce((s, c) => s + c.totalPaid, 0),
+    totalBalance: pastCycles.reduce((s, c) => s + c.balance, 0),
+    paidCycles: pastCycles.filter(c => c.status === "paid").length,
+    partialCycles: pastCycles.filter(c => c.status === "partial").length,
+    missedCycles: pastCycles.filter(c => c.status === "missed").length,
+  };
+  res.json({ member, rosca: formatRosca(rosca), cycles, summary });
 });
 
 // Dashboard summary
