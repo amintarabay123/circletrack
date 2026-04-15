@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/circletrack/"
+title = "CircleTrack Mobile"
+version = "1.0.0"
+id = "artifacts/circletrack"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/circletrack/" ]
+localPort = 25112
+
+[services.development]
+run = "pnpm --filter @workspace/circletrack run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/circletrack", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/circletrack", "run", "serve" ]
+
+[services.env]
+PORT = "25112"
+BASE_PATH = "/circletrack/"
