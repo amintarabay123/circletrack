@@ -22,11 +22,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
 
-// Mirrors the server-side getCycleDueDate so the form can auto-fill paidAt
 function getCycleDueDateLocal(startDate: string, frequency: string, cycle: number): string {
   const start = new Date(startDate + "T00:00:00");
   let due: Date;
-
   if (frequency === "weekly") {
     due = addWeeks(start, cycle);
   } else if (frequency === "biweekly") {
@@ -39,9 +37,8 @@ function getCycleDueDateLocal(startDate: string, frequency: string, cycle: numbe
     const secondHalfDay = (y: number, m: number) => Math.min(30, lastDay(y, m));
     let half: "first" | "second";
     let dueDay: number;
-    if (startDay <= 15) {
-      half = "first"; dueDay = 15;
-    } else {
+    if (startDay <= 15) { half = "first"; dueDay = 15; }
+    else {
       half = "second"; dueDay = secondHalfDay(year, month);
       if (startDay > dueDay) { half = "first"; month += 1; if (month > 11) { month = 0; year += 1; } dueDay = 15; }
     }
@@ -55,7 +52,6 @@ function getCycleDueDateLocal(startDate: string, frequency: string, cycle: numbe
   } else {
     due = addMonths(start, cycle);
   }
-  // Return as "YYYY-MM-DDThh:mm" for datetime-local input (noon to avoid DST edge cases)
   const y = due.getFullYear();
   const m = String(due.getMonth() + 1).padStart(2, "0");
   const d = String(due.getDate()).padStart(2, "0");
@@ -93,7 +89,6 @@ export function RoscaPayments() {
   const currentCycle = dashboard?.rosca.currentCycle ?? 1;
   const totalCycles = dashboard?.rosca.totalCycles ?? currentCycle;
   const contributionAmount = dashboard?.rosca.contributionAmount ?? 0;
-  // Allow all cycles up to totalCycles so payments can be recorded retroactively
   const cycleOptions = Array.from({ length: totalCycles }, (_, i) => i + 1);
 
   const invalidate = () => {
@@ -119,17 +114,11 @@ export function RoscaPayments() {
 
   const startDate = dashboard?.rosca.startDate ?? "";
   const frequency = dashboard?.rosca.frequency ?? "monthly";
-
-  const watchMemberId = form.watch("memberId");
   const watchCycle = form.watch("cycle");
-  const selectedMember = members?.find(m => m.id === Number(watchMemberId));
-
-  // Compute the due date label for the selected cycle to show as a hint
   const cycleDueDateHint = startDate ? getCycleDueDateLocal(startDate, frequency, watchCycle).slice(0, 10) : "";
 
   function getDefaultPaidAt(cycle: number) {
-    if (startDate) return getCycleDueDateLocal(startDate, frequency, cycle);
-    return new Date().toISOString().slice(0, 16);
+    return startDate ? getCycleDueDateLocal(startDate, frequency, cycle) : new Date().toISOString().slice(0, 16);
   }
 
   function onCycleChange(cycle: number) {
@@ -144,13 +133,7 @@ export function RoscaPayments() {
   }
 
   function openAddDialog() {
-    form.reset({
-      memberId: 0,
-      cycle: currentCycle,
-      amount: contributionAmount,
-      paidAt: getDefaultPaidAt(currentCycle),
-      notes: "",
-    });
+    form.reset({ memberId: 0, cycle: currentCycle, amount: contributionAmount, paidAt: getDefaultPaidAt(currentCycle), notes: "" });
     setAddOpen(true);
   }
 
@@ -159,24 +142,26 @@ export function RoscaPayments() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-5 animate-in fade-in duration-300">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-foreground">{t.payments}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{payments?.length ?? 0} {t.payments.toLowerCase()}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{payments?.length ?? 0} {t.payments.toLowerCase()}</p>
         </div>
-        <Button onClick={openAddDialog} className="rounded-xl font-bold shadow-sm gap-2">
+        <Button onClick={openAddDialog} className="rounded-xl font-bold shadow-sm gap-2 shrink-0">
           <Plus className="w-4 h-4" />
-          {t.recordPayment}
+          <span className="hidden sm:inline">{t.recordPayment}</span>
+          <span className="sm:hidden">{t.record}</span>
         </Button>
       </div>
 
-      {/* Cycle filter */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-sm text-muted-foreground font-semibold">{t.filterByCycle}</span>
+      {/* Cycle filter — horizontally scrollable, no wrapping */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+        <span className="text-sm text-muted-foreground font-semibold shrink-0">{t.filterByCycle}</span>
         <button
           onClick={() => setCycleFilter(undefined)}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${!cycleFilter ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-white text-muted-foreground border-border hover:border-primary/50"}`}
+          className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${!cycleFilter ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-white text-muted-foreground border-border hover:border-primary/50"}`}
         >
           {t.all}
         </button>
@@ -184,17 +169,18 @@ export function RoscaPayments() {
           <button
             key={c}
             onClick={() => setCycleFilter(c)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${cycleFilter === c ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-white text-muted-foreground border-border hover:border-primary/50"}`}
+            className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${cycleFilter === c ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-white text-muted-foreground border-border hover:border-primary/50"}`}
           >
             {t.cycle} {c}
           </button>
         ))}
       </div>
 
+      {/* Content */}
       {isLoading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-7 h-7 animate-spin text-primary" /></div>
       ) : !payments || payments.length === 0 ? (
-        <div className="border-2 border-dashed border-border rounded-2xl p-14 text-center flex flex-col items-center gap-4">
+        <div className="border-2 border-dashed border-border rounded-2xl p-12 text-center flex flex-col items-center gap-4">
           <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
             <CreditCard className="w-8 h-8 text-primary" />
           </div>
@@ -207,78 +193,130 @@ export function RoscaPayments() {
           </Button>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/30 border-b border-border">
-              <tr>
-                <th className="text-left px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.member}</th>
-                <th className="text-center px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.cycle}</th>
-                <th className="text-right px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.amount}</th>
-                <th className="text-center px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.status}</th>
-                <th className="text-left px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">{t.paidOn}</th>
-                <th className="text-right px-5 py-3.5"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {payments.map((payment, i) => (
-                <tr key={payment.id} className="hover:bg-muted/20 transition-colors animate-in fade-in" style={{ animationDelay: `${i * 30}ms` }}>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center text-white font-bold text-xs shrink-0">
+        <>
+          {/* Mobile: card list */}
+          <div className="md:hidden space-y-2">
+            {payments.map((payment, i) => {
+              const shares = (payment as any).memberShares ?? 1;
+              const expected = contributionAmount * shares;
+              const balance = expected - Number(payment.amount);
+              const isPartial = balance > 0.01;
+              return (
+                <div key={payment.id} className="bg-white rounded-2xl border border-border shadow-sm p-4 animate-in fade-in" style={{ animationDelay: `${i * 20}ms` }}>
+                  <div className="flex items-center justify-between gap-3">
+                    {/* Left: avatar + name + cycle */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center text-white font-bold text-sm shrink-0">
                         {(payment.memberName ?? "?").charAt(0).toUpperCase()}
                       </div>
-                      <span className="font-bold text-foreground">{payment.memberName}</span>
+                      <div className="min-w-0">
+                        <p className="font-bold text-foreground text-sm truncate">{payment.memberName}</p>
+                        <p className="text-xs text-muted-foreground">{t.cycle} {payment.cycle} · {format(new Date(payment.paidAt), "MMM d, yyyy")}</p>
+                      </div>
                     </div>
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <span className="font-bold text-xs bg-muted px-2.5 py-1 rounded-full text-muted-foreground">{t.cycle} {payment.cycle}</span>
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <div className="flex flex-col items-end">
-                      <span className="font-extrabold text-foreground">${Number(payment.amount).toLocaleString()}</span>
-                      {(() => {
-                        const expected = contributionAmount * ((payment as typeof payment & { memberShares?: number }).memberShares ?? 1);
-                        const balance = expected - Number(payment.amount);
-                        return balance > 0.01 ? (
-                          <span className="text-xs text-red-500 font-semibold">-${balance.toLocaleString()} saldo</span>
-                        ) : null;
-                      })()}
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <div className="flex flex-col items-center gap-1">
-                      {payment.isLate ? (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
-                          <Clock className="w-3 h-3" /> {t.lateBadge}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
-                          <CheckCircle2 className="w-3 h-3" /> {t.onTimeBadge}
-                        </span>
-                      )}
-                      {(() => {
-                        const expected = contributionAmount * ((payment as typeof payment & { memberShares?: number }).memberShares ?? 1);
-                        return Number(payment.amount) < expected - 0.01 ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full">
-                            <AlertCircle className="w-3 h-3" /> {t.partialBadge ?? "Parcial"}
+                    {/* Right: amount + badges + delete */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <p className="font-extrabold text-foreground text-sm">${Number(payment.amount).toLocaleString()}</p>
+                        {isPartial && <p className="text-xs text-red-500 font-semibold">-${balance.toLocaleString()}</p>}
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        {payment.isLate ? (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                            <Clock className="w-2.5 h-2.5" /> {t.lateBadge}
                           </span>
-                        ) : null;
-                      })()}
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            <CheckCircle2 className="w-2.5 h-2.5" /> {t.onTimeBadge}
+                          </span>
+                        )}
+                        {isPartial && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full">
+                            <AlertCircle className="w-2.5 h-2.5" /> {t.partialBadge}
+                          </span>
+                        )}
+                      </div>
+                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-destructive hover:text-destructive shrink-0" onClick={() => setDeletePaymentId(payment.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
                     </div>
-                  </td>
-                  <td className="px-5 py-4 text-muted-foreground text-xs hidden md:table-cell">
-                    {format(new Date(payment.paidAt), "MMM d, yyyy h:mm a")}
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-destructive hover:text-destructive" onClick={() => setDeletePaymentId(payment.id)}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </td>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden md:block bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30 border-b border-border">
+                <tr>
+                  <th className="text-left px-5 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.member}</th>
+                  <th className="text-center px-4 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.cycle}</th>
+                  <th className="text-right px-4 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.amount}</th>
+                  <th className="text-center px-4 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.status}</th>
+                  <th className="text-left px-4 py-3.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">{t.paidOn}</th>
+                  <th className="text-right px-4 py-3.5"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {payments.map((payment, i) => {
+                  const shares = (payment as any).memberShares ?? 1;
+                  const expected = contributionAmount * shares;
+                  const balance = expected - Number(payment.amount);
+                  const isPartial = balance > 0.01;
+                  return (
+                    <tr key={payment.id} className="hover:bg-muted/20 transition-colors animate-in fade-in" style={{ animationDelay: `${i * 30}ms` }}>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center text-white font-bold text-xs shrink-0">
+                            {(payment.memberName ?? "?").charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-bold text-foreground">{payment.memberName}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span className="font-bold text-xs bg-muted px-2.5 py-1 rounded-full text-muted-foreground">{t.cycle} {payment.cycle}</span>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex flex-col items-end">
+                          <span className="font-extrabold text-foreground">${Number(payment.amount).toLocaleString()}</span>
+                          {isPartial && <span className="text-xs text-red-500 font-semibold">-${balance.toLocaleString()} saldo</span>}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <div className="flex flex-col items-center gap-1">
+                          {payment.isLate ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+                              <Clock className="w-3 h-3" /> {t.lateBadge}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                              <CheckCircle2 className="w-3 h-3" /> {t.onTimeBadge}
+                            </span>
+                          )}
+                          {isPartial && (
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full">
+                              <AlertCircle className="w-3 h-3" /> {t.partialBadge}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-muted-foreground text-xs">
+                        {format(new Date(payment.paidAt), "MMM d, yyyy h:mm a")}
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-destructive hover:text-destructive" onClick={() => setDeletePaymentId(payment.id)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* Record Payment Dialog */}
