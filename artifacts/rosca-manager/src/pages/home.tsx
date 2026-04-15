@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useListRoscas, getListRoscasQueryKey } from "@workspace/api-client-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Plus, ArrowRight, CircleDollarSign, Globe, TrendingUp, Users, Trash2, Loader2 } from "lucide-react";
+import { Plus, ArrowRight, CircleDollarSign, Globe, TrendingUp, Users, Trash2, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -31,13 +31,21 @@ function CircleCard({ rosca, onDelete }: { rosca: Rosca; onDelete: (rosca: Rosca
               {freqEmoji} {freqLabel} · {t.started} {new Date(rosca.startDate).toLocaleDateString()}
             </p>
           </Link>
-          <div className="flex items-center gap-2 ml-3 shrink-0">
+          <div className="flex items-center gap-1.5 ml-3 shrink-0">
             <Badge
               variant={rosca.isActive ? "default" : "secondary"}
               className={rosca.isActive ? "bg-emerald-100 text-emerald-700 border-emerald-200 border" : ""}
             >
               {rosca.isActive ? t.active : t.completed}
             </Badge>
+            <Link
+              href={`/rosca/${rosca.id}/edit`}
+              onClick={(e) => e.stopPropagation()}
+              className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-primary hover:bg-primary/10 transition-colors"
+              title={t.editCircle}
+            >
+              <Pencil className="w-4 h-4" />
+            </Link>
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(rosca); }}
               className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-red-500 hover:bg-red-50 transition-colors"
