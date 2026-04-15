@@ -1,0 +1,34 @@
+{
+  "exportVersion": 1,
+  "exportedAt": "2026-04-15T00:00:00.000Z",
+  "rosca": {
+    "id": 2,
+    "name": "Shirley San 2026",
+    "startDate": "2026-01-30",
+    "frequency": "semimonthly",
+    "contributionAmount": 300,
+    "totalCycles": 20,
+    "currentCycle": 1,
+    "isActive": true
+  },
+  "members": [
+    {
+      "name": "Amin Tarabay",
+      "phone": "499-1449",
+      "email": "amintarabay@gmail.com",
+      "shares": 1,
+      "turnOrder": 2
+    }
+  ],
+  "payments": [
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-30T16:00:00.000Z",
+      "dueDate": "2026-02-01",
+      "isLate": false,
+      "notes": null
+    }
+  ]
+}

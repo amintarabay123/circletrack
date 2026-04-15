@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "l8SWY_y5n0o89wrNt9IOU"
+uri = "file://Shirley_San_2026.json"
+type = "unspecified"
+title = "Shirley San 2026 — Circle Export"
