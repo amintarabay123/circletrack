@@ -22,13 +22,13 @@ title = "1 — Sign In (1242×2688)"
 id = "iM9-3xI9SC1Bqt9nEzSeD"
 uri = "file://screenshots/02_circles_list.jpg"
 type = "image"
-title = "2 — My Circles (1242×2688)"
+title = "Circles Page (1242×2688)"
 
 [[outputs]]
 id = "cyOvgGGG114tPdtsA7fzj"
 uri = "file://screenshots/03_circle_detail.jpg"
 type = "image"
-title = "3 — Circle Dashboard (1242×2688)"
+title = "Dashboard (1242×2688)"
 
 [[outputs]]
 id = "p2xq9zHvgvr_VuCF52WXd"
