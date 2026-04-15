@@ -11,6 +11,7 @@ import { RoscaMembers } from "@/pages/rosca-members";
 import { RoscaPayments } from "@/pages/rosca-payments";
 import { RoscaRatings } from "@/pages/rosca-ratings";
 import { MemberReport } from "@/pages/rosca-member-report";
+import { RoscaEdit } from "@/pages/rosca-edit";
 import { LangProvider } from "@/lib/i18n";
 
 const queryClient = new QueryClient({
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/rosca/:id" nest>
         <Switch>
           <Route path="/report/:memberId" component={MemberReport} />
+          <Route path="/edit" component={RoscaEdit} />
           <Route>
             <Layout>
               <Switch>

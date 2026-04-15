@@ -3,7 +3,7 @@ import { useParams, Link } from "wouter";
 import { useGetRoscaDashboard, getGetRoscaDashboardQueryKey } from "@workspace/api-client-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Loader2, TrendingUp, DollarSign, Calendar, Crown, CheckCircle2, Clock, AlertCircle, ChevronRight, ChevronLeft } from "lucide-react";
+import { Loader2, TrendingUp, DollarSign, Calendar, Crown, CheckCircle2, Clock, AlertCircle, ChevronRight, ChevronLeft, Settings2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -95,6 +95,17 @@ export function RoscaDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="shrink-0 rounded-xl font-semibold gap-2 border-muted-foreground/30 text-muted-foreground hover:text-foreground"
+          >
+            <Link href={`~/rosca/${roscaId}/edit`}>
+              <Settings2 className="w-4 h-4" />
+              {t.editCircle}
+            </Link>
+          </Button>
           {rosca.isActive && currentCycle > 1 && (
             <Button
               variant="outline"

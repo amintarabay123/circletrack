@@ -159,6 +159,14 @@ const translations = {
     partialCycles: "partial",
     missedCycles: "missed",
     partialBadge: "Partial",
+    editCircle: "Edit Circle",
+    editLedger: "Edit Circle",
+    editLedgerDesc: "Update your savings circle settings.",
+    saveChanges: "Save Changes",
+    saving: "Saving...",
+    circleUpdated: "Circle Updated",
+    circleUpdatedDesc: "Your circle settings have been saved.",
+    errorUpdate: "Failed to update circle.",
   },
   es: {
     appName: "CircleTrack",
@@ -316,6 +324,14 @@ const translations = {
     partialCycles: "parciales",
     missedCycles: "no pagados",
     partialBadge: "Parcial",
+    editCircle: "Editar Tanda",
+    editLedger: "Editar Tanda",
+    editLedgerDesc: "Actualiza la configuración de tu tanda.",
+    saveChanges: "Guardar Cambios",
+    saving: "Guardando...",
+    circleUpdated: "Tanda Actualizada",
+    circleUpdatedDesc: "Los cambios de tu tanda han sido guardados.",
+    errorUpdate: "Error al actualizar la tanda.",
   }
 };
 

@@ -137,7 +137,6 @@ router.put("/roscas/:id", async (req, res): Promise<void> => {
     frequency: parsed.data.frequency,
     contributionAmount: String(parsed.data.contributionAmount),
     totalCycles: parsed.data.totalCycles,
-    currentCycle: parsed.data.totalCycles,
   }).where(eq(roscasTable.id, id)).returning();
   if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
   res.json(formatRosca(rosca));
