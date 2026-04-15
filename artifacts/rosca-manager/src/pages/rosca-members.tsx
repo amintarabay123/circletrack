@@ -216,7 +216,7 @@ export function RoscaMembers() {
                   </td>
                   <td className="px-5 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-primary hover:text-primary hover:bg-primary/10" title={t.memberReport ?? "Reporte"} onClick={() => navigate(`/rosca/${roscaId}/report/${member.id}`)}>
+                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-primary hover:text-primary hover:bg-primary/10" title={t.memberReport ?? "Reporte"} onClick={() => navigate(`~/rosca/${roscaId}/report/${member.id}`)}>
                         <FileText className="w-3.5 h-3.5" />
                       </Button>
                       <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => setEditMember(member)}>
