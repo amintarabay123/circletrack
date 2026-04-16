@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "b30eb8aa-00ab-42b5-8a42-0b0e878b02e8"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.amintarabay.workspace",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}
