@@ -37,6 +37,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b734747f-3f71-4ac2-ac6d-f5434e223e84"
+      }
+    },
+    "owner": "amintarabay"
   }
 }
