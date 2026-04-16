@@ -7,7 +7,10 @@
     "production": {
       "ios": {
         "buildConfiguration": "Release",
-        "autoIncrement": true
+        "autoIncrement": true,
+        "cache": {
+          "disabled": true
+        }
       }
     }
   }
