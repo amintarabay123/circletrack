@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.19.31",
-    "expo-auth-session": "^55.0.14",
+    "expo-auth-session": "~7.0.10",
     "expo-secure-store": "^15.0.8"
   }
 }
