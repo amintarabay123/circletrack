@@ -71,3 +71,9 @@ id = "Ylc1oLEcNYTzW-Tss1LZQ"
 uri = "file://circletrack-assets.tar.gz"
 type = "unspecified"
 title = "CircleTrack Assets (Screenshots + App Store Listing)"
+
+[[outputs]]
+id = "JKnVn8bpy9VsYam8aXAzT"
+uri = "file://artifacts/circletrack/assets/images/icon.png"
+type = "image"
+title = "CircleTrack App Icon (1024x1024)"
