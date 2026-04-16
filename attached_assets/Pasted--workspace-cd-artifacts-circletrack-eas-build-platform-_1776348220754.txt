@@ -1,0 +1,69 @@
+~/workspace$ cd artifacts/circletrack && eas build --platform ios --profile production
+
+⚠️ Detected that your app uses Expo Go for development, this is not recommended when building production apps.
+Learn more: https://expo.fyi/why-not-build-expo-go-for-production
+To suppress this warning, set EAS_BUILD_NO_EXPO_GO_WARNING=true.
+
+Resolved "production" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "production" environment on EAS.
+Environment variables loaded from the "production" build profile "env" configuration: EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY, EXPO_PUBLIC_DOMAIN.
+
+✔ Incremented buildNumber from 10 to 11.
+
+
+✔ Using remote iOS credentials (Expo server)
+
+If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
+This is optional, but without Apple account access you will need to provide all the missing values manually and we can only run minimal validation on them.
+✔ Do you want to log in to your Apple account? … yes
+
+› Log in to your Apple Developer account to continue
+✔ Apple ID: … amintarabay@mac.com
+› Restoring session /home/runner/.app-store/auth/amintarabay@mac.com/cookie
+› Team Amin Tarabay (6C792B9LG7)
+› Provider Amin Tarabay (624074)
+✔ Logged in Local session
+✔ Bundle identifier registered com.circletrack.app
+✔ Synced capabilities: No updates
+✔ Synced capability identifiers: No updates
+✔ Fetched Apple distribution certificates
+✔ Fetched Apple provisioning profiles
+
+Project Credentials Configuration
+
+Project                   @amintarabay/circletrack
+Bundle Identifier         com.circletrack.app
+                          
+App Store Configuration   
+                          
+Distribution Certificate  
+Serial Number             63BB2C351563ADC98856F4F893AD2A46
+Expiration Date           Fri, 16 Apr 2027 01:26:38 UTC
+Apple Team                6C792B9LG7 (Amin Tarabay (Individual))
+Updated                   12 hours ago
+                          
+Provisioning Profile      
+Developer Portal ID       NMN97RJFH4
+Status                    active
+Expiration                Fri, 16 Apr 2027 01:26:38 UTC
+Apple Team                6C792B9LG7 (Amin Tarabay (Individual))
+Updated                   12 hours ago
+                          
+All credentials are ready to build @amintarabay/circletrack (com.circletrack.app)
+
+
+Compressing project files and uploading to EAS Build. Learn more: https://expo.fyi/eas-build-archive
+✔ Compressed project files 2s (24.5 MB)
+✔ Uploaded to EAS 4s
+✔ Computed project fingerprint
+
+See logs: https://expo.dev/accounts/amintarabay/projects/circletrack/builds/bfded111-5ef7-425d-bdce-97aeff5e02a5
+
+Waiting for build to complete. You can press Ctrl+C to exit.
+  Build queued...
+
+Start builds sooner in the priority queue.
+Sign up for a paid plan at https://expo.dev/accounts/amintarabay/settings/billing
+
+Waiting in Free tier queue
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| starting in about 50 minutes...
