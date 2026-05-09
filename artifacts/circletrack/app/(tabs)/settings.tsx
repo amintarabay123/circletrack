@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { TabletContainer } from "@/components/TabletContainer";
 
 export default function SettingsScreen() {
   const colors = useColors();
@@ -38,6 +39,7 @@ export default function SettingsScreen() {
   const styles = makeStyles(colors);
 
   return (
+    <TabletContainer>
     <ScrollView
       style={[styles.container, { paddingTop: topPad }]}
       contentContainerStyle={{ paddingBottom: bottomPad + 40 }}
@@ -115,6 +117,7 @@ export default function SettingsScreen() {
         </View>
       )}
     </ScrollView>
+    </TabletContainer>
   );
 }
 

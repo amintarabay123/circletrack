@@ -18,6 +18,7 @@ import { useListRoscas } from "@workspace/api-client-react";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import SignInScreen from "@/components/SignInScreen";
+import { TabletContainer } from "@/components/TabletContainer";
 import type { Rosca } from "@workspace/api-client-react";
 
 export default function CirclesScreen() {
@@ -57,6 +58,7 @@ function CirclesList() {
   const styles = makeStyles(colors);
 
   return (
+    <TabletContainer>
     <View style={[styles.container, { paddingTop: topPad }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{t("myCircles")}</Text>
@@ -118,6 +120,7 @@ function CirclesList() {
         />
       )}
     </View>
+    </TabletContainer>
   );
 }
 

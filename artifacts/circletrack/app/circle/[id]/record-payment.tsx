@@ -18,6 +18,7 @@ import { useRecordPayment, useGetRoscaDashboard } from "@workspace/api-client-re
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { TabletContainer } from "@/components/TabletContainer";
 
 export default function RecordPaymentScreen() {
   const { id, memberId, memberName, amountDue } = useLocalSearchParams<{
@@ -80,6 +81,7 @@ export default function RecordPaymentScreen() {
   const styles = makeStyles(colors);
 
   return (
+    <TabletContainer>
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -173,6 +175,7 @@ export default function RecordPaymentScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </TabletContainer>
   );
 }
 

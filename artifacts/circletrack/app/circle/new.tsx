@@ -18,6 +18,7 @@ import { useCreateRosca } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { TabletContainer } from "@/components/TabletContainer";
 
 type Frequency = "weekly" | "biweekly" | "monthly";
 
@@ -82,6 +83,7 @@ export default function NewCircleScreen() {
   ];
 
   return (
+    <TabletContainer>
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -198,6 +200,7 @@ export default function NewCircleScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </TabletContainer>
   );
 }
 

@@ -18,6 +18,7 @@ import { useAddMember } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { TabletContainer } from "@/components/TabletContainer";
 
 export default function AddMemberScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -72,6 +73,7 @@ export default function AddMemberScreen() {
   const styles = makeStyles(colors);
 
   return (
+    <TabletContainer>
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -169,6 +171,7 @@ export default function AddMemberScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </TabletContainer>
   );
 }
 

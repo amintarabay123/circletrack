@@ -22,6 +22,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { TabletContainer } from "@/components/TabletContainer";
 
 export default function CircleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -96,6 +97,7 @@ export default function CircleDetailScreen() {
   }[dashboard.rosca.frequency] ?? dashboard.rosca.frequency;
 
   return (
+    <TabletContainer>
     <View style={[styles.container, { paddingTop: topPad }]}>
       <View style={styles.header}>
         <Pressable
@@ -236,6 +238,7 @@ export default function CircleDetailScreen() {
         </Pressable>
       </View>
     </View>
+    </TabletContainer>
   );
 }
 
