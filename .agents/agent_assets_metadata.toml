@@ -77,3 +77,27 @@ id = "JKnVn8bpy9VsYam8aXAzT"
 uri = "file://artifacts/circletrack/assets/images/icon.png"
 type = "image"
 title = "CircleTrack App Icon (1024x1024)"
+
+[[outputs]]
+id = "2DBOXRwiHEXi77us2Qrm5"
+uri = "file://screenshots/ipad-1-circles-list-es.jpg"
+type = "image"
+title = "iPad Screenshot 1 — Todas tus tandas en un solo lugar"
+
+[[outputs]]
+id = "rWhvcHtN_bYCJWgACMM5B"
+uri = "file://screenshots/ipad-2-circle-detail-es.jpg"
+type = "image"
+title = "iPad Screenshot 2 — Sabe quién pagó y quién falta"
+
+[[outputs]]
+id = "m2kbhiz15VqMLmeSPPRKt"
+uri = "file://screenshots/ipad-3-circle-detail-en.jpg"
+type = "image"
+title = "iPad Screenshot 3 — Know who paid and who hasn't"
+
+[[outputs]]
+id = "rNV3uptLoq8m0AU_ET06r"
+uri = "file://screenshots/ipad-4-circles-list-en.jpg"
+type = "image"
+title = "iPad Screenshot 4 — All your circles in one place"
