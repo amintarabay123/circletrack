@@ -5,8 +5,10 @@ import * as WebBrowser from "expo-web-browser";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -14,6 +16,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { TabletContainer } from "@/components/TabletContainer";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -50,81 +53,95 @@ export default function SignInScreen() {
   const styles = makeStyles(colors);
 
   return (
-    <View
-      style={[
-        styles.container,
-        { paddingTop: topPad + 20, paddingBottom: bottomPad + 20 },
-      ]}
+    <TabletContainer>
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.logoSection}>
-        <View style={styles.logoCircle}>
-          <Ionicons name="people-circle" size={56} color={colors.primary} />
-        </View>
-        <Text style={styles.appName}>{t("appName")}</Text>
-        <Text style={styles.tagline}>{t("appTagline")}</Text>
-      </View>
-
-      <View style={styles.featuresSection}>
-        {[
-          { icon: "lock-closed-outline" as const, key: "Datos privados y seguros" },
-          { icon: "phone-portrait-outline" as const, key: "Gestiona desde tu teléfono" },
-          { icon: "people-outline" as const, key: "Controla tu tanda completa" },
-        ].map((f, i) => (
-          <View key={i} style={styles.featureRow}>
-            <View style={[styles.featureIcon, { backgroundColor: colors.primary + "18" }]}>
-              <Ionicons name={f.icon} size={18} color={colors.primary} />
-            </View>
-            <Text style={styles.featureText}>{f.key}</Text>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: topPad + 20, paddingBottom: bottomPad + 40 },
+        ]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+      >
+        <View style={styles.logoSection}>
+          <View style={styles.logoCircle}>
+            <Ionicons name="people-circle" size={56} color={colors.primary} />
           </View>
-        ))}
-      </View>
+          <Text style={styles.appName}>{t("appName")}</Text>
+          <Text style={styles.tagline}>{t("appTagline")}</Text>
+        </View>
 
-      <View style={styles.buttonSection}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.btn,
-            styles.googleBtn,
-            { borderColor: colors.border },
-            pressed && styles.pressed,
-          ]}
-          onPress={() => handleSSO("oauth_google")}
-          disabled={!!loading}
-          testID="sign-in-google"
-        >
-          {loading === "oauth_google" ? (
-            <ActivityIndicator size="small" color={colors.foreground} />
-          ) : (
-            <Ionicons name="logo-google" size={20} color="#4285F4" />
-          )}
-          <Text style={[styles.btnText, { color: colors.foreground }]}>
-            {t("signInWithGoogle")}
-          </Text>
-        </Pressable>
+        <View style={styles.featuresSection}>
+          {[
+            { icon: "lock-closed-outline" as const, key: "Datos privados y seguros" },
+            { icon: "phone-portrait-outline" as const, key: "Gestiona desde tu teléfono" },
+            { icon: "people-outline" as const, key: "Controla tu tanda completa" },
+          ].map((f, i) => (
+            <View key={i} style={styles.featureRow}>
+              <View style={[styles.featureIcon, { backgroundColor: colors.primary + "18" }]}>
+                <Ionicons name={f.icon} size={18} color={colors.primary} />
+              </View>
+              <Text style={styles.featureText}>{f.key}</Text>
+            </View>
+          ))}
+        </View>
 
-        {Platform.OS !== "android" && (
+        <View style={styles.buttonSection}>
           <Pressable
             style={({ pressed }) => [
               styles.btn,
-              styles.appleBtn,
-              { backgroundColor: colors.foreground },
+              styles.googleBtn,
+              { borderColor: colors.border },
               pressed && styles.pressed,
             ]}
-            onPress={() => handleSSO("oauth_apple")}
+            onPress={() => handleSSO("oauth_google")}
             disabled={!!loading}
-            testID="sign-in-apple"
+            testID="sign-in-google"
           >
-            {loading === "oauth_apple" ? (
-              <ActivityIndicator size="small" color={colors.background} />
+            {loading === "oauth_google" ? (
+              <ActivityIndicator size="small" color={colors.foreground} />
             ) : (
-              <Ionicons name="logo-apple" size={22} color={colors.background} />
+              <Ionicons name="logo-google" size={20} color="#4285F4" />
             )}
-            <Text style={[styles.btnText, { color: colors.background }]}>
-              {t("signInWithApple")}
+            <Text style={[styles.btnText, { color: colors.foreground }]}>
+              {t("signInWithGoogle")}
             </Text>
           </Pressable>
-        )}
-      </View>
-    </View>
+
+          {Platform.OS !== "android" && (
+            <Pressable
+              style={({ pressed }) => [
+                styles.btn,
+                styles.appleBtn,
+                { backgroundColor: colors.foreground },
+                pressed && styles.pressed,
+              ]}
+              onPress={() => handleSSO("oauth_apple")}
+              disabled={!!loading}
+              testID="sign-in-apple"
+            >
+              {loading === "oauth_apple" ? (
+                <ActivityIndicator size="small" color={colors.background} />
+              ) : (
+                <Ionicons name="logo-apple" size={22} color={colors.background} />
+              )}
+              <Text style={[styles.btnText, { color: colors.background }]}>
+                {t("signInWithApple")}
+              </Text>
+            </Pressable>
+          )}
+        </View>
+
+        <Text style={[styles.disclaimer, { color: colors.mutedForeground }]}>
+          {t("signInDesc")}
+        </Text>
+      </ScrollView>
+    </KeyboardAvoidingView>
+    </TabletContainer>
   );
 }
 
@@ -132,18 +149,20 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
       paddingHorizontal: 28,
-      justifyContent: "space-between",
+      justifyContent: "center",
+      gap: 32,
     },
     logoSection: {
       alignItems: "center",
-      paddingTop: 20,
     },
     logoCircle: {
-      width: 96,
-      height: 96,
-      borderRadius: 48,
+      width: 88,
+      height: 88,
+      borderRadius: 24,
       backgroundColor: colors.primary + "18",
       alignItems: "center",
       justifyContent: "center",
@@ -164,7 +183,6 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
     },
     featuresSection: {
       gap: 14,
-      paddingVertical: 20,
     },
     featureRow: {
       flexDirection: "row",
@@ -202,6 +220,12 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
     btnText: {
       fontSize: 16,
       fontFamily: "Inter_600SemiBold",
+    },
+    disclaimer: {
+      fontSize: 13,
+      fontFamily: "Inter_400Regular",
+      textAlign: "center",
+      lineHeight: 20,
     },
     pressed: { opacity: 0.75 },
   });
