@@ -101,3 +101,27 @@ id = "rNV3uptLoq8m0AU_ET06r"
 uri = "file://screenshots/ipad-4-circles-list-en.jpg"
 type = "image"
 title = "iPad Screenshot 4 — All your circles in one place"
+
+[[outputs]]
+id = "0mkA0ieRLdFCgJRLquZe6"
+uri = "file://screenshots/ipad-1-circles-list-es.png"
+type = "image"
+title = "iPad Screenshot 1 — Todas tus tandas (PNG)"
+
+[[outputs]]
+id = "c76zzijKodPKU3qZGUADq"
+uri = "file://screenshots/ipad-2-circle-detail-es.png"
+type = "image"
+title = "iPad Screenshot 2 — Sabe quién pagó (PNG)"
+
+[[outputs]]
+id = "Z33JpbS1fbqNegbwGk-vU"
+uri = "file://screenshots/ipad-3-circle-detail-en.png"
+type = "image"
+title = "iPad Screenshot 3 — Know who paid (PNG)"
+
+[[outputs]]
+id = "M7PSN9Odsuv-5OrQg6KWQ"
+uri = "file://screenshots/ipad-4-circles-list-en.png"
+type = "image"
+title = "iPad Screenshot 4 — All your circles (PNG)"
