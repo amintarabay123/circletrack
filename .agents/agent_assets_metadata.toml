@@ -329,3 +329,27 @@ id = "xauxjboXpXq3WrLJH_6Iz"
 uri = "file://screenshots/en-ipad-01.jpg"
 type = "image"
 title = "EN iPad — My Circles (13\")"
+
+[[outputs]]
+id = "3B9MGllZ9hpU6IVODD_ov"
+uri = "file://screenshots/iphone65-1-circles-list-en.jpg"
+type = "image"
+title = "English Screenshot 1 — Circles list"
+
+[[outputs]]
+id = "Z_zydfn-pJrtZD0Uie005"
+uri = "file://screenshots/iphone65-2-circle-detail-en.jpg"
+type = "image"
+title = "English Screenshot 2 — Circle detail"
+
+[[outputs]]
+id = "HQfJ9AzJXrk7u9aZ5lcas"
+uri = "file://screenshots/iphone65-3-members-en.jpg"
+type = "image"
+title = "English Screenshot 3 — Members"
+
+[[outputs]]
+id = "W1Ntmxs0lfxE1w0Pr6qvO"
+uri = "file://screenshots/iphone65-4-payment-en.jpg"
+type = "image"
+title = "English Screenshot 4 — Record payment"
