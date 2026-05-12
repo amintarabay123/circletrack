@@ -36,4 +36,48 @@ app.use(clerkMiddleware());
 
 app.use("/api", router);
 
+app.get("/support", (_req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CircleTrack Support</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 640px; margin: 60px auto; padding: 0 24px; color: #141c2e; background: #f6f8fb; }
+    h1 { color: #18a574; font-size: 2rem; margin-bottom: 8px; }
+    h2 { font-size: 1.1rem; margin-top: 32px; color: #141c2e; }
+    p, li { line-height: 1.7; color: #444; }
+    a { color: #18a574; }
+    .card { background: #fff; border-radius: 16px; padding: 24px; margin-top: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  </style>
+</head>
+<body>
+  <h1>CircleTrack Support</h1>
+  <p>CircleTrack helps you manage ROSCAs, tandas, and savings circles with ease.</p>
+
+  <div class="card">
+    <h2>Frequently Asked Questions</h2>
+    <h2>How do I create a new circle?</h2>
+    <p>Tap the <strong>+</strong> button on the My Circles screen, fill in the circle name, contribution amount, frequency, and number of members, then tap Create.</p>
+
+    <h2>How do I record a payment?</h2>
+    <p>Open a circle, find the member in the payment list, and tap <strong>Record Payment</strong> next to their name.</p>
+
+    <h2>How do I add members?</h2>
+    <p>Inside a circle, tap <strong>Add Member</strong> and enter their name and contact details.</p>
+
+    <h2>What is a ROSCA / Tanda?</h2>
+    <p>A rotating savings and credit association (ROSCA), known as a "tanda" in Latin America, is a group savings system where each member contributes a fixed amount each cycle, and one member receives the full pot per cycle.</p>
+  </div>
+
+  <div class="card">
+    <h2>Contact Support</h2>
+    <p>Need help? Email us at <a href="mailto:support@circletrack.app">support@circletrack.app</a> and we will respond within 1–2 business days.</p>
+  </div>
+</body>
+</html>`);
+});
+
 export default app;
