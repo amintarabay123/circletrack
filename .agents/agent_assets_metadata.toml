@@ -125,3 +125,75 @@ id = "M7PSN9Odsuv-5OrQg6KWQ"
 uri = "file://screenshots/ipad-4-circles-list-en.png"
 type = "image"
 title = "iPad Screenshot 4 — All your circles (PNG)"
+
+[[outputs]]
+id = "YiG74ubZX9yZgnU08DfGX"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone65-1-circles-list.jpg"
+type = "image"
+title = "iPhone 6.5\" — 1. Mis Tandas (list)"
+
+[[outputs]]
+id = "G-KfnHKANRcnwOCLtuMC1"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone65-2-circle-detail.jpg"
+type = "image"
+title = "iPhone 6.5\" — 2. Detalle de tanda"
+
+[[outputs]]
+id = "Q2b72qydlRqibLAH9T2fz"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone65-3-add-member.jpg"
+type = "image"
+title = "iPhone 6.5\" — 3. Integrantes"
+
+[[outputs]]
+id = "Yjrt2Eo9rWqhFwU7Sn5Kr"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone65-4-record-payment.jpg"
+type = "image"
+title = "iPhone 6.5\" — 4. Registrar pago"
+
+[[outputs]]
+id = "JSrMdg0vMHjVbszCs2tcg"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone69-1-circles-list.jpg"
+type = "image"
+title = "iPhone 6.9\" — 1. Mis Tandas (list)"
+
+[[outputs]]
+id = "pIyFhy7XnwLg7jBsq_HWE"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone69-2-circle-detail.jpg"
+type = "image"
+title = "iPhone 6.9\" — 2. Detalle de tanda"
+
+[[outputs]]
+id = "VH5NPpNYbdvpM9-kv4nwe"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone69-3-add-member.jpg"
+type = "image"
+title = "iPhone 6.9\" — 3. Integrantes"
+
+[[outputs]]
+id = "s9jmzU09IzYmuxLRTXIrN"
+uri = "file://artifacts/mockup-sandbox/screenshots/iphone69-4-record-payment.jpg"
+type = "image"
+title = "iPhone 6.9\" — 4. Registrar pago"
+
+[[outputs]]
+id = "D1Vb8EpnFH8Sg0xHd6GsI"
+uri = "file://artifacts/mockup-sandbox/screenshots/ipad13-1-circles-list.jpg"
+type = "image"
+title = "iPad 13\" — 1. Mis Tandas (list)"
+
+[[outputs]]
+id = "wirCphOXLXpPIE9xC7SDC"
+uri = "file://artifacts/mockup-sandbox/screenshots/ipad13-2-circle-detail.jpg"
+type = "image"
+title = "iPad 13\" — 2. Detalle de tanda"
+
+[[outputs]]
+id = "R4GeCR0PGaUvy5I9zlm0Z"
+uri = "file://artifacts/mockup-sandbox/screenshots/ipad13-3-add-member.jpg"
+type = "image"
+title = "iPad 13\" — 3. Integrantes"
+
+[[outputs]]
+id = "khPNr10NLZpXGQN0VzK-b"
+uri = "file://artifacts/mockup-sandbox/screenshots/ipad13-4-record-payment.jpg"
+type = "image"
+title = "iPad 13\" — 4. Registrar pago"

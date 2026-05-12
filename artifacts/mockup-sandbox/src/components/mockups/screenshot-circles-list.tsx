@@ -5,13 +5,15 @@ export default function ScreenshotCirclesList() {
   const border = "#e2e6ef";
   const muted = "#636e82";
   const text = "#141c2e";
+  const success = "#22b55a";
 
   const circles = [
-    { name: "Tanda Navidad 2025", freq: "Mensual", active: true, cycle: 3, total: 12, amount: 500, members: 12 },
-    { name: "Tanda Familiar", freq: "Quincenal", active: true, cycle: 7, total: 10, amount: 250, members: 10 },
-    { name: "Tanda Amigos", freq: "Semanal", active: false, cycle: 8, total: 8, amount: 100, members: 8 },
-    { name: "Tanda del Trabajo", freq: "Mensual", active: true, cycle: 1, total: 6, amount: 1000, members: 6 },
-    { name: "Tanda Vecinos", freq: "Mensual", active: true, cycle: 2, total: 8, amount: 300, members: 8 },
+    { name: "Tanda Navidad 2025", freq: "Mensual", active: true, cycle: 3, total: 12, amount: 500, members: 12, collected: 1500 },
+    { name: "Tanda Familiar", freq: "Quincenal", active: true, cycle: 7, total: 10, amount: 250, members: 10, collected: 1750 },
+    { name: "Tanda Amigos", freq: "Semanal", active: false, cycle: 8, total: 8, amount: 100, members: 8, collected: 800 },
+    { name: "Tanda del Trabajo", freq: "Mensual", active: true, cycle: 1, total: 6, amount: 1000, members: 6, collected: 1000 },
+    { name: "Tanda Vecinos", freq: "Mensual", active: true, cycle: 2, total: 8, amount: 300, members: 8, collected: 600 },
+    { name: "Tanda Comunidad", freq: "Mensual", active: true, cycle: 4, total: 10, amount: 200, members: 10, collected: 800 },
   ];
 
   return (
@@ -21,7 +23,7 @@ export default function ScreenshotCirclesList() {
       display: "flex", flexDirection: "column",
     }}>
       {/* iOS Status Bar */}
-      <div style={{ background: bg, padding: "14px 24px 4px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ background: bg, padding: "14px 24px 4px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0, position: "relative" }}>
         <span style={{ fontSize: 17, fontWeight: 600, color: text, letterSpacing: -0.3 }}>9:41</span>
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", width: 126, height: 34, background: "#000", borderRadius: 20 }} />
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -45,43 +47,69 @@ export default function ScreenshotCirclesList() {
       </div>
 
       {/* Navigation Bar */}
-      <div style={{ background: bg, padding: "8px 20px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${border}`, flexShrink: 0 }}>
-        <span style={{ fontSize: 28, fontWeight: 700, color: text, letterSpacing: -0.5 }}>Mis Tandas</span>
-        <div style={{ width: 36, height: 36, borderRadius: 18, background: primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M9 1V17M1 9H17" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+      <div style={{ background: bg, padding: "8px 20px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+        <span style={{ fontSize: 30, fontWeight: 700, color: text, letterSpacing: -0.5 }}>Mis Tandas</span>
+        <div style={{ width: 40, height: 40, borderRadius: 20, background: primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2V18M2 10H18" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
           </svg>
         </div>
       </div>
 
+      {/* Summary banner */}
+      <div style={{ marginLeft: 16, marginRight: 16, marginBottom: 14, background: primary + "12", borderRadius: 16, padding: "14px 18px", border: `1px solid ${primary}22`, flexShrink: 0, display: "flex", justifyContent: "space-around" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: primary }}>5</div>
+          <div style={{ fontSize: 12, color: muted }}>Activas</div>
+        </div>
+        <div style={{ width: 1, background: border }} />
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: text }}>54</div>
+          <div style={{ fontSize: 12, color: muted }}>Integrantes</div>
+        </div>
+        <div style={{ width: 1, background: border }} />
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: success }}>$6,450</div>
+          <div style={{ fontSize: 12, color: muted }}>Cobrado</div>
+        </div>
+      </div>
+
       {/* Content */}
-      <div style={{ flex: 1, overflowY: "hidden", padding: "12px 16px" }}>
+      <div style={{ flex: 1, overflowY: "hidden", padding: "0 16px" }}>
         {circles.map((c, i) => (
-          <div key={i} style={{ background: card, borderRadius: 16, padding: "16px 18px", marginBottom: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.06)", border: `1px solid ${border}` }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontSize: 17, fontWeight: 600, color: text, letterSpacing: -0.3 }}>{c.name}</span>
+          <div key={i} style={{ background: card, borderRadius: 16, padding: "16px 18px", marginBottom: 12, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: `1px solid ${border}` }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+              <span style={{ fontSize: 17, fontWeight: 600, color: text, letterSpacing: -0.2 }}>{c.name}</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: c.active ? primary : muted, background: c.active ? primary + "18" : "#eff1f5", padding: "3px 10px", borderRadius: 20 }}>
                 {c.active ? "Activa" : "Inactiva"}
               </span>
             </div>
-            <div style={{ display: "flex", gap: 14, marginBottom: 10 }}>
+            <div style={{ display: "flex", gap: 12, marginBottom: 10 }}>
               <span style={{ fontSize: 13, color: muted }}>↻ {c.freq}</span>
-              <span style={{ fontSize: 13, color: muted }}>•</span>
-              <span style={{ fontSize: 13, color: muted }}>Turno {c.cycle} de {c.total}</span>
-              <span style={{ fontSize: 13, color: muted }}>•</span>
+              <span style={{ fontSize: 13, color: border }}>|</span>
+              <span style={{ fontSize: 13, color: muted }}>Turno {c.cycle}/{c.total}</span>
+              <span style={{ fontSize: 13, color: border }}>|</span>
               <span style={{ fontSize: 13, color: muted }}>{c.members} integrantes</span>
             </div>
+            <div style={{ height: 1, background: border, marginBottom: 10 }} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 22, fontWeight: 700, color: primary }}>${c.amount.toLocaleString()}</span>
-              <span style={{ fontSize: 13, color: muted }}>›</span>
+              <div>
+                <div style={{ fontSize: 11, color: muted, marginBottom: 2 }}>Aportación</div>
+                <span style={{ fontSize: 20, fontWeight: 700, color: primary }}>${c.amount.toLocaleString()}</span>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 11, color: muted, marginBottom: 2 }}>Cobrado</div>
+                <span style={{ fontSize: 16, fontWeight: 600, color: success }}>${c.collected.toLocaleString()}</span>
+              </div>
+              <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1L7 7L1 13" stroke={muted} strokeWidth="1.5" strokeLinecap="round"/></svg>
             </div>
           </div>
         ))}
       </div>
 
       {/* Tab Bar */}
-      <div style={{ background: card, borderTop: `1px solid ${border}`, display: "flex", paddingBottom: 28, paddingTop: 8, flexShrink: 0 }}>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, paddingTop: 4 }}>
+      <div style={{ background: card, borderTop: `1px solid ${border}`, display: "flex", paddingBottom: 30, paddingTop: 10, flexShrink: 0 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
           <svg width="26" height="22" viewBox="0 0 26 22" fill="none">
             <path d="M9 10C11.8 10 14 7.8 14 5C14 2.2 11.8 0 9 0C6.2 0 4 2.2 4 5C4 7.8 6.2 10 9 10Z" fill={primary}/>
             <path d="M9 12C5.7 12 0 13.7 0 17V19H18V17C18 13.7 12.3 12 9 12Z" fill={primary}/>
@@ -90,7 +118,7 @@ export default function ScreenshotCirclesList() {
           </svg>
           <span style={{ fontSize: 10, fontWeight: 600, color: primary }}>Tandas</span>
         </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, paddingTop: 4 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke={muted} strokeWidth="2"/>
             <path d="M12 6V12L16 14" stroke={muted} strokeWidth="2" strokeLinecap="round"/>

@@ -9,12 +9,14 @@ export default function ScreenshotCircleDetail() {
   const danger = "#e52222";
 
   const members = [
-    { name: "María García", paid: true, late: false, due: 500, paid_amt: 500 },
-    { name: "José López", paid: false, late: false, due: 500, paid_amt: 0 },
-    { name: "Ana Martínez", paid: false, late: true, due: 500, paid_amt: 0 },
-    { name: "Carlos Ruiz", paid: true, late: false, due: 500, paid_amt: 500 },
-    { name: "Laura Torres", paid: true, late: false, due: 500, paid_amt: 500 },
-    { name: "Pedro Sánchez", paid: false, late: false, due: 500, paid_amt: 0 },
+    { name: "María García", paid: true, late: false, due: 500, paid_amt: 500, turn: 1 },
+    { name: "José López", paid: false, late: false, due: 500, paid_amt: 0, turn: 2 },
+    { name: "Ana Martínez", paid: false, late: true, due: 500, paid_amt: 0, turn: 3 },
+    { name: "Carlos Ruiz", paid: true, late: false, due: 500, paid_amt: 500, turn: 4 },
+    { name: "Laura Torres", paid: true, late: false, due: 500, paid_amt: 500, turn: 5 },
+    { name: "Pedro Sánchez", paid: false, late: false, due: 500, paid_amt: 0, turn: 6 },
+    { name: "Rosa Herrera", paid: true, late: false, due: 500, paid_amt: 500, turn: 7 },
+    { name: "Miguel Ángel", paid: false, late: true, due: 500, paid_amt: 0, turn: 8 },
   ];
 
   return (
@@ -24,7 +26,7 @@ export default function ScreenshotCircleDetail() {
       display: "flex", flexDirection: "column",
     }}>
       {/* iOS Status Bar */}
-      <div style={{ background: bg, padding: "14px 24px 4px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ background: bg, padding: "14px 24px 4px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0, position: "relative" }}>
         <span style={{ fontSize: 17, fontWeight: 600, color: text, letterSpacing: -0.3 }}>9:41</span>
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", width: 126, height: 34, background: "#000", borderRadius: 20 }} />
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -48,54 +50,67 @@ export default function ScreenshotCircleDetail() {
       </div>
 
       {/* Nav */}
-      <div style={{ background: bg, padding: "8px 20px 12px", display: "flex", alignItems: "center", gap: 12, borderBottom: `1px solid ${border}`, flexShrink: 0 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 16, background: "#eff1f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ background: bg, padding: "8px 20px 12px", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+        <div style={{ width: 34, height: 34, borderRadius: 17, background: "#eff1f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke={text} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </div>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: text, letterSpacing: -0.3 }}>Tanda Navidad 2025</div>
+          <div style={{ fontSize: 19, fontWeight: 700, color: text, letterSpacing: -0.3 }}>Tanda Navidad 2025</div>
           <div style={{ fontSize: 13, color: muted }}>Mensual · Turno 3 de 12</div>
         </div>
       </div>
 
       {/* Tabs */}
       <div style={{ background: bg, display: "flex", borderBottom: `1px solid ${border}`, paddingLeft: 20, flexShrink: 0 }}>
-        <div style={{ paddingBottom: 10, paddingTop: 10, paddingLeft: 4, paddingRight: 16, borderBottom: `2px solid ${primary}`, color: primary, fontSize: 15, fontWeight: 600 }}>Resumen</div>
-        <div style={{ paddingBottom: 10, paddingTop: 10, paddingLeft: 16, paddingRight: 16, color: muted, fontSize: 15 }}>Integrantes</div>
+        <div style={{ paddingBottom: 10, paddingTop: 8, paddingLeft: 4, paddingRight: 18, borderBottom: `2px solid ${primary}`, color: primary, fontSize: 15, fontWeight: 600 }}>Resumen</div>
+        <div style={{ paddingBottom: 10, paddingTop: 8, paddingLeft: 18, paddingRight: 18, color: muted, fontSize: 15 }}>Integrantes</div>
       </div>
 
       {/* Content */}
       <div style={{ flex: 1, overflowY: "hidden", padding: "14px 16px" }}>
-        {/* Stats */}
+        {/* Stats row 1 */}
         <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
-          <div style={{ flex: 1, background: card, borderRadius: 14, padding: "14px 16px", border: `1px solid ${border}`, textAlign: "center" }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: primary }}>$6,000</div>
-            <div style={{ fontSize: 12, color: muted, marginTop: 2 }}>Bote del turno</div>
+          <div style={{ flex: 1, background: card, borderRadius: 14, padding: "16px", border: `1px solid ${border}`, textAlign: "center" }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: primary }}>$6,000</div>
+            <div style={{ fontSize: 12, color: muted, marginTop: 3 }}>Bote del turno</div>
           </div>
-          <div style={{ flex: 1, background: card, borderRadius: 14, padding: "14px 16px", border: `1px solid ${border}`, textAlign: "center" }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: success }}>75%</div>
-            <div style={{ fontSize: 12, color: muted, marginTop: 2 }}>Tasa de cobro</div>
+          <div style={{ flex: 1, background: card, borderRadius: 14, padding: "16px", border: `1px solid ${border}`, textAlign: "center" }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: success }}>75%</div>
+            <div style={{ fontSize: 12, color: muted, marginTop: 3 }}>Tasa de cobro</div>
           </div>
         </div>
+
+        {/* Stats row 2 */}
         <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-          {([["3", "Pagados", success], ["2", "Pendientes", muted], ["1", "Atrasados", danger]] as [string,string,string][]).map(([v, l, c], i) => (
-            <div key={i} style={{ flex: 1, background: card, borderRadius: 14, padding: "12px 10px", border: `1px solid ${border}`, textAlign: "center" }}>
-              <div style={{ fontSize: 20, fontWeight: 700, color: c }}>{v}</div>
-              <div style={{ fontSize: 11, color: muted, marginTop: 2 }}>{l}</div>
+          {([["5", "Pagados", success], ["2", "Pendientes", muted], ["1", "Atrasados", danger]] as [string,string,string][]).map(([v, l, c], i) => (
+            <div key={i} style={{ flex: 1, background: card, borderRadius: 14, padding: "14px 10px", border: `1px solid ${border}`, textAlign: "center" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: c }}>{v}</div>
+              <div style={{ fontSize: 11, color: muted, marginTop: 3 }}>{l}</div>
             </div>
           ))}
         </div>
 
-        {/* Recipient */}
-        <div style={{ background: primary + "12", borderRadius: 14, padding: "12px 16px", marginBottom: 12, border: `1px solid ${primary}20`, display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 20 }}>🎁</span>
-          <div>
-            <div style={{ fontSize: 12, color: muted }}>Recibe el bote</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: primary }}>María García</div>
+        {/* Progress bar */}
+        <div style={{ background: card, borderRadius: 14, padding: "14px 16px", marginBottom: 12, border: `1px solid ${border}` }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: text }}>Progreso del turno</span>
+            <span style={{ fontSize: 13, color: muted }}>Turno 3 de 12</span>
+          </div>
+          <div style={{ height: 8, background: "#eff1f5", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ width: "25%", height: "100%", background: primary, borderRadius: 4 }} />
           </div>
         </div>
 
-        <div style={{ fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 8 }}>Estado de pago</div>
+        {/* Recipient */}
+        <div style={{ background: primary + "12", borderRadius: 14, padding: "14px 16px", marginBottom: 12, border: `1px solid ${primary}22`, display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 22 }}>🎁</span>
+          <div>
+            <div style={{ fontSize: 12, color: muted }}>Recibe el bote este turno</div>
+            <div style={{ fontSize: 17, fontWeight: 600, color: primary }}>María García — Turno 1</div>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 11, fontWeight: 700, color: muted, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 10 }}>Estado de pago</div>
 
         {members.map((m, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", background: card, borderRadius: 14, padding: "12px 14px", marginBottom: 8, border: `1px solid ${border}`, gap: 12 }}>
@@ -104,7 +119,7 @@ export default function ScreenshotCircleDetail() {
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 15, fontWeight: 600, color: text }}>{m.name}</div>
-              <div style={{ fontSize: 12, color: muted }}>${m.paid_amt} / ${m.due}</div>
+              <div style={{ fontSize: 12, color: muted }}>Turno {m.turn} · ${m.paid_amt}/${m.due}</div>
             </div>
             <span style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 20, color: m.paid ? success : m.late ? danger : muted, background: m.paid ? success + "15" : m.late ? danger + "15" : muted + "15", flexShrink: 0 }}>
               {m.paid ? "Pagado" : m.late ? "Tarde" : "Pendiente"}
