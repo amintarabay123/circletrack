@@ -83,11 +83,11 @@ export default function NewCircleScreen() {
   ];
 
   return (
-    <TabletContainer>
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+    <TabletContainer>
       <ScrollView
         contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 40 }]}
         showsVerticalScrollIndicator={false}
@@ -199,8 +199,8 @@ export default function NewCircleScreen() {
           />
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
     </TabletContainer>
+    </KeyboardAvoidingView>
   );
 }
 

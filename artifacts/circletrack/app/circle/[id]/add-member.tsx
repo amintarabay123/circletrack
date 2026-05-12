@@ -73,11 +73,11 @@ export default function AddMemberScreen() {
   const styles = makeStyles(colors);
 
   return (
-    <TabletContainer>
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+    <TabletContainer>
       <ScrollView
         contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 40 }]}
         showsVerticalScrollIndicator={false}
@@ -170,8 +170,8 @@ export default function AddMemberScreen() {
           </View>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
     </TabletContainer>
+    </KeyboardAvoidingView>
   );
 }
 

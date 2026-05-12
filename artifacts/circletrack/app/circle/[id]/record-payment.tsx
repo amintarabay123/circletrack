@@ -81,11 +81,11 @@ export default function RecordPaymentScreen() {
   const styles = makeStyles(colors);
 
   return (
-    <TabletContainer>
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+    <TabletContainer>
       <ScrollView
         contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 40 }]}
         showsVerticalScrollIndicator={false}
@@ -174,8 +174,8 @@ export default function RecordPaymentScreen() {
           />
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
     </TabletContainer>
+    </KeyboardAvoidingView>
   );
 }
 
