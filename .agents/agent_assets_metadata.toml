@@ -251,3 +251,21 @@ id = "b2aV1OJ6zN5Eo4ZGpLN-e"
 uri = "file://screenshots/ipad13-1.jpg"
 type = "image"
 title = "iPad 13\" #1 — Todas tus tandas"
+
+[[outputs]]
+id = "qpiZ0cD0Q56QZ8rv98pTa"
+uri = "file://screenshots/ipad13-2.jpg"
+type = "image"
+title = "iPad 13\" #2 — Sabe quién pagó y quién falta (Spanish)"
+
+[[outputs]]
+id = "LSKP50O1t1d5herkNTrE7"
+uri = "file://screenshots/ipad13-3.jpg"
+type = "image"
+title = "iPad 13\" #3 — Know who paid and who hasn't (English)"
+
+[[outputs]]
+id = "sSMtnuNcd6yejExg7giao"
+uri = "file://screenshots/ipad13-4.jpg"
+type = "image"
+title = "iPad 13\" #4 — All your circles in one place (English)"
