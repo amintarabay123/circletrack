@@ -353,3 +353,51 @@ id = "W1Ntmxs0lfxE1w0Pr6qvO"
 uri = "file://screenshots/iphone65-4-payment-en.jpg"
 type = "image"
 title = "English Screenshot 4 — Record payment"
+
+[[outputs]]
+id = "PBlQDBxdGyawGpF3zlVxB"
+uri = "file://screenshots/new-es-1.jpg"
+type = "image"
+title = "Spanish 1 — Circles List"
+
+[[outputs]]
+id = "v05CQkR-zaVDTHKeli3gU"
+uri = "file://screenshots/new-es-2.jpg"
+type = "image"
+title = "Spanish 2 — Members"
+
+[[outputs]]
+id = "8Qt8WwmNV0FJFidrqOvd8"
+uri = "file://screenshots/new-es-3.jpg"
+type = "image"
+title = "Spanish 3 — Ratings"
+
+[[outputs]]
+id = "GjAuqR4Le7vpgxqehPDvx"
+uri = "file://screenshots/new-es-4.jpg"
+type = "image"
+title = "Spanish 4 — Record Payment"
+
+[[outputs]]
+id = "4wWW_P13K-qTqkf4xWO6S"
+uri = "file://screenshots/new-en-1.jpg"
+type = "image"
+title = "English 1 — Circles List"
+
+[[outputs]]
+id = "ZBQVlfg7ufBvCg-Arg20w"
+uri = "file://screenshots/new-en-2.jpg"
+type = "image"
+title = "English 2 — Members"
+
+[[outputs]]
+id = "Kwg1uiHRNfGeHqmnhM_f2"
+uri = "file://screenshots/new-en-3.jpg"
+type = "image"
+title = "English 3 — Ratings"
+
+[[outputs]]
+id = "QvEXQm7AdvOXww8zOFnsW"
+uri = "file://screenshots/new-en-4.jpg"
+type = "image"
+title = "English 4 — Record Payment"
