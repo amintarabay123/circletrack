@@ -269,3 +269,63 @@ id = "sSMtnuNcd6yejExg7giao"
 uri = "file://screenshots/ipad13-4.jpg"
 type = "image"
 title = "iPad 13\" #4 — All your circles in one place (English)"
+
+[[outputs]]
+id = "F4uMAF0qA3q6CyJnGwbeX"
+uri = "file://screenshots/es-01-circles-list.jpg"
+type = "image"
+title = "ES 1 — Mis Tandas (iPhone 6.9\")"
+
+[[outputs]]
+id = "MOcnVV0kCsyaMGgBL9R2m"
+uri = "file://screenshots/es-02-circle-detail.jpg"
+type = "image"
+title = "ES 2 — Detalle del círculo (iPhone 6.9\")"
+
+[[outputs]]
+id = "RhNCwsaRGoTqc9uYJPo2a"
+uri = "file://screenshots/es-03-members.jpg"
+type = "image"
+title = "ES 3 — Integrantes y calificaciones (iPhone 6.9\")"
+
+[[outputs]]
+id = "G7tYaBa4s4UoVjqW4WJ1E"
+uri = "file://screenshots/es-04-payment.jpg"
+type = "image"
+title = "ES 4 — Registrar pago (iPhone 6.9\")"
+
+[[outputs]]
+id = "184Ol17o6_i0S-goO6POi"
+uri = "file://screenshots/en-01-circles-list.jpg"
+type = "image"
+title = "EN 1 — My Circles (iPhone 6.9\")"
+
+[[outputs]]
+id = "npxevNxCgfqD7_SGv-kZP"
+uri = "file://screenshots/en-02-circle-detail.jpg"
+type = "image"
+title = "EN 2 — Circle detail (iPhone 6.9\")"
+
+[[outputs]]
+id = "RDq_vAAA2h0bym29wgYYE"
+uri = "file://screenshots/en-03-members.jpg"
+type = "image"
+title = "EN 3 — Members & ratings (iPhone 6.9\")"
+
+[[outputs]]
+id = "94ghURO-pbgH1jDKG6lX0"
+uri = "file://screenshots/en-04-payment.jpg"
+type = "image"
+title = "EN 4 — Record payment (iPhone 6.9\")"
+
+[[outputs]]
+id = "qkVayuPbCudctmkhv7OBp"
+uri = "file://screenshots/es-ipad-01.jpg"
+type = "image"
+title = "ES iPad — Mis Tandas (13\")"
+
+[[outputs]]
+id = "xauxjboXpXq3WrLJH_6Iz"
+uri = "file://screenshots/en-ipad-01.jpg"
+type = "image"
+title = "EN iPad — My Circles (13\")"
