@@ -15,6 +15,7 @@ import { MemberReport } from "@/pages/rosca-member-report";
 import { RoscaEdit } from "@/pages/rosca-edit";
 import { SignInPage } from "@/pages/sign-in";
 import { SignUpPage } from "@/pages/sign-up";
+import { SupportPage } from "@/pages/support";
 import { LangProvider } from "@/lib/i18n";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -69,6 +70,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/sign-in/*?" component={SignInPage} />
       <Route path="/sign-up/*?" component={SignUpPage} />
+      <Route path="/support" component={SupportPage} />
       <Route path="/rosca/new">
         <ProtectedRoute component={RoscaNew} />
       </Route>
