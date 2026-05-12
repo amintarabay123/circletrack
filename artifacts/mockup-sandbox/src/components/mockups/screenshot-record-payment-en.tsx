@@ -1,4 +1,4 @@
-export default function ScreenshotRecordPayment() {
+export default function ScreenshotRecordPaymentEn() {
   const vw = typeof window !== "undefined" ? window.innerWidth : 1320;
   const vh = typeof window !== "undefined" ? window.innerHeight : 2868;
   const scale = vw / 428;
@@ -14,11 +14,11 @@ export default function ScreenshotRecordPayment() {
   const amber = "#f0a500";
 
   const history = [
-    { month: "Diciembre 2024", amount: 500, date: "1 dic", on_time: true },
-    { month: "Noviembre 2024", amount: 500, date: "30 oct", on_time: true },
-    { month: "Octubre 2024", amount: 500, date: "2 oct", on_time: true },
-    { month: "Septiembre 2024", amount: 500, date: "5 sep", on_time: false },
-    { month: "Agosto 2024", amount: 500, date: "1 ago", on_time: true },
+    { month: "December 2024", amount: 500, date: "Dec 1", on_time: true },
+    { month: "November 2024", amount: 500, date: "Oct 30", on_time: true },
+    { month: "October 2024", amount: 500, date: "Oct 2", on_time: true },
+    { month: "September 2024", amount: 500, date: "Sep 5", on_time: false },
+    { month: "August 2024", amount: 500, date: "Aug 1", on_time: true },
   ];
 
   return (
@@ -44,44 +44,44 @@ export default function ScreenshotRecordPayment() {
             <div style={{ width: 54, height: 54, borderRadius: 27, background: "rgba(255,255,255,0.25)", border: "2px solid rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "#fff", flexShrink: 0 }}>JL</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 20, fontWeight: 800, color: "#fff" }}>José López</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", marginTop: 1 }}>Tanda Navidad · Turno 2/12</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", marginTop: 1 }}>Christmas Tanda · Turn 2/12</div>
               <div style={{ display: "flex", gap: 6, marginTop: 7 }}>
-                <span style={{ background: "rgba(255,255,255,0.2)", borderRadius: 18, padding: "4px 10px", fontSize: 11, fontWeight: 600, color: "#fff" }}>$500 MXN/turno</span>
-                <span style={{ background: "rgba(240,165,0,0.45)", borderRadius: 18, padding: "4px 10px", fontSize: 11, fontWeight: 600, color: "#fff" }}>Pendiente</span>
+                <span style={{ background: "rgba(255,255,255,0.2)", borderRadius: 18, padding: "4px 10px", fontSize: 11, fontWeight: 600, color: "#fff" }}>$500/turn</span>
+                <span style={{ background: "rgba(240,165,0,0.45)", borderRadius: 18, padding: "4px 10px", fontSize: 11, fontWeight: 600, color: "#fff" }}>Pending</span>
               </div>
             </div>
           </div>
         </div>
 
         <div style={{ margin: "12px 12px 0", background: card, borderRadius: 18, padding: "16px", border: `1px solid ${border}`, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", flexShrink: 0 }}>
-          <div style={{ fontSize: 16, fontWeight: 800, color: text, marginBottom: 14 }}>Registrar Pago</div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: text, marginBottom: 14 }}>Record Payment</div>
           <div style={{ marginBottom: 11 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: muted, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.4px" }}>Monto</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: muted, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.4px" }}>Amount</div>
             <div style={{ background: primary + "08", borderRadius: 12, padding: "13px 14px", border: `2px solid ${primary}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: 22, fontWeight: 800, color: text }}>$500.00</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: primary, background: primary + "15", padding: "3px 9px", borderRadius: 9 }}>MXN</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: primary, background: primary + "15", padding: "3px 9px", borderRadius: 9 }}>USD</span>
             </div>
           </div>
           <div style={{ marginBottom: 11 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: muted, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.4px" }}>Fecha de pago</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: muted, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.4px" }}>Payment date</div>
             <div style={{ background: bg, borderRadius: 12, padding: "13px 14px", border: `1.5px solid ${border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 15, color: text }}>12 de enero, 2025</span>
+              <span style={{ fontSize: 15, color: text }}>January 12, 2025</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="12" rx="2" stroke={muted} strokeWidth="1.5"/><path d="M5 1V4M11 1V4M1 7H15" stroke={muted} strokeWidth="1.5" strokeLinecap="round"/></svg>
             </div>
           </div>
           <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: muted, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.4px" }}>Notas (opcional)</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: muted, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.4px" }}>Notes (optional)</div>
             <div style={{ background: bg, borderRadius: 12, padding: "13px 14px", border: `1.5px solid ${border}`, height: 46 }}>
-              <span style={{ fontSize: 14, color: muted + "80" }}>Agregar notas...</span>
+              <span style={{ fontSize: 14, color: muted + "80" }}>Add notes...</span>
             </div>
           </div>
           <div style={{ background: "linear-gradient(135deg, #0d7a55, #18a574)", borderRadius: 13, padding: "15px", textAlign: "center", boxShadow: "0 4px 12px rgba(24,165,116,0.35)" }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>✓ Confirmar Pago</span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>✓ Confirm Payment</span>
           </div>
         </div>
 
         <div style={{ flex: 1, margin: "10px 12px 0", overflow: "hidden" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: muted, textTransform: "uppercase" as const, letterSpacing: "0.7px", marginBottom: 8 }}>Historial de pagos</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: muted, textTransform: "uppercase" as const, letterSpacing: "0.7px", marginBottom: 8 }}>Payment history</div>
           {history.map((h, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", background: card, borderRadius: 12, padding: "10px 12px", marginBottom: 6, border: `1px solid ${border}`, gap: 10 }}>
               <div style={{ width: 34, height: 34, borderRadius: 17, background: h.on_time ? success + "18" : "#fde8e8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -92,19 +92,19 @@ export default function ScreenshotRecordPayment() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: text }}>{h.month}</div>
-                <div style={{ fontSize: 11, color: muted }}>Pagado el {h.date} · {h.on_time ? "A tiempo" : "Con retraso"}</div>
+                <div style={{ fontSize: 11, color: muted }}>Paid on {h.date} · {h.on_time ? "On time" : "Late"}</div>
               </div>
               <div style={{ fontSize: 15, fontWeight: 800, color: success }}>${h.amount}</div>
             </div>
           ))}
           <div style={{ background: card, borderRadius: 12, padding: "12px 14px", border: `1px solid ${border}` }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: text, marginBottom: 7 }}>Calificación del integrante</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: text, marginBottom: 7 }}>Member rating</div>
             <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
               {[1,2,3,4].map(s => (
                 <svg key={s} width="24" height="24" viewBox="0 0 12 12" fill={amber}><path d="M6 0L7.35 4.15H12L8.55 6.7L9.9 10.85L6 8.3L2.1 10.85L3.45 6.7L0 4.15H4.65L6 0Z"/></svg>
               ))}
               <svg width="24" height="24" viewBox="0 0 12 12" fill="#dde4de"><path d="M6 0L7.35 4.15H12L8.55 6.7L9.9 10.85L6 8.3L2.1 10.85L3.45 6.7L0 4.15H4.65L6 0Z"/></svg>
-              <span style={{ fontSize: 12, color: muted, marginLeft: 4 }}>4.0 · Buen pagador</span>
+              <span style={{ fontSize: 12, color: muted, marginLeft: 4 }}>4.0 · Good payer</span>
             </div>
           </div>
         </div>
@@ -119,10 +119,10 @@ export default function ScreenshotRecordPayment() {
         textAlign: "center",
       }}>
         <div style={{ fontSize: Math.round(vw * 0.074), fontWeight: 800, color: "#fff", letterSpacing: -1, lineHeight: 1.15 }}>
-          Registra pagos<br />en segundos
+          Record payments<br />in seconds
         </div>
         <div style={{ fontSize: Math.round(vw * 0.033), color: "rgba(255,255,255,0.65)", marginTop: Math.round(vh * 0.008), fontWeight: 500 }}>
-          Historial completo de cada integrante
+          Full payment history for every member
         </div>
       </div>
     </div>

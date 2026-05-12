@@ -1,4 +1,4 @@
-export default function ScreenshotCircleDetail() {
+export default function ScreenshotCircleDetailEn() {
   const vw = typeof window !== "undefined" ? window.innerWidth : 1320;
   const vh = typeof window !== "undefined" ? window.innerHeight : 2868;
   const scale = vw / 428;
@@ -55,12 +55,12 @@ export default function ScreenshotCircleDetail() {
               <svg width="9" height="14" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </div>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>Tanda Navidad 2025</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>Mensual · Turno 3 de 12</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>Christmas Tanda 2025</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>Monthly · Turn 3 of 12</div>
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, padding: "12px 14px 16px" }}>
-            {([["$6,000", "Bote del turno"], ["75%", "Tasa de cobro"], ["Turno 3", "de 12"]] as [string,string][]).map(([v, l], i) => (
+            {([["$6,000", "Pool amount"], ["75%", "Collection rate"], ["Turn 3", "of 12"]] as [string,string][]).map(([v, l], i) => (
               <div key={i} style={{ flex: 1, background: "rgba(255,255,255,0.18)", borderRadius: 14, padding: "11px 10px", textAlign: "center", border: "1px solid rgba(255,255,255,0.25)" }}>
                 <div style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>{v}</div>
                 <div style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>{l}</div>
@@ -72,17 +72,17 @@ export default function ScreenshotCircleDetail() {
         <div style={{ margin: "10px 12px 0", background: card, borderRadius: 14, padding: "11px 14px", border: `1px solid ${border}`, display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
           <div style={{ width: 38, height: 38, borderRadius: 19, background: "linear-gradient(135deg, #0d7a55, #22c98a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🎁</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: muted }}>Recibe el bote este turno</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: primary }}>María García — Turno 1</div>
+            <div style={{ fontSize: 11, color: muted }}>Receiving the pool this turn</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: primary }}>María García — Turn 1</div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 10, color: muted }}>Fecha</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: text }}>15 ene</div>
+            <div style={{ fontSize: 10, color: muted }}>Date</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: text }}>Jan 15</div>
           </div>
         </div>
 
         <div style={{ display: "flex", gap: 8, margin: "8px 12px", flexShrink: 0 }}>
-          {([["7", "Pagados", success + "22", success], ["3", "Pendientes", muted + "22", muted], ["2", "Atrasados", danger + "18", danger]] as [string,string,string,string][]).map(([v, l, bg2, c], i) => (
+          {([["7", "Paid", success + "22", success], ["3", "Pending", muted + "22", muted], ["2", "Late", danger + "18", danger]] as [string,string,string,string][]).map(([v, l, bg2, c], i) => (
             <div key={i} style={{ flex: 1, background: bg2, borderRadius: 12, padding: "10px 8px", textAlign: "center", border: `1px solid ${c}30` }}>
               <div style={{ fontSize: 20, fontWeight: 800, color: c }}>{v}</div>
               <div style={{ fontSize: 10, color: c, marginTop: 1, fontWeight: 600 }}>{l}</div>
@@ -92,7 +92,7 @@ export default function ScreenshotCircleDetail() {
 
         <div style={{ margin: "0 12px 8px", flexShrink: 0 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: muted }}>Progreso del turno</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: muted }}>Turn progress</span>
             <span style={{ fontSize: 11, color: muted }}>25%</span>
           </div>
           <div style={{ height: 5, background: "#deeee8", borderRadius: 3, overflow: "hidden" }}>
@@ -100,7 +100,7 @@ export default function ScreenshotCircleDetail() {
           </div>
         </div>
 
-        <div style={{ fontSize: 10, fontWeight: 700, color: muted, textTransform: "uppercase", letterSpacing: "0.7px", padding: "0 12px", marginBottom: 6, flexShrink: 0 }}>Estado de pago</div>
+        <div style={{ fontSize: 10, fontWeight: 700, color: muted, textTransform: "uppercase", letterSpacing: "0.7px", padding: "0 12px", marginBottom: 6, flexShrink: 0 }}>Payment status</div>
 
         <div style={{ flex: 1, overflowY: "hidden", padding: "0 12px" }}>
           {members.map((m, i) => (
@@ -110,10 +110,10 @@ export default function ScreenshotCircleDetail() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: text }}>{m.name}</div>
-                <div style={{ fontSize: 10, color: muted }}>Turno {m.turn} · ${m.paid_amt}/${m.due}</div>
+                <div style={{ fontSize: 10, color: muted }}>Turn {m.turn} · ${m.paid_amt}/${m.due}</div>
               </div>
               <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 18, color: m.paid ? success : m.late ? danger : amber, background: m.paid ? success + "18" : m.late ? danger + "15" : amber + "20", flexShrink: 0 }}>
-                {m.paid ? "✓ Pagado" : m.late ? "Tarde" : "Pendiente"}
+                {m.paid ? "✓ Paid" : m.late ? "Late" : "Pending"}
               </span>
             </div>
           ))}
@@ -127,10 +127,10 @@ export default function ScreenshotCircleDetail() {
         textAlign: "center",
       }}>
         <div style={{ fontSize: Math.round(vw * 0.074), fontWeight: 800, color: "#fff", letterSpacing: -1, lineHeight: 1.15 }}>
-          Sabe quién pagó<br />y quién falta
+          Know who paid<br />and who hasn't
         </div>
         <div style={{ fontSize: Math.round(vw * 0.033), color: "rgba(255,255,255,0.65)", marginTop: Math.round(vh * 0.008), fontWeight: 500 }}>
-          Panel en tiempo real para cada turno
+          Real-time panel for every turn
         </div>
       </div>
     </div>

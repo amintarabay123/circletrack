@@ -1,4 +1,4 @@
-export default function ScreenshotAddMember() {
+export default function ScreenshotAddMemberEn() {
   const vw = typeof window !== "undefined" ? window.innerWidth : 1320;
   const vh = typeof window !== "undefined" ? window.innerHeight : 2868;
   const scale = vw / 428;
@@ -15,14 +15,14 @@ export default function ScreenshotAddMember() {
   const avatarColors = ["#18a574","#3b82f6","#8b5cf6","#f59e0b","#ef4444","#06b6d4","#ec4899","#10b981","#f97316","#6366f1"];
 
   const members = [
-    { name: "María García", turn: 1, rating: 5, paid: true, initials: "MG", note: "Siempre puntual" },
-    { name: "José López", turn: 2, rating: 4, paid: false, initials: "JL", note: "Buen pagador" },
+    { name: "María García", turn: 1, rating: 5, paid: true, initials: "MG", note: "Always on time" },
+    { name: "José López", turn: 2, rating: 4, paid: false, initials: "JL", note: "Good payer" },
     { name: "Ana Martínez", turn: 3, rating: 3, paid: false, initials: "AM", note: "" },
-    { name: "Carlos Ruiz", turn: 4, rating: 5, paid: true, initials: "CR", note: "Muy confiable" },
+    { name: "Carlos Ruiz", turn: 4, rating: 5, paid: true, initials: "CR", note: "Very reliable" },
     { name: "Laura Torres", turn: 5, rating: 4, paid: true, initials: "LT", note: "" },
-    { name: "Pedro Sánchez", turn: 6, rating: 5, paid: false, initials: "PS", note: "Excelente historial" },
+    { name: "Pedro Sánchez", turn: 6, rating: 5, paid: false, initials: "PS", note: "Excellent history" },
     { name: "Rosa Herrera", turn: 7, rating: 4, paid: true, initials: "RH", note: "" },
-    { name: "Miguel Ángel", turn: 8, rating: 2, paid: false, initials: "MÁ", note: "Pago tardío" },
+    { name: "Miguel Ángel", turn: 8, rating: 2, paid: false, initials: "MÁ", note: "Late payments" },
     { name: "Sofía Ramírez", turn: 9, rating: 5, paid: true, initials: "SR", note: "" },
     { name: "Diego Morales", turn: 10, rating: 3, paid: false, initials: "DM", note: "" },
   ];
@@ -51,8 +51,8 @@ export default function ScreenshotAddMember() {
               <svg width="9" height="14" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>Tanda Navidad 2025</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>10 integrantes · Turno 3/12</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>Christmas Tanda 2025</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>10 members · Turn 3/12</div>
             </div>
             <div style={{ width: 38, height: 38, borderRadius: 19, background: "rgba(255,255,255,0.2)", border: "1.5px solid rgba(255,255,255,0.35)", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M10 2V18M2 10H18" stroke="white" strokeWidth="2.5" strokeLinecap="round"/></svg>
@@ -61,8 +61,8 @@ export default function ScreenshotAddMember() {
         </div>
 
         <div style={{ background: card, display: "flex", borderBottom: `2px solid ${border}`, flexShrink: 0 }}>
-          <div style={{ flex: 1, paddingBottom: 10, paddingTop: 12, textAlign: "center", color: muted, fontSize: 14, fontWeight: 500 }}>Resumen</div>
-          <div style={{ flex: 1, paddingBottom: 10, paddingTop: 12, textAlign: "center", borderBottom: `2.5px solid ${primary}`, color: primary, fontSize: 14, fontWeight: 700 }}>Integrantes</div>
+          <div style={{ flex: 1, paddingBottom: 10, paddingTop: 12, textAlign: "center", color: muted, fontSize: 14, fontWeight: 500 }}>Summary</div>
+          <div style={{ flex: 1, paddingBottom: 10, paddingTop: 12, textAlign: "center", borderBottom: `2.5px solid ${primary}`, color: primary, fontSize: 14, fontWeight: 700 }}>Members</div>
         </div>
 
         <div style={{ flex: 1, overflowY: "hidden", padding: "10px 12px 0" }}>
@@ -81,9 +81,9 @@ export default function ScreenshotAddMember() {
                 </div>
               </div>
               <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <div style={{ fontSize: 10, color: muted, marginBottom: 3 }}>Turno {m.turn}</div>
+                <div style={{ fontSize: 10, color: muted, marginBottom: 3 }}>Turn {m.turn}</div>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 18, color: m.paid ? success : muted, background: m.paid ? success + "18" : muted + "15" }}>
-                  {m.paid ? "✓ Pagó" : "Pendiente"}
+                  {m.paid ? "✓ Paid" : "Pending"}
                 </span>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function ScreenshotAddMember() {
         <div style={{ padding: "8px 12px 32px", background: bg, flexShrink: 0 }}>
           <div style={{ background: "linear-gradient(135deg, #0d7a55, #18a574)", borderRadius: 14, padding: "15px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 14px rgba(24,165,116,0.35)" }}>
             <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M10 1V19M1 10H19" stroke="white" strokeWidth="2.5" strokeLinecap="round"/></svg>
-            <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>Agregar Integrante</span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>Add Member</span>
           </div>
         </div>
       </div>
@@ -105,10 +105,10 @@ export default function ScreenshotAddMember() {
         textAlign: "center",
       }}>
         <div style={{ fontSize: Math.round(vw * 0.074), fontWeight: 800, color: "#fff", letterSpacing: -1, lineHeight: 1.15 }}>
-          Califica a tus<br />integrantes
+          Rate your<br />members
         </div>
         <div style={{ fontSize: Math.round(vw * 0.033), color: "rgba(255,255,255,0.65)", marginTop: Math.round(vh * 0.008), fontWeight: 500 }}>
-          Historial de confianza para cada miembro
+          Trust history for every member
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-export default function IPadScreenshot1() {
+export default function IPadScreenshot1En() {
   const primary = "#18a574";
   const bg = "#f0f4f0";
   const card = "#ffffff";
@@ -6,7 +6,6 @@ export default function IPadScreenshot1() {
   const muted = "#6b7c74";
   const text = "#0f1f18";
   const success = "#18a574";
-  const amber = "#f0a500";
 
   const W = 2064;
   const H = 2752;
@@ -14,14 +13,14 @@ export default function IPadScreenshot1() {
   const innerH = Math.ceil(H / scale);
 
   const circles = [
-    { name: "Tanda Navidad 2025", freq: "Mensual", active: true, cycle: 3, total: 12, amount: 500, members: 12, collected: 1500, pct: 25 },
-    { name: "Tanda Familiar Pérez", freq: "Quincenal", active: true, cycle: 7, total: 10, amount: 250, members: 10, collected: 1750, pct: 70 },
-    { name: "Tanda Amigos del Norte", freq: "Semanal", active: false, cycle: 8, total: 8, amount: 100, members: 8, collected: 800, pct: 100 },
-    { name: "Tanda del Trabajo", freq: "Mensual", active: true, cycle: 1, total: 6, amount: 1000, members: 6, collected: 1000, pct: 17 },
-    { name: "Tanda Vecinos Unidos", freq: "Mensual", active: true, cycle: 2, total: 8, amount: 300, members: 8, collected: 600, pct: 25 },
-    { name: "Tanda Comunidad", freq: "Mensual", active: true, cycle: 4, total: 10, amount: 200, members: 10, collected: 800, pct: 40 },
-    { name: "Tanda Las Comadres", freq: "Quincenal", active: true, cycle: 5, total: 12, amount: 400, members: 12, collected: 2000, pct: 42 },
-    { name: "Tanda Emprendedores", freq: "Mensual", active: true, cycle: 2, total: 8, amount: 750, members: 8, collected: 1500, pct: 25 },
+    { name: "Christmas Tanda 2025", freq: "Monthly", active: true, cycle: 3, total: 12, amount: 500, members: 12, collected: 1500, pct: 25 },
+    { name: "Family Circle", freq: "Biweekly", active: true, cycle: 7, total: 10, amount: 250, members: 10, collected: 1750, pct: 70 },
+    { name: "Friends Savings Group", freq: "Weekly", active: false, cycle: 8, total: 8, amount: 100, members: 8, collected: 800, pct: 100 },
+    { name: "Work Tanda", freq: "Monthly", active: true, cycle: 1, total: 6, amount: 1000, members: 6, collected: 1000, pct: 17 },
+    { name: "Neighborhood Circle", freq: "Monthly", active: true, cycle: 2, total: 8, amount: 300, members: 8, collected: 600, pct: 25 },
+    { name: "Community Savings", freq: "Monthly", active: true, cycle: 4, total: 10, amount: 200, members: 10, collected: 800, pct: 40 },
+    { name: "Ladies Group", freq: "Biweekly", active: true, cycle: 5, total: 12, amount: 400, members: 12, collected: 2000, pct: 42 },
+    { name: "Entrepreneurs Circle", freq: "Monthly", active: true, cycle: 2, total: 8, amount: 750, members: 8, collected: 1500, pct: 25 },
   ];
 
   const avatarColors = ["#18a574","#3b82f6","#8b5cf6","#f59e0b","#ef4444","#06b6d4","#ec4899","#10b981"];
@@ -47,15 +46,15 @@ export default function IPadScreenshot1() {
         <div style={{ background: "linear-gradient(160deg, #0d7a55 0%, #18a574 55%, #22c98a 100%)", padding: "18px 32px 20px", flexShrink: 0 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: "#fff", letterSpacing: -0.5 }}>Mis Tandas</div>
-              <div style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>8 tandas activas · 54 integrantes</div>
+              <div style={{ fontSize: 32, fontWeight: 800, color: "#fff", letterSpacing: -0.5 }}>My Circles</div>
+              <div style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>8 active circles · 54 members</div>
             </div>
             <div style={{ width: 48, height: 48, borderRadius: 24, background: "rgba(255,255,255,0.2)", border: "1.5px solid rgba(255,255,255,0.4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2V18M2 10H18" stroke="white" strokeWidth="2.5" strokeLinecap="round"/></svg>
             </div>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
-            {([["7 Activas", "rgba(255,255,255,0.18)"], ["$8,450 Cobrado", "rgba(240,165,0,0.35)"], ["54 Integrantes", "rgba(255,255,255,0.12)"], ["Turno 3 activo", "rgba(255,255,255,0.12)"]] as [string,string][]).map(([label, bg2], i) => (
+            {([["7 Active", "rgba(255,255,255,0.18)"], ["$8,450 Collected", "rgba(240,165,0,0.35)"], ["54 Members", "rgba(255,255,255,0.12)"], ["Turn 3 active", "rgba(255,255,255,0.12)"]] as [string,string][]).map(([label, bg2], i) => (
               <div key={i} style={{ background: bg2, borderRadius: 20, padding: "6px 14px", border: "1px solid rgba(255,255,255,0.2)" }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{label}</span>
               </div>
@@ -74,10 +73,10 @@ export default function IPadScreenshot1() {
                     </div>
                     <div style={{ fontSize: 15, fontWeight: 700, color: text, letterSpacing: -0.2 }}>{c.name}</div>
                   </div>
-                  <div style={{ fontSize: 12, color: muted }}>↻ {c.freq} · {c.members} integrantes</div>
+                  <div style={{ fontSize: 12, color: muted }}>↻ {c.freq} · {c.members} members</div>
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 700, color: c.active ? success : muted, background: c.active ? success + "18" : "#f0f0f0", padding: "3px 10px", borderRadius: 20, flexShrink: 0 }}>
-                  {c.active ? "● Activa" : "Inactiva"}
+                  {c.active ? "● Active" : "Inactive"}
                 </span>
               </div>
               <div style={{ height: 5, background: "#eef2ef", borderRadius: 3, marginBottom: 10, overflow: "hidden" }}>
@@ -85,15 +84,15 @@ export default function IPadScreenshot1() {
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
-                  <div style={{ fontSize: 11, color: muted }}>Aportación</div>
+                  <div style={{ fontSize: 11, color: muted }}>Contribution</div>
                   <div style={{ fontSize: 20, fontWeight: 800, color: primary }}>${c.amount.toLocaleString()}</div>
                 </div>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 11, color: muted }}>Turno</div>
+                  <div style={{ fontSize: 11, color: muted }}>Turn</div>
                   <div style={{ fontSize: 16, fontWeight: 700, color: text }}>{c.cycle}/{c.total}</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 11, color: muted }}>Cobrado</div>
+                  <div style={{ fontSize: 11, color: muted }}>Collected</div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: success }}>${c.collected.toLocaleString()}</div>
                 </div>
               </div>
@@ -104,11 +103,11 @@ export default function IPadScreenshot1() {
         <div style={{ background: card, borderTop: `1px solid ${border}`, display: "flex", paddingBottom: 20, paddingTop: 12, flexShrink: 0 }}>
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <svg width="26" height="22" viewBox="0 0 26 22" fill="none"><path d="M9 10C11.8 10 14 7.8 14 5C14 2.2 11.8 0 9 0C6.2 0 4 2.2 4 5C4 7.8 6.2 10 9 10Z" fill={primary}/><path d="M9 12C5.7 12 0 13.7 0 17V19H18V17C18 13.7 12.3 12 9 12Z" fill={primary}/><path d="M19 10C21 10 22.5 8.5 22.5 6.5C22.5 4.5 21 3 19 3C18.2 3 17.5 3.3 17 3.8C17.6 4.6 18 5.7 18 7C18 8 17.7 8.9 17.2 9.6C17.7 9.9 18.3 10 19 10Z" fill={primary} fillOpacity="0.5"/><path d="M19 12C17.9 12 16.9 12.2 16.1 12.6C17.4 13.6 18.3 15 18.3 17V19H26V17C26 13.7 22.3 12 19 12Z" fill={primary} fillOpacity="0.5"/></svg>
-            <span style={{ fontSize: 10, fontWeight: 700, color: primary }}>Tandas</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: primary }}>Circles</span>
           </div>
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke={muted} strokeWidth="2"/><path d="M12 6V12L16 14" stroke={muted} strokeWidth="2" strokeLinecap="round"/></svg>
-            <span style={{ fontSize: 10, color: muted }}>Ajustes</span>
+            <span style={{ fontSize: 10, color: muted }}>Settings</span>
           </div>
         </div>
       </div>
@@ -120,10 +119,10 @@ export default function IPadScreenshot1() {
         textAlign: "center",
       }}>
         <div style={{ fontSize: Math.round(W * 0.06), fontWeight: 800, color: "#fff", letterSpacing: -2, lineHeight: 1.15 }}>
-          Todas tus tandas<br />en un solo lugar
+          All your circles<br />in one place
         </div>
         <div style={{ fontSize: Math.round(W * 0.026), color: "rgba(255,255,255,0.65)", marginTop: Math.round(H * 0.008), fontWeight: 500 }}>
-          Controla cada círculo de ahorro desde tu iPad
+          Manage every savings circle from your iPad
         </div>
       </div>
     </div>
