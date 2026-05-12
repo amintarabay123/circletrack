@@ -202,25 +202,25 @@ title = "iPad 13\" — 4. Registrar pago"
 id = "mGreeoNQNSawPXpBa8uR5"
 uri = "file://screenshots/iphone65-1-circles-list.jpg"
 type = "image"
-title = "iPhone 6.5\" #1 — Mis Tandas (Circles List)"
+title = "Screenshot 1 — Circles list"
 
 [[outputs]]
 id = "geHbCF3pPCT-uRxVIOqtg"
 uri = "file://screenshots/iphone65-2-circle-detail.jpg"
 type = "image"
-title = "iPhone 6.5\" #2 — Circle Detail with Members"
+title = "Screenshot 2 — Circle detail"
 
 [[outputs]]
 id = "RIdQ-tFz4RA8uCUIiavLh"
 uri = "file://screenshots/iphone65-3-add-member.jpg"
 type = "image"
-title = "iPhone 6.5\" #3 — Integrantes + Star Ratings"
+title = "Screenshot 3 — Add member"
 
 [[outputs]]
 id = "W5bkAcTyZiC7N6-9bVeG3"
 uri = "file://screenshots/iphone65-4-record-payment.jpg"
 type = "image"
-title = "iPhone 6.5\" #4 — Record Payment + History"
+title = "Screenshot 4 — Record payment"
 
 [[outputs]]
 id = "r64sIj431SnNJzsGRKUBi"
