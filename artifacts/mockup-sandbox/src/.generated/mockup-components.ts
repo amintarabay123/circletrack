@@ -11,5 +11,9 @@ export const modules: ModuleMap = {
   "./components/mockups/ipad-screenshot-4.tsx": () => import("../components/mockups/ipad-screenshot-4.tsx"),
   "./components/mockups/member-ratings.tsx": () => import("../components/mockups/member-ratings.tsx"),
   "./components/mockups/record-payment.tsx": () => import("../components/mockups/record-payment.tsx"),
+  "./components/mockups/screenshot-add-member.tsx": () => import("../components/mockups/screenshot-add-member.tsx"),
+  "./components/mockups/screenshot-circle-detail.tsx": () => import("../components/mockups/screenshot-circle-detail.tsx"),
+  "./components/mockups/screenshot-circles-list.tsx": () => import("../components/mockups/screenshot-circles-list.tsx"),
+  "./components/mockups/screenshot-record-payment.tsx": () => import("../components/mockups/screenshot-record-payment.tsx"),
   "./components/mockups/settings.tsx": () => import("../components/mockups/settings.tsx")
 };
