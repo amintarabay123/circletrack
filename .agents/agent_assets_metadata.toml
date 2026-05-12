@@ -197,3 +197,57 @@ id = "khPNr10NLZpXGQN0VzK-b"
 uri = "file://artifacts/mockup-sandbox/screenshots/ipad13-4-record-payment.jpg"
 type = "image"
 title = "iPad 13\" — 4. Registrar pago"
+
+[[outputs]]
+id = "mGreeoNQNSawPXpBa8uR5"
+uri = "file://screenshots/iphone65-1-circles-list.jpg"
+type = "image"
+title = "iPhone 6.5\" #1 — Mis Tandas (Circles List)"
+
+[[outputs]]
+id = "geHbCF3pPCT-uRxVIOqtg"
+uri = "file://screenshots/iphone65-2-circle-detail.jpg"
+type = "image"
+title = "iPhone 6.5\" #2 — Circle Detail with Members"
+
+[[outputs]]
+id = "RIdQ-tFz4RA8uCUIiavLh"
+uri = "file://screenshots/iphone65-3-add-member.jpg"
+type = "image"
+title = "iPhone 6.5\" #3 — Integrantes + Star Ratings"
+
+[[outputs]]
+id = "W5bkAcTyZiC7N6-9bVeG3"
+uri = "file://screenshots/iphone65-4-record-payment.jpg"
+type = "image"
+title = "iPhone 6.5\" #4 — Record Payment + History"
+
+[[outputs]]
+id = "r64sIj431SnNJzsGRKUBi"
+uri = "file://screenshots/iphone69-1-circles-list.jpg"
+type = "image"
+title = "iPhone 6.9\" #1 — Mis Tandas (Circles List)"
+
+[[outputs]]
+id = "dgVO7uKLSjRqFYB9A14Zr"
+uri = "file://screenshots/iphone69-2-circle-detail.jpg"
+type = "image"
+title = "iPhone 6.9\" #2 — Circle Detail with Members"
+
+[[outputs]]
+id = "_NzsCQ0ag2EwPKqlD6Yqg"
+uri = "file://screenshots/iphone69-3-add-member.jpg"
+type = "image"
+title = "iPhone 6.9\" #3 — Integrantes + Star Ratings"
+
+[[outputs]]
+id = "o0TzMDMr-RkmqYA14HBcr"
+uri = "file://screenshots/iphone69-4-record-payment.jpg"
+type = "image"
+title = "iPhone 6.9\" #4 — Record Payment + History"
+
+[[outputs]]
+id = "b2aV1OJ6zN5Eo4ZGpLN-e"
+uri = "file://screenshots/ipad13-1.jpg"
+type = "image"
+title = "iPad 13\" #1 — Todas tus tandas"
