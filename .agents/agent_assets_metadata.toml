@@ -401,3 +401,51 @@ id = "QvEXQm7AdvOXww8zOFnsW"
 uri = "file://screenshots/new-en-4.jpg"
 type = "image"
 title = "English 4 — Record Payment"
+
+[[outputs]]
+id = "o3BpRtik2L3dtogUFXyPn"
+uri = "file://screenshots/fresh-es-1.jpg"
+type = "image"
+title = "Spanish 1 — My Circles"
+
+[[outputs]]
+id = "lJpYa0033sKhI9PDul4PL"
+uri = "file://screenshots/fresh-es-2.jpg"
+type = "image"
+title = "Spanish 2 — Members"
+
+[[outputs]]
+id = "rmSZ_khaEtnsE9uqFX5l9"
+uri = "file://screenshots/fresh-es-3.jpg"
+type = "image"
+title = "Spanish 3 — Ratings"
+
+[[outputs]]
+id = "lKnD7Qidr8XYarwS2wP-g"
+uri = "file://screenshots/fresh-es-4.jpg"
+type = "image"
+title = "Spanish 4 — Record Payment"
+
+[[outputs]]
+id = "8LU3AGZdr9noqaqgtDczU"
+uri = "file://screenshots/fresh-en-1.jpg"
+type = "image"
+title = "English 1 — My Circles"
+
+[[outputs]]
+id = "k-y61SrNMptSOxxHFHdaz"
+uri = "file://screenshots/fresh-en-2.jpg"
+type = "image"
+title = "English 2 — Members"
+
+[[outputs]]
+id = "qW3fZgPC8VPb6nWsL4mpT"
+uri = "file://screenshots/fresh-en-3.jpg"
+type = "image"
+title = "English 3 — Ratings"
+
+[[outputs]]
+id = "7M3ZwOyAqMYKOumZDsdnp"
+uri = "file://screenshots/fresh-en-4.jpg"
+type = "image"
+title = "English 4 — Record Payment"
