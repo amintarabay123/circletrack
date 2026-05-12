@@ -51,7 +51,7 @@ export default function ScreenshotCirclesList() {
       <div style={{
         width: phoneW, height: phoneH, zIndex: 1, overflow: "hidden",
         borderRadius: Math.round(phoneW * 0.1),
-        boxShadow: `0 ${bw * 3}px ${bw * 10}px rgba(0,0,0,0.7), 0 0 0 ${bw}px #1e2a3a, 0 0 0 ${Math.round(bw * 1.4)}px #243040`,
+        boxShadow: `0 ${bw * 3}px ${bw * 10}px rgba(0,0,0,0.5)`,
       }}>
         <div style={{
           width: 428, height: 926,

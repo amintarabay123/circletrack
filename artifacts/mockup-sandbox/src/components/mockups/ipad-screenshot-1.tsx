@@ -36,13 +36,12 @@ export default function IPadScreenshot1() {
 
       {/* iPad frame */}
       <div style={{
-        width: 1500, background: bg, borderRadius: 80, overflow: "hidden", zIndex: 1,
-        boxShadow: "0 80px 200px rgba(0,0,0,0.7), 0 0 0 24px #1e2a3a, 0 0 0 30px #243040",
+        width: 1500, background: bg, borderRadius: 40, overflow: "hidden", zIndex: 1,
+        boxShadow: "0 40px 120px rgba(0,0,0,0.6)",
       }}>
         {/* Status bar */}
         <div style={{ background: bg, padding: "36px 60px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontSize: 36, fontWeight: 700, color: text }}>9:41</span>
-          <div style={{ width: 24, height: 24, borderRadius: 12, background: "#1e2a3a" }} />
           <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
             <svg width="44" height="30" viewBox="0 0 14 10"><rect x="0" y="3" width="3" height="7" rx="1" fill={text} opacity="0.4"/><rect x="4" y="2" width="3" height="8" rx="1" fill={text} opacity="0.6"/><rect x="8" y="0" width="3" height="10" rx="1" fill={text}/><rect x="12" y="1" width="2" height="8" rx="1" fill={text} opacity="0.3"/></svg>
             <svg width="44" height="30" viewBox="0 0 22 10"><rect x="0" y="1" width="18" height="8" rx="2" stroke={text} strokeWidth="1" fill="none"/><rect x="1.5" y="2.5" width="13" height="5" rx="1" fill={primary}/><rect x="19" y="3" width="2" height="4" rx="1" fill={text} opacity="0.4"/></svg>
