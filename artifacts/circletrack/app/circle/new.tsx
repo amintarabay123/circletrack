@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
@@ -292,7 +292,7 @@ export default function NewCircleScreen() {
                           mode="date"
                           display="spinner"
                           themeVariant={colors.background === "#111638" ? "dark" : "light"}
-                          onChange={(_, date) => {
+                          onChange={(_: DateTimePickerEvent, date?: Date) => {
                             if (date) setDraftDate(date);
                           }}
                         />
@@ -305,7 +305,7 @@ export default function NewCircleScreen() {
                       value={draftDate}
                       mode="date"
                       display="default"
-                      onChange={(ev, date) => {
+                      onChange={(ev: DateTimePickerEvent, date?: Date) => {
                         setPickerOpen(false);
                         if (ev.type === "set" && date) {
                           setStartDate(toYMD(date));
