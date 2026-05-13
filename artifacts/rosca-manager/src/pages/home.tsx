@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
 import { useUser, useClerk, Show } from "@clerk/react";
-import type { Rosca } from "@workspace/api-zod";
+import type { Rosca } from "@workspace/api-client-react";
 
 function formatAmount(n: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(n);

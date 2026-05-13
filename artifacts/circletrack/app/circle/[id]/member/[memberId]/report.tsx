@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
+import { customFetch } from "@workspace/api-client-react";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
@@ -187,11 +188,10 @@ export default function MemberReportScreen() {
 
   const { data, isLoading, error } = useQuery<ReportData>({
     queryKey: ["member-report", circleId, memberIdNum],
-    queryFn: async () => {
-      const res = await fetch(`/api/roscas/${circleId}/members/${memberIdNum}/report`);
-      if (!res.ok) throw new Error("Failed");
-      return res.json();
-    },
+    queryFn: async () =>
+      customFetch<ReportData>(`/api/roscas/${circleId}/members/${memberIdNum}/report`, {
+        method: "GET",
+      }),
     enabled: !!circleId && !!memberIdNum,
   });
 

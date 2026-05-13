@@ -16,7 +16,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useUpdateRosca, getGetRoscaDashboardQueryKey, getListRoscasQueryKey, CreateRoscaBodyFrequency } from "@workspace/api-client-react";
+import { useUpdateRosca, useGetRosca, getGetRoscaDashboardQueryKey, getGetRoscaQueryKey, getListRoscasQueryKey, CreateRoscaBodyFrequency } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
@@ -39,12 +39,18 @@ export default function EditCircleScreen() {
   const { t } = useLang();
   const queryClient = useQueryClient();
 
-  const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [frequency, setFrequency] = useState<Frequency>("monthly");
   const [contributionAmount, setContributionAmount] = useState("100");
   const [totalCycles, setTotalCycles] = useState("10");
+
+  const { data: rosca, isLoading } = useGetRosca(circleId, {
+    query: {
+      enabled: !!circleId,
+      queryKey: getGetRoscaQueryKey(circleId),
+    },
+  });
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const styles = makeStyles(colors);
@@ -60,25 +66,20 @@ export default function EditCircleScreen() {
   };
 
   useEffect(() => {
-    if (!circleId) return;
-    fetch(`/api/roscas/${circleId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setName(data.name ?? "");
-        setStartDate(data.startDate?.slice(0, 10) ?? "");
-        setFrequency(data.frequency ?? "monthly");
-        setContributionAmount(String(data.contributionAmount ?? 100));
-        setTotalCycles(String(data.totalCycles ?? 10));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [circleId]);
+    if (!rosca) return;
+    setName(rosca.name ?? "");
+    setStartDate(rosca.startDate?.slice(0, 10) ?? "");
+    setFrequency((rosca.frequency as Frequency) ?? "monthly");
+    setContributionAmount(String(rosca.contributionAmount ?? 100));
+    setTotalCycles(String(rosca.totalCycles ?? 10));
+  }, [rosca]);
 
   const { mutate: updateRosca, isPending } = useUpdateRosca({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListRoscasQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(circleId) });
+        queryClient.invalidateQueries({ queryKey: getGetRoscaQueryKey(circleId) });
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         router.back();
       },
@@ -158,7 +159,7 @@ export default function EditCircleScreen() {
             <View style={{ width: 36 }} />
           </View>
 
-          {loading ? (
+          {isLoading ? (
             <View style={styles.centered}>
               <ActivityIndicator color={colors.primary} size="large" />
             </View>

@@ -25,6 +25,7 @@ import {
   useListMembers,
   getListPaymentsQueryKey,
   getGetRoscaDashboardQueryKey,
+  getListMembersQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
@@ -60,12 +61,21 @@ export default function PaymentsScreen() {
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
   const styles = makeStyles(colors);
 
-  const { data: dashboard } = useGetRoscaDashboard(circleId, { query: { enabled: !!circleId } });
-  const { data: members } = useListMembers(circleId, { query: { enabled: !!circleId } });
+  const { data: dashboard } = useGetRoscaDashboard(circleId, {
+    query: { enabled: !!circleId, queryKey: getGetRoscaDashboardQueryKey(circleId) },
+  });
+  const { data: members } = useListMembers(circleId, {
+    query: { enabled: !!circleId, queryKey: getListMembersQueryKey(circleId) },
+  });
   const { data: payments, isLoading, refetch } = useListPayments(
     circleId,
     { cycle: cycleFilter },
-    { query: { enabled: !!circleId } }
+    {
+      query: {
+        enabled: !!circleId,
+        queryKey: getListPaymentsQueryKey(circleId, { cycle: cycleFilter }),
+      },
+    },
   );
 
   const totalCycles = dashboard?.rosca.totalCycles ?? 1;

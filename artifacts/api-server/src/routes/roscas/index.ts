@@ -134,7 +134,7 @@ router.post("/roscas", async (req: any, res): Promise<void> => {
   const [rosca] = await db.insert(roscasTable).values({
     userId: req.userId,
     name: parsed.data.name,
-    startDate: parsed.data.startDate,
+    startDate: format(parsed.data.startDate, "yyyy-MM-dd"),
     frequency: parsed.data.frequency,
     contributionAmount: String(parsed.data.contributionAmount),
     totalCycles: parsed.data.totalCycles,
@@ -162,7 +162,7 @@ router.put("/roscas/:id", async (req: any, res): Promise<void> => {
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
   const [rosca] = await db.update(roscasTable).set({
     name: parsed.data.name,
-    startDate: parsed.data.startDate,
+    startDate: format(parsed.data.startDate, "yyyy-MM-dd"),
     frequency: parsed.data.frequency,
     contributionAmount: String(parsed.data.contributionAmount),
     totalCycles: parsed.data.totalCycles,

@@ -14,7 +14,11 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRecordPayment, useGetRoscaDashboard } from "@workspace/api-client-react";
+import {
+  useRecordPayment,
+  useGetRoscaDashboard,
+  getGetRoscaDashboardQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
@@ -36,7 +40,10 @@ export default function RecordPaymentScreen() {
 
   const circleId = Number(id);
   const { data: dashboard } = useGetRoscaDashboard(circleId, {
-    query: { enabled: !isNaN(circleId) },
+    query: {
+      enabled: !isNaN(circleId),
+      queryKey: getGetRoscaDashboardQueryKey(circleId),
+    },
   });
 
   const [amount, setAmount] = useState(amountDue ? parseFloat(amountDue).toFixed(2) : "");

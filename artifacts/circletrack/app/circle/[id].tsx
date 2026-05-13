@@ -19,6 +19,8 @@ import {
   useGetRoscaDashboard,
   useGetMemberRatings,
   useDeleteRosca,
+  getGetRoscaDashboardQueryKey,
+  getGetMemberRatingsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
@@ -40,10 +42,16 @@ export default function CircleDetailScreen() {
 
   const circleId = Number(id);
   const { data: dashboard, isLoading, error, refetch } = useGetRoscaDashboard(circleId, {
-    query: { enabled: !isNaN(circleId) },
+    query: {
+      enabled: !isNaN(circleId),
+      queryKey: getGetRoscaDashboardQueryKey(circleId),
+    },
   });
   const { data: ratings, refetch: refetchRatings } = useGetMemberRatings(circleId, {
-    query: { enabled: !isNaN(circleId) },
+    query: {
+      enabled: !isNaN(circleId),
+      queryKey: getGetMemberRatingsQueryKey(circleId),
+    },
   });
 
   const { mutate: deleteRosca } = useDeleteRosca();
