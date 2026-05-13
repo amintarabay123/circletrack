@@ -17,7 +17,7 @@ import { useLang } from "@/lib/i18n";
 const editRoscaSchema = z.object({
   name: z.string().min(2),
   startDate: z.string().min(1),
-  frequency: z.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
+  frequency: z.enum(["weekly", "biweekly", "first_fifteenth", "monthly", "semimonthly"]),
   contributionAmount: z.coerce.number().positive(),
   totalCycles: z.coerce.number().int().positive(),
 });
@@ -149,7 +149,9 @@ export function RoscaEdit() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="weekly">{t.weekly}</SelectItem>
+                          <SelectItem value="first_fifteenth">{t.firstFifteenth}</SelectItem>
                           <SelectItem value="monthly">{t.monthly}</SelectItem>
+                          <SelectItem value="biweekly">{t.biweekly}</SelectItem>
                           <SelectItem value="semimonthly">{t.semimonthly}</SelectItem>
                         </SelectContent>
                       </Select>

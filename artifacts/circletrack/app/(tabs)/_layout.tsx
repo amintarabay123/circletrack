@@ -4,8 +4,11 @@ import { SymbolView } from "expo-symbols";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import { useLang } from "@/context/LanguageContext";
+
+const TAB_ICON_SIZE = 30;
 
 export default function TabLayout() {
   const colors = useColors();
@@ -14,6 +17,11 @@ export default function TabLayout() {
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
   const { t } = useLang();
+  const insets = useSafeAreaInsets();
+
+  const tabBarPadTop = 10;
+  const tabBarPadBottom = isWeb ? 12 : Math.max(insets.bottom, 12);
+  const tabBarMinHeight = (isWeb ? 72 : 58) + tabBarPadTop + tabBarPadBottom;
 
   return (
     <Tabs
@@ -21,13 +29,27 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.mutedForeground,
         headerShown: false,
+        tabBarLabelStyle: {
+          fontSize: 15,
+          fontFamily: "Inter_700Bold",
+          marginTop: 4,
+        },
+        tabBarIconStyle: {
+          marginTop: 6,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 4,
+        },
         tabBarStyle: {
           position: "absolute",
           backgroundColor: isIOS ? "transparent" : colors.background,
           borderTopWidth: isWeb ? 1 : 0,
           borderTopColor: colors.border,
           elevation: 0,
-          ...(isWeb ? { height: 84 } : {}),
+          paddingTop: tabBarPadTop,
+          paddingBottom: tabBarPadBottom,
+          minHeight: tabBarMinHeight,
+          ...(isWeb ? { height: tabBarMinHeight } : {}),
         },
         tabBarBackground: () =>
           isIOS ? (
@@ -47,9 +69,9 @@ export default function TabLayout() {
           title: t("circles"),
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="person.3" tintColor={color} size={24} />
+              <SymbolView name="person.3" tintColor={color} size={TAB_ICON_SIZE} />
             ) : (
-              <Ionicons name="people-circle-outline" size={24} color={color} />
+              <Ionicons name="people-circle-outline" size={TAB_ICON_SIZE} color={color} />
             ),
         }}
       />
@@ -59,9 +81,9 @@ export default function TabLayout() {
           title: t("settings"),
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="gear" tintColor={color} size={24} />
+              <SymbolView name="gear" tintColor={color} size={TAB_ICON_SIZE} />
             ) : (
-              <Ionicons name="settings-outline" size={24} color={color} />
+              <Ionicons name="settings-outline" size={TAB_ICON_SIZE} color={color} />
             ),
         }}
       />

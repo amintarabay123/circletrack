@@ -239,7 +239,16 @@ export function MemberReport() {
   );
 
   const { member, rosca, cycles, summary } = data;
-  const freqLabel = ({ weekly: "Semanal", biweekly: "Quincenal", monthly: "Mensual", semimonthly: "Quincenal 15/30" } as Record<string, string>)[rosca.frequency] ?? rosca.frequency;
+  const freqLabel =
+    (
+      {
+        weekly: t.weekly,
+        biweekly: t.biweekly,
+        first_fifteenth: t.firstFifteenth,
+        monthly: t.monthly,
+        semimonthly: t.semimonthly,
+      } as Record<string, string>
+    )[rosca.frequency] ?? rosca.frequency;
 
   return (
     <div className="min-h-screen bg-background">

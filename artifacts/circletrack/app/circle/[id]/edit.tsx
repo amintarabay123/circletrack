@@ -25,6 +25,7 @@ import { TabletContainer } from "@/components/TabletContainer";
 const FREQUENCIES = [
   CreateRoscaBodyFrequency.weekly,
   CreateRoscaBodyFrequency.biweekly,
+  CreateRoscaBodyFrequency.first_fifteenth,
   CreateRoscaBodyFrequency.semimonthly,
   CreateRoscaBodyFrequency.monthly,
 ] as const;
@@ -59,6 +60,7 @@ export default function EditCircleScreen() {
     const map: Record<Frequency, string> = {
       weekly: t("weekly"),
       biweekly: t("biweekly"),
+      first_fifteenth: t("firstFifteenth"),
       semimonthly: t("semimonthly"),
       monthly: t("monthly"),
     };

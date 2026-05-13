@@ -71,7 +71,13 @@ function buildHtml(data: ReportData, lang: "es" | "en"): string {
     </tr>
   `).join("");
 
-  const freqLabel = ({ weekly: isSpa ? "Semanal" : "Weekly", biweekly: isSpa ? "Quincenal" : "Biweekly", monthly: isSpa ? "Mensual" : "Monthly", semimonthly: isSpa ? "Quincenal 15/30" : "Semi-monthly" } as Record<string, string>)[rosca.frequency] ?? rosca.frequency;
+  const freqLabel = ({
+    weekly: isSpa ? "Semanal" : "Weekly",
+    biweekly: isSpa ? "Cada 2 semanas" : "Every 2 weeks",
+    first_fifteenth: isSpa ? "1ra y 15 de cada mes" : "1st & 15th monthly",
+    monthly: isSpa ? "Mensual" : "Monthly",
+    semimonthly: isSpa ? "15 y fin de mes" : "15th & month-end",
+  } as Record<string, string>)[rosca.frequency] ?? rosca.frequency;
 
   return `<!DOCTYPE html>
 <html>

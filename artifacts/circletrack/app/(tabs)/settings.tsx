@@ -24,7 +24,7 @@ export default function SettingsScreen() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
+  const bottomPad = Platform.OS === "web" ? 34 + 96 : insets.bottom + 96;
 
   const handleSignOut = () => {
     Alert.alert(t("signOut"), t("signOut") + "?", [
@@ -68,7 +68,7 @@ export default function SettingsScreen() {
     <TabletContainer>
     <ScrollView
       style={[styles.container, { paddingTop: topPad }]}
-      contentContainerStyle={{ paddingBottom: bottomPad + 40 }}
+      contentContainerStyle={{ paddingBottom: bottomPad + 24 }}
       showsVerticalScrollIndicator={false}
     >
       <Text style={styles.headerTitle}>{t("settings")}</Text>
@@ -79,7 +79,7 @@ export default function SettingsScreen() {
           <View style={styles.card}>
             <View style={styles.row}>
               <View style={[styles.avatar, { backgroundColor: colors.primary + "20" }]}>
-                <Ionicons name="person" size={22} color={colors.primary} />
+                <Ionicons name="person" size={26} color={colors.primary} />
               </View>
               <View style={styles.userInfo}>
                 <Text style={styles.userName}>
@@ -106,7 +106,7 @@ export default function SettingsScreen() {
           >
             <Text style={styles.langText}>{t("spanish")}</Text>
             {lang === "es" && (
-              <Ionicons name="checkmark" size={20} color={colors.primary} />
+              <Ionicons name="checkmark" size={22} color={colors.primary} />
             )}
           </Pressable>
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
@@ -119,7 +119,7 @@ export default function SettingsScreen() {
           >
             <Text style={styles.langText}>{t("english")}</Text>
             {lang === "en" && (
-              <Ionicons name="checkmark" size={20} color={colors.primary} />
+              <Ionicons name="checkmark" size={22} color={colors.primary} />
             )}
           </Pressable>
         </View>
@@ -135,7 +135,7 @@ export default function SettingsScreen() {
             ]}
             onPress={handleSignOut}
           >
-            <Ionicons name="log-out-outline" size={20} color={colors.destructive} />
+            <Ionicons name="log-out-outline" size={22} color={colors.destructive} />
             <Text style={[styles.signOutText, { color: colors.destructive }]}>
               {t("signOut")}
             </Text>
@@ -154,7 +154,7 @@ export default function SettingsScreen() {
             onPress={handleDeleteAccount}
             disabled={isDeleting}
           >
-            <Ionicons name="trash-outline" size={20} color={colors.destructive} />
+            <Ionicons name="trash-outline" size={22} color={colors.destructive} />
             <Text style={[styles.signOutText, { color: colors.destructive }]}>
               {isDeleting ? "..." : t("deleteAccount")}
             </Text>
@@ -174,7 +174,7 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       paddingHorizontal: 20,
     },
     headerTitle: {
-      fontSize: 28,
+      fontSize: 32,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
       marginBottom: 28,
@@ -184,11 +184,11 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       marginBottom: 24,
     },
     sectionLabel: {
-      fontSize: 12,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: 13,
+      fontFamily: "Inter_700Bold",
       color: colors.mutedForeground,
       textTransform: "uppercase",
-      letterSpacing: 0.8,
+      letterSpacing: 0.9,
       marginBottom: 8,
       marginLeft: 4,
     },
@@ -202,13 +202,13 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
     row: {
       flexDirection: "row",
       alignItems: "center",
-      padding: 16,
+      padding: 18,
       gap: 12,
     },
     avatar: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+      width: 48,
+      height: 48,
+      borderRadius: 24,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -216,13 +216,13 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       flex: 1,
     },
     userName: {
-      fontSize: 16,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: 18,
+      fontFamily: "Inter_700Bold",
       color: colors.foreground,
     },
     userEmail: {
-      fontSize: 13,
-      fontFamily: "Inter_400Regular",
+      fontSize: 14,
+      fontFamily: "Inter_500Medium",
       color: colors.mutedForeground,
       marginTop: 2,
     },
@@ -230,11 +230,11 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      padding: 16,
+      padding: 18,
     },
     langText: {
-      fontSize: 16,
-      fontFamily: "Inter_400Regular",
+      fontSize: 17,
+      fontFamily: "Inter_600SemiBold",
       color: colors.foreground,
     },
     divider: {
@@ -246,7 +246,7 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       alignItems: "center",
       justifyContent: "center",
       gap: 8,
-      padding: 16,
+      padding: 18,
       borderRadius: 14,
       borderWidth: 1,
     },
@@ -255,13 +255,13 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       alignItems: "center",
       justifyContent: "center",
       gap: 8,
-      padding: 16,
+      padding: 18,
       borderRadius: 14,
       borderWidth: 1.5,
     },
     signOutText: {
-      fontSize: 16,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: 17,
+      fontFamily: "Inter_700Bold",
     },
     pressed: {
       opacity: 0.7,

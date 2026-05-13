@@ -46,7 +46,7 @@ export function SupportPage() {
             },
             {
               q: "How do I create a new circle?",
-              a: "Tap the + button on the main screen, fill in the circle name, contribution amount, frequency (weekly, biweekly, or monthly), and the number of members. You can then add members and assign turn order."
+              a: "Tap the + button on the main screen, fill in the circle name, contribution amount, frequency (weekly, 1st & 15th, monthly, and more), and the number of members. You can then add members and assign turn order."
             },
             {
               q: "How do I record a payment?",

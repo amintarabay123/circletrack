@@ -9,10 +9,11 @@ import {
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setBaseUrl, setAuthTokenGetter } from "@workspace/api-client-react";
+import { ClerkApiReadyGate } from "@/components/ClerkApiReadyGate";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { tokenCache } from "@/lib/tokenCache";
@@ -23,6 +24,8 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error: any) => {
+        // One retry: Clerk sometimes attaches the session JWT a tick after isSignedIn.
+        if (error?.status === 401 && failureCount < 1) return true;
         if (error?.status === 401) return false;
         return failureCount < 2;
       },
@@ -37,8 +40,10 @@ interface ClerkConfig {
 }
 
 function AuthSetup({ children }: { children: React.ReactNode }) {
-  const { getToken, isSignedIn } = useAuth();
+  const { getToken, isSignedIn, isLoaded } = useAuth();
   const qc = useQueryClient();
+  /** Avoid refetching every mounted screen on each effect run; only refresh when session becomes signed-in. */
+  const wasSignedIn = useRef(false);
 
   useEffect(() => {
     setAuthTokenGetter(async () => {
@@ -54,11 +59,14 @@ function AuthSetup({ children }: { children: React.ReactNode }) {
   }, [getToken]);
 
   useEffect(() => {
-    if (isSignedIn) {
-      console.log("[Auth] isSignedIn=true, invalidating queries");
+    if (!isLoaded) return;
+    const signed = Boolean(isSignedIn);
+    if (signed && !wasSignedIn.current) {
+      console.log("[Auth] session became signed-in, invalidating queries");
       qc.invalidateQueries();
     }
-  }, [isSignedIn, qc]);
+    wasSignedIn.current = signed;
+  }, [isSignedIn, isLoaded, qc]);
 
   return <>{children}</>;
 }
@@ -156,7 +164,9 @@ export default function RootLayout() {
               <GestureHandlerRootView style={{ flex: 1 }}>
                 <LanguageProvider>
                   <AuthSetup>
-                    <RootLayoutNav />
+                    <ClerkApiReadyGate>
+                      <RootLayoutNav />
+                    </ClerkApiReadyGate>
                   </AuthSetup>
                 </LanguageProvider>
               </GestureHandlerRootView>

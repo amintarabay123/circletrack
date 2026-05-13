@@ -88,12 +88,37 @@ function getSemimonthlyDate(startDate: string, cycle: number): Date {
   return new Date(year, month, dueDay);
 }
 
+/** Nth due on the 1st or 15th on or after startDate (inclusive). Cycle 1 = first such date. */
+function getFirstFifteenthDueDate(startDate: string, cycle: number): Date {
+  const start = parseISO(startDate.slice(0, 10));
+  const startTs = start.getTime();
+  let y = start.getFullYear();
+  let m = start.getMonth();
+  const collected: Date[] = [];
+  let guard = 0;
+  while (collected.length < cycle + 2 && guard++ < 600) {
+    for (const dom of [1, 15] as const) {
+      const dt = new Date(y, m, dom);
+      if (dt.getTime() >= startTs) collected.push(dt);
+    }
+    m += 1;
+    if (m > 11) {
+      m = 0;
+      y += 1;
+    }
+  }
+  const due = collected[cycle - 1];
+  if (!due) throw new Error("getFirstFifteenthDueDate: cycle out of range");
+  return due;
+}
+
 function getCycleDueDate(startDate: string, frequency: string, cycle: number): string {
   const start = parseISO(startDate.slice(0, 10));
   let due: Date;
   if (frequency === "weekly") due = addWeeks(start, cycle);
   else if (frequency === "biweekly") due = addWeeks(start, cycle * 2);
   else if (frequency === "semimonthly") due = getSemimonthlyDate(startDate, cycle);
+  else if (frequency === "first_fifteenth") due = getFirstFifteenthDueDate(startDate, cycle);
   else due = addMonths(start, cycle);
   return format(due, "yyyy-MM-dd");
 }
@@ -102,6 +127,10 @@ function getCycleStartDate(startDate: string, frequency: string, cycle: number):
   if (frequency === "semimonthly") {
     if (cycle === 1) return startDate.slice(0, 10);
     return format(getSemimonthlyDate(startDate, cycle - 1), "yyyy-MM-dd");
+  }
+  if (frequency === "first_fifteenth") {
+    if (cycle === 1) return startDate.slice(0, 10);
+    return format(getFirstFifteenthDueDate(startDate, cycle - 1), "yyyy-MM-dd");
   }
   const start = parseISO(startDate.slice(0, 10));
   let s: Date;
@@ -127,21 +156,44 @@ router.get("/roscas", async (req: any, res): Promise<void> => {
   res.json(roscas.map(formatRosca));
 });
 
+function startDateToYmd(value: Date | string): string {
+  if (typeof value === "string") {
+    const s = value.slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  }
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return format(value, "yyyy-MM-dd");
+  }
+  throw new Error("Invalid startDate");
+}
+
 // Create a rosca
 router.post("/roscas", async (req: any, res): Promise<void> => {
   const parsed = CreateRoscaBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
-  const [rosca] = await db.insert(roscasTable).values({
-    userId: req.userId,
-    name: parsed.data.name,
-    startDate: format(parsed.data.startDate, "yyyy-MM-dd"),
-    frequency: parsed.data.frequency,
-    contributionAmount: String(parsed.data.contributionAmount),
-    totalCycles: parsed.data.totalCycles,
-    currentCycle: 1,
-    isActive: true,
-  }).returning();
-  res.status(201).json(formatRosca(rosca));
+  let startYmd: string;
+  try {
+    startYmd = startDateToYmd(parsed.data.startDate);
+  } catch {
+    res.status(400).json({ error: "Invalid startDate" });
+    return;
+  }
+  try {
+    const [rosca] = await db.insert(roscasTable).values({
+      userId: req.userId,
+      name: parsed.data.name,
+      startDate: startYmd,
+      frequency: parsed.data.frequency,
+      contributionAmount: String(parsed.data.contributionAmount),
+      totalCycles: parsed.data.totalCycles,
+      currentCycle: 1,
+      isActive: true,
+    }).returning();
+    res.status(201).json(formatRosca(rosca));
+  } catch (e) {
+    console.error("[POST /roscas] insert failed:", e);
+    res.status(500).json({ error: e instanceof Error ? e.message : "Insert failed" });
+  }
 });
 
 // Get a single rosca
@@ -160,15 +212,27 @@ router.put("/roscas/:id", async (req: any, res): Promise<void> => {
   if (!await checkRoscaOwnership(id, req.userId, res)) return;
   const parsed = UpdateRoscaBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
-  const [rosca] = await db.update(roscasTable).set({
-    name: parsed.data.name,
-    startDate: format(parsed.data.startDate, "yyyy-MM-dd"),
-    frequency: parsed.data.frequency,
-    contributionAmount: String(parsed.data.contributionAmount),
-    totalCycles: parsed.data.totalCycles,
-  }).where(eq(roscasTable.id, id)).returning();
-  if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
-  res.json(formatRosca(rosca));
+  let startYmd: string;
+  try {
+    startYmd = startDateToYmd(parsed.data.startDate);
+  } catch {
+    res.status(400).json({ error: "Invalid startDate" });
+    return;
+  }
+  try {
+    const [rosca] = await db.update(roscasTable).set({
+      name: parsed.data.name,
+      startDate: startYmd,
+      frequency: parsed.data.frequency,
+      contributionAmount: String(parsed.data.contributionAmount),
+      totalCycles: parsed.data.totalCycles,
+    }).where(eq(roscasTable.id, id)).returning();
+    if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
+    res.json(formatRosca(rosca));
+  } catch (e) {
+    console.error("[PUT /roscas/:id] update failed:", e);
+    res.status(500).json({ error: e instanceof Error ? e.message : "Update failed" });
+  }
 });
 
 // Advance rosca cycle

@@ -21,6 +21,7 @@ import {
   useDeleteRosca,
   getGetRoscaDashboardQueryKey,
   getGetMemberRatingsQueryKey,
+  getListRoscasQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
@@ -47,7 +48,13 @@ export default function CircleDetailScreen() {
       queryKey: getGetRoscaDashboardQueryKey(circleId),
     },
   });
-  const { data: ratings, refetch: refetchRatings } = useGetMemberRatings(circleId, {
+  const {
+    data: ratings,
+    refetch: refetchRatings,
+    isError: ratingsIsError,
+    isLoading: ratingsLoading,
+    error: ratingsQueryError,
+  } = useGetMemberRatings(circleId, {
     query: {
       enabled: !isNaN(circleId),
       queryKey: getGetMemberRatingsQueryKey(circleId),
@@ -95,8 +102,16 @@ export default function CircleDetailScreen() {
             { id: circleId },
             {
               onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ["listRoscas"] });
                 router.back();
+                queueMicrotask(() => {
+                  queryClient.invalidateQueries({ queryKey: getListRoscasQueryKey() });
+                });
+              },
+              onError: (err) => {
+                Alert.alert(
+                  t("error"),
+                  String((err as { message?: string })?.message ?? err),
+                );
               },
             }
           );
@@ -129,15 +144,17 @@ export default function CircleDetailScreen() {
   const freqMap: Record<string, string> = {
     weekly: t("weekly"),
     biweekly: t("biweekly"),
+    first_fifteenth: t("firstFifteenth"),
     monthly: t("monthly"),
     semimonthly: t("semimonthly"),
   };
   const freq = freqMap[dashboard.rosca.frequency] ?? dashboard.rosca.frequency;
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "dashboard", label: t("dashboard") },
-    { key: "payments", label: t("payments") },
-    { key: "members", label: t("members") },
+  const tabs: { key: Tab; label: string; icon: React.ComponentProps<typeof Ionicons>["name"] }[] = [
+    { key: "dashboard", label: t("dashboard"), icon: "home-outline" },
+    { key: "payments", label: t("payments"), icon: "card-outline" },
+    /* Tab lists reliability ratings — label uses "Ratings" so it matches what users look for */
+    { key: "members", label: t("ratings"), icon: "star-outline" },
   ];
 
   return (
@@ -163,12 +180,21 @@ export default function CircleDetailScreen() {
       </View>
 
       <View style={styles.tabs}>
-        {tabs.map(({ key, label }) => (
+        {tabs.map(({ key, label, icon }) => (
           <Pressable
             key={key}
             style={[styles.tab, activeTab === key && { borderBottomColor: colors.primary }]}
-            onPress={() => setActiveTab(key)}
+            onPress={() => {
+              Haptics.selectionAsync();
+              setActiveTab(key);
+            }}
           >
+            <Ionicons
+              name={icon}
+              size={16}
+              color={activeTab === key ? colors.primary : colors.mutedForeground}
+              style={{ marginBottom: 4 }}
+            />
             <Text style={[styles.tabText, { color: activeTab === key ? colors.primary : colors.mutedForeground }]}>
               {label}
             </Text>
@@ -177,6 +203,7 @@ export default function CircleDetailScreen() {
       </View>
 
       <ScrollView
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: bottomPad + 100 }}
         refreshControl={
@@ -189,6 +216,31 @@ export default function CircleDetailScreen() {
       >
         {activeTab === "dashboard" && (
           <>
+            <View style={styles.quickLinks}>
+              <Pressable
+                style={({ pressed }) => [styles.quickLink, { borderColor: colors.border, backgroundColor: colors.card }, pressed && { opacity: 0.85 }]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setActiveTab("payments");
+                }}
+              >
+                <Ionicons name="card-outline" size={22} color={colors.primary} />
+                <Text style={[styles.quickLinkText, { color: colors.foreground }]}>{t("payments")}</Text>
+                <Text style={[styles.quickLinkHint, { color: colors.mutedForeground }]}>{t("paymentHistory")}</Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [styles.quickLink, { borderColor: colors.border, backgroundColor: colors.card }, pressed && { opacity: 0.85 }]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setActiveTab("members");
+                }}
+              >
+                <Ionicons name="star-outline" size={22} color={colors.primary} />
+                <Text style={[styles.quickLinkText, { color: colors.foreground }]}>{t("ratings")}</Text>
+                <Text style={[styles.quickLinkHint, { color: colors.mutedForeground }]}>{t("memberRatings")}</Text>
+              </Pressable>
+            </View>
+
             <View style={styles.statsRow}>
               <StatCard
                 label={t("potAmount")}
@@ -265,13 +317,30 @@ export default function CircleDetailScreen() {
         {activeTab === "members" && (
           <>
             <Text style={styles.sectionTitle}>{t("memberRatings")}</Text>
-            {(!ratings || ratings.length === 0) && (
+            {ratingsIsError && (
+              <View style={styles.emptyState}>
+                <Ionicons name="alert-circle-outline" size={40} color={colors.destructive} />
+                <Text style={[styles.emptyText, { textAlign: "center" }]}>{t("ratingsLoadError")}</Text>
+                <Text style={[styles.emptyText, { fontSize: 12, marginTop: 6 }]} selectable>
+                  {String((ratingsQueryError as Error)?.message ?? ratingsQueryError)}
+                </Text>
+                <Pressable style={[styles.retryBtn, { marginTop: 12 }]} onPress={() => refetchRatings()}>
+                  <Text style={[styles.retryText, { color: colors.primary }]}>{t("retry")}</Text>
+                </Pressable>
+              </View>
+            )}
+            {!ratingsIsError && ratingsLoading && (
+              <View style={styles.emptyState}>
+                <ActivityIndicator color={colors.primary} />
+              </View>
+            )}
+            {!ratingsIsError && !ratingsLoading && (!ratings || ratings.length === 0) && (
               <View style={styles.emptyState}>
                 <Ionicons name="people-outline" size={40} color={colors.mutedForeground} />
                 <Text style={styles.emptyText}>{t("noMembers")}</Text>
               </View>
             )}
-            {ratings?.map((r) => (
+            {!ratingsIsError && ratings?.map((r) => (
               <RatingRow
                 key={r.memberId}
                 rating={r}
@@ -651,12 +720,39 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       flex: 1,
       paddingVertical: 10,
       alignItems: "center",
+      justifyContent: "center",
       borderBottomWidth: 2,
       borderBottomColor: "transparent",
     },
     tabText: {
-      fontSize: 14,
+      fontSize: 12,
       fontFamily: "Inter_500Medium",
+      textAlign: "center",
+    },
+    quickLinks: {
+      flexDirection: "row",
+      gap: 10,
+      marginTop: 12,
+      marginBottom: 4,
+    },
+    quickLink: {
+      flex: 1,
+      borderRadius: 12,
+      borderWidth: 1,
+      paddingVertical: 12,
+      paddingHorizontal: 10,
+      alignItems: "center",
+    },
+    quickLinkText: {
+      fontSize: 14,
+      fontFamily: "Inter_600SemiBold",
+      marginTop: 6,
+    },
+    quickLinkHint: {
+      fontSize: 11,
+      fontFamily: "Inter_400Regular",
+      marginTop: 2,
+      textAlign: "center",
     },
     statsRow: {
       flexDirection: "row",

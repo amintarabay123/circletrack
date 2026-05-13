@@ -53,7 +53,8 @@ function CirclesList() {
   const { data: circles, isLoading, error, refetch } = useListRoscas({});
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 + 84 : insets.bottom + 84;
+  /** Space for enlarged tab bar + safe area (keep in sync with app/(tabs)/_layout.tsx). */
+  const bottomPad = Platform.OS === "web" ? 34 + 96 : insets.bottom + 96;
 
   const styles = makeStyles(colors);
 
@@ -70,7 +71,7 @@ function CirclesList() {
           }}
           testID="add-circle-btn"
         >
-          <Ionicons name="add" size={24} color={colors.primaryForeground} />
+          <Ionicons name="add" size={28} color={colors.primaryForeground} />
         </Pressable>
       </View>
 
@@ -108,7 +109,7 @@ function CirclesList() {
           scrollEnabled={!!circles?.length}
           ListEmptyComponent={
             <View style={styles.centered}>
-              <Ionicons name="people-circle-outline" size={64} color={colors.mutedForeground} />
+              <Ionicons name="people-circle-outline" size={72} color={colors.mutedForeground} />
               <Text style={styles.emptyTitle}>{t("noCircles")}</Text>
               <Text style={styles.emptyDesc}>{t("noCirclesDesc")}</Text>
             </View>
@@ -134,6 +135,7 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
   const freqMap: Record<string, string> = {
     weekly: t("weekly"),
     biweekly: t("biweekly"),
+    first_fifteenth: t("firstFifteenth"),
     monthly: t("monthly"),
     semimonthly: t("semimonthly"),
   };
@@ -150,7 +152,7 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
     },
     pressed: { opacity: 0.8 },
     row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    name: { fontSize: 17, fontFamily: "Inter_600SemiBold", color: colors.foreground, flex: 1 },
+    name: { fontSize: 18, fontFamily: "Inter_700Bold", color: colors.foreground, flex: 1 },
     badge: {
       paddingHorizontal: 10,
       paddingVertical: 3,
@@ -158,19 +160,19 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
       backgroundColor: circle.isActive ? colors.primary + "20" : colors.muted,
     },
     badgeText: {
-      fontSize: 11,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: 12,
+      fontFamily: "Inter_700Bold",
       color: circle.isActive ? colors.primary : colors.mutedForeground,
     },
     meta: { flexDirection: "row", gap: 12, marginTop: 10, alignItems: "center" },
     metaItem: { flexDirection: "row", alignItems: "center", gap: 4 },
-    metaText: { fontSize: 13, fontFamily: "Inter_400Regular", color: colors.mutedForeground },
+    metaText: { fontSize: 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
     divider: { flex: 1, height: 1, backgroundColor: colors.border, marginVertical: 10 },
     amount: { fontSize: 22, fontFamily: "Inter_700Bold", color: colors.primary },
     amountLabel: { fontSize: 12, fontFamily: "Inter_400Regular", color: colors.mutedForeground, marginTop: 2 },
     cycleRow: { flexDirection: "row", alignItems: "baseline", gap: 4 },
-    cycle: { fontSize: 13, fontFamily: "Inter_500Medium", color: colors.foreground },
-    cycleMuted: { fontSize: 13, fontFamily: "Inter_400Regular", color: colors.mutedForeground },
+    cycle: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: colors.foreground },
+    cycleMuted: { fontSize: 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
   });
 
   return (
@@ -188,11 +190,11 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
 
       <View style={styles.meta}>
         <View style={styles.metaItem}>
-          <Ionicons name="repeat" size={14} color={colors.mutedForeground} />
+          <Ionicons name="repeat" size={16} color={colors.mutedForeground} />
           <Text style={styles.metaText}>{freq}</Text>
         </View>
         <View style={styles.metaItem}>
-          <Ionicons name="people-outline" size={14} color={colors.mutedForeground} />
+          <Ionicons name="people-outline" size={16} color={colors.mutedForeground} />
           <Text style={styles.metaText}>{t("cycle")} {circle.currentCycle}/{circle.totalCycles}</Text>
         </View>
       </View>
@@ -209,7 +211,7 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
             <Text style={styles.cycle}>{t("cycle")} {circle.currentCycle}</Text>
             <Text style={styles.cycleMuted}>{t("of")} {circle.totalCycles}</Text>
           </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} style={{ marginTop: 4 }} />
+          <Ionicons name="chevron-forward" size={20} color={colors.mutedForeground} style={{ marginTop: 4 }} />
         </View>
       </View>
     </Pressable>
@@ -231,15 +233,15 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       paddingTop: 8,
     },
     headerTitle: {
-      fontSize: 28,
+      fontSize: 32,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
     },
     addBtn: {
       backgroundColor: colors.primary,
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 48,
+      height: 48,
+      borderRadius: 24,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -251,15 +253,15 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       paddingTop: 60,
     },
     emptyTitle: {
-      fontSize: 18,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: 20,
+      fontFamily: "Inter_700Bold",
       color: colors.foreground,
       marginTop: 12,
       textAlign: "center",
     },
     emptyDesc: {
-      fontSize: 14,
-      fontFamily: "Inter_400Regular",
+      fontSize: 15,
+      fontFamily: "Inter_500Medium",
       color: colors.mutedForeground,
       marginTop: 6,
       textAlign: "center",
@@ -272,8 +274,8 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       backgroundColor: colors.primary + "20",
     },
     retryText: {
-      fontSize: 15,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: 16,
+      fontFamily: "Inter_700Bold",
     },
     pressed: { opacity: 0.8 },
   });

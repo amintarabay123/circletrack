@@ -7,7 +7,7 @@ import {
   useGetRoscaDashboard, getGetRoscaDashboardQueryKey
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { format, addWeeks, addMonths } from "date-fns";
+import { format, addWeeks, addMonths, parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,6 +22,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLang } from "@/lib/i18n";
 
+/** Nth due on the 1st or 15th on or after startDate (inclusive). Cycle 1 = first such date. Mirrors api-server getFirstFifteenthDueDate. */
+function getFirstFifteenthDueDateLocal(startDate: string, cycle: number): Date {
+  const start = parseISO(startDate.slice(0, 10));
+  const startTs = start.getTime();
+  let y = start.getFullYear();
+  let m = start.getMonth();
+  const collected: Date[] = [];
+  let guard = 0;
+  while (collected.length < cycle + 2 && guard++ < 600) {
+    for (const dom of [1, 15] as const) {
+      const dt = new Date(y, m, dom);
+      if (dt.getTime() >= startTs) collected.push(dt);
+    }
+    m += 1;
+    if (m > 11) {
+      m = 0;
+      y += 1;
+    }
+  }
+  const due = collected[cycle - 1];
+  if (!due) throw new Error("getFirstFifteenthDueDateLocal: cycle out of range");
+  return due;
+}
+
 function getCycleDueDateLocal(startDate: string, frequency: string, cycle: number): string {
   const start = new Date(startDate + "T00:00:00");
   let due: Date;
@@ -29,6 +53,8 @@ function getCycleDueDateLocal(startDate: string, frequency: string, cycle: numbe
     due = addWeeks(start, cycle);
   } else if (frequency === "biweekly") {
     due = addWeeks(start, cycle * 2);
+  } else if (frequency === "first_fifteenth") {
+    due = getFirstFifteenthDueDateLocal(startDate, cycle);
   } else if (frequency === "semimonthly") {
     const startDay = start.getDate();
     let year = start.getFullYear();
