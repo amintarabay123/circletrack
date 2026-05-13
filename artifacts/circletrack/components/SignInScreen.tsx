@@ -76,16 +76,16 @@ export default function SignInScreen() {
         </View>
 
         <View style={styles.featuresSection}>
-          {[
-            { icon: "lock-closed-outline" as const, key: "Datos privados y seguros" },
-            { icon: "phone-portrait-outline" as const, key: "Gestiona desde tu teléfono" },
-            { icon: "people-outline" as const, key: "Controla tu tanda completa" },
-          ].map((f, i) => (
+          {([
+            { icon: "lock-closed-outline" as const, key: "featurePrivate" as const },
+            { icon: "phone-portrait-outline" as const, key: "featurePhone" as const },
+            { icon: "people-outline" as const, key: "featureControl" as const },
+          ] as const).map((f, i) => (
             <View key={i} style={styles.featureRow}>
               <View style={[styles.featureIcon, { backgroundColor: colors.primary + "18" }]}>
                 <Ionicons name={f.icon} size={18} color={colors.primary} />
               </View>
-              <Text style={styles.featureText}>{f.key}</Text>
+              <Text style={styles.featureText}>{t(f.key)}</Text>
             </View>
           ))}
         </View>
