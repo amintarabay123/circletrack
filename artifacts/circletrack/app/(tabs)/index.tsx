@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useListRoscas } from "@workspace/api-client-react";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { useIsTablet } from "@/hooks/useIsTablet";
 import SignInScreen from "@/components/SignInScreen";
 import { TabletContainer } from "@/components/TabletContainer";
 import type { Rosca } from "@workspace/api-client-react";
@@ -49,14 +50,15 @@ function CirclesList() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useLang();
+  const isTablet = useIsTablet();
 
   const { data: circles, isLoading, error, refetch } = useListRoscas({});
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   /** Space for enlarged tab bar + safe area (keep in sync with app/(tabs)/_layout.tsx). */
-  const bottomPad = Platform.OS === "web" ? 34 + 96 : insets.bottom + 96;
+  const bottomPad = Platform.OS === "web" ? 34 + (isTablet ? 124 : 96) : insets.bottom + (isTablet ? 124 : 96);
 
-  const styles = makeStyles(colors);
+  const styles = makeStyles(colors, isTablet);
 
   return (
     <TabletContainer>
@@ -71,7 +73,7 @@ function CirclesList() {
           }}
           testID="add-circle-btn"
         >
-          <Ionicons name="add" size={28} color={colors.primaryForeground} />
+          <Ionicons name="add" size={isTablet ? 32 : 28} color={colors.primaryForeground} />
         </Pressable>
       </View>
 
@@ -104,7 +106,7 @@ function CirclesList() {
               onPress={() => router.push(`/circle/${item.id}`)}
             />
           )}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: bottomPad, paddingTop: 8 }}
+          contentContainerStyle={{ paddingHorizontal: isTablet ? 28 : 20, paddingBottom: bottomPad, paddingTop: isTablet ? 12 : 8 }}
           showsVerticalScrollIndicator={false}
           scrollEnabled={!!circles?.length}
           ListEmptyComponent={
@@ -131,6 +133,7 @@ function CirclesList() {
 function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void }) {
   const colors = useColors();
   const { t } = useLang();
+  const isTablet = useIsTablet();
 
   const freqMap: Record<string, string> = {
     weekly: t("weekly"),
@@ -145,14 +148,14 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
     card: {
       backgroundColor: colors.card,
       borderRadius: 16,
-      padding: 16,
-      marginBottom: 12,
+      padding: isTablet ? 20 : 16,
+      marginBottom: isTablet ? 16 : 12,
       borderWidth: 1,
       borderColor: colors.border,
     },
     pressed: { opacity: 0.8 },
     row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    name: { fontSize: 18, fontFamily: "Inter_700Bold", color: colors.foreground, flex: 1 },
+    name: { fontSize: isTablet ? 24 : 18, fontFamily: "Inter_700Bold", color: colors.foreground, flex: 1 },
     badge: {
       paddingHorizontal: 10,
       paddingVertical: 3,
@@ -160,19 +163,19 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
       backgroundColor: circle.isActive ? colors.primary + "20" : colors.muted,
     },
     badgeText: {
-      fontSize: 12,
+      fontSize: isTablet ? 14 : 12,
       fontFamily: "Inter_700Bold",
       color: circle.isActive ? colors.primary : colors.mutedForeground,
     },
-    meta: { flexDirection: "row", gap: 12, marginTop: 10, alignItems: "center" },
+    meta: { flexDirection: "row", gap: isTablet ? 16 : 12, marginTop: isTablet ? 12 : 10, alignItems: "center" },
     metaItem: { flexDirection: "row", alignItems: "center", gap: 4 },
-    metaText: { fontSize: 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
-    divider: { flex: 1, height: 1, backgroundColor: colors.border, marginVertical: 10 },
-    amount: { fontSize: 22, fontFamily: "Inter_700Bold", color: colors.primary },
-    amountLabel: { fontSize: 12, fontFamily: "Inter_400Regular", color: colors.mutedForeground, marginTop: 2 },
+    metaText: { fontSize: isTablet ? 18 : 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
+    divider: { flex: 1, height: 1, backgroundColor: colors.border, marginVertical: isTablet ? 14 : 10 },
+    amount: { fontSize: isTablet ? 30 : 22, fontFamily: "Inter_700Bold", color: colors.primary },
+    amountLabel: { fontSize: isTablet ? 15 : 12, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginTop: 2 },
     cycleRow: { flexDirection: "row", alignItems: "baseline", gap: 4 },
-    cycle: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: colors.foreground },
-    cycleMuted: { fontSize: 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
+    cycle: { fontSize: isTablet ? 18 : 14, fontFamily: "Inter_600SemiBold", color: colors.foreground },
+    cycleMuted: { fontSize: isTablet ? 18 : 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
   });
 
   return (
@@ -190,11 +193,11 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
 
       <View style={styles.meta}>
         <View style={styles.metaItem}>
-          <Ionicons name="repeat" size={16} color={colors.mutedForeground} />
+          <Ionicons name="repeat" size={isTablet ? 20 : 16} color={colors.mutedForeground} />
           <Text style={styles.metaText}>{freq}</Text>
         </View>
         <View style={styles.metaItem}>
-          <Ionicons name="people-outline" size={16} color={colors.mutedForeground} />
+          <Ionicons name="people-outline" size={isTablet ? 20 : 16} color={colors.mutedForeground} />
           <Text style={styles.metaText}>{t("cycle")} {circle.currentCycle}/{circle.totalCycles}</Text>
         </View>
       </View>
@@ -211,14 +214,14 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
             <Text style={styles.cycle}>{t("cycle")} {circle.currentCycle}</Text>
             <Text style={styles.cycleMuted}>{t("of")} {circle.totalCycles}</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color={colors.mutedForeground} style={{ marginTop: 4 }} />
+          <Ionicons name="chevron-forward" size={isTablet ? 24 : 20} color={colors.mutedForeground} style={{ marginTop: 4 }} />
         </View>
       </View>
     </Pressable>
   );
 }
 
-function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useColors>) {
+function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useColors>, isTablet: boolean) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -233,15 +236,15 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       paddingTop: 8,
     },
     headerTitle: {
-      fontSize: 32,
+      fontSize: isTablet ? 38 : 32,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
     },
     addBtn: {
       backgroundColor: colors.primary,
-      width: 48,
-      height: 48,
-      borderRadius: 24,
+      width: isTablet ? 56 : 48,
+      height: isTablet ? 56 : 48,
+      borderRadius: isTablet ? 28 : 24,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -253,14 +256,14 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       paddingTop: 60,
     },
     emptyTitle: {
-      fontSize: 20,
+      fontSize: isTablet ? 24 : 20,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
       marginTop: 12,
       textAlign: "center",
     },
     emptyDesc: {
-      fontSize: 15,
+      fontSize: isTablet ? 17 : 15,
       fontFamily: "Inter_500Medium",
       color: colors.mutedForeground,
       marginTop: 6,
@@ -274,7 +277,7 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       backgroundColor: colors.primary + "20",
     },
     retryText: {
-      fontSize: 16,
+      fontSize: isTablet ? 18 : 16,
       fontFamily: "Inter_700Bold",
     },
     pressed: { opacity: 0.8 },

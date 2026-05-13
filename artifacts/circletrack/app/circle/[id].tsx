@@ -27,10 +27,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
+import { useIsTablet } from "@/hooks/useIsTablet";
 import type { TranslationKeys } from "@/constants/i18n";
 import type { DashboardSummary, MemberStatus } from "@workspace/api-client-react";
 
 type Tab = "dashboard" | "payments" | "members";
+
+function normalizePercent(value: number): number {
+  // API may return 0-1 or 0-100 depending on source version.
+  if (!isFinite(value)) return 0;
+  return value <= 1 ? Math.round(value * 100) : Math.round(value);
+}
 
 export default function CircleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -38,6 +45,7 @@ export default function CircleDetailScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useLang();
+  const isTablet = useIsTablet();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
 
@@ -64,9 +72,9 @@ export default function CircleDetailScreen() {
   const { mutate: deleteRosca } = useDeleteRosca();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
+  const bottomPad = Platform.OS === "web" ? (isTablet ? 46 : 34) : insets.bottom;
 
-  const styles = makeStyles(colors);
+  const styles = makeStyles(colors, isTablet);
 
   function showOptions() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -140,7 +148,7 @@ export default function CircleDetailScreen() {
     );
   }
 
-  const collectionPct = Math.round(dashboard.collectionRate * 100);
+  const collectionPct = normalizePercent(dashboard.collectionRate);
   const freqMap: Record<string, string> = {
     weekly: t("weekly"),
     biweekly: t("biweekly"),
@@ -153,8 +161,7 @@ export default function CircleDetailScreen() {
   const tabs: { key: Tab; label: string; icon: React.ComponentProps<typeof Ionicons>["name"] }[] = [
     { key: "dashboard", label: t("dashboard"), icon: "home-outline" },
     { key: "payments", label: t("payments"), icon: "card-outline" },
-    /* Tab lists reliability ratings — label uses "Ratings" so it matches what users look for */
-    { key: "members", label: t("ratings"), icon: "star-outline" },
+    { key: "members", label: t("members"), icon: "people-outline" },
   ];
 
   return (
@@ -191,9 +198,9 @@ export default function CircleDetailScreen() {
           >
             <Ionicons
               name={icon}
-              size={16}
+              size={isTablet ? 26 : 18}
               color={activeTab === key ? colors.primary : colors.mutedForeground}
-              style={{ marginBottom: 4 }}
+              style={{ marginBottom: isTablet ? 6 : 4 }}
             />
             <Text style={[styles.tabText, { color: activeTab === key ? colors.primary : colors.mutedForeground }]}>
               {label}
@@ -247,12 +254,14 @@ export default function CircleDetailScreen() {
                 value={`$${dashboard.potAmount.toLocaleString()}`}
                 color={colors.primary}
                 colors={colors}
+                isTablet={isTablet}
               />
               <StatCard
                 label={t("collectionRate")}
                 value={`${collectionPct}%`}
                 color={collectionPct >= 80 ? colors.success : colors.destructive}
                 colors={colors}
+                isTablet={isTablet}
               />
             </View>
 
@@ -262,18 +271,21 @@ export default function CircleDetailScreen() {
                 value={String(dashboard.paidCount)}
                 color={colors.success}
                 colors={colors}
+                isTablet={isTablet}
               />
               <StatCard
                 label={t("unpaidCount")}
                 value={String(dashboard.unpaidCount)}
                 color={colors.mutedForeground}
                 colors={colors}
+                isTablet={isTablet}
               />
               <StatCard
                 label={t("lateCount")}
                 value={String(dashboard.lateCount)}
                 color={colors.destructive}
                 colors={colors}
+                isTablet={isTablet}
               />
             </View>
 
@@ -295,6 +307,7 @@ export default function CircleDetailScreen() {
                 circleId={circleId}
                 colors={colors}
                 t={t}
+                isTablet={isTablet}
                 onRecordPayment={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push(`/circle/${id}/record-payment?memberId=${ms.memberId}&memberName=${encodeURIComponent(ms.memberName)}&amountDue=${ms.amountDue}`);
@@ -311,11 +324,47 @@ export default function CircleDetailScreen() {
             colors={colors}
             t={t}
             router={router}
+            isTablet={isTablet}
           />
         )}
 
         {activeTab === "members" && (
           <>
+            <Text style={styles.sectionTitle}>{t("members")}</Text>
+            {dashboard.memberStatuses.length === 0 && (
+              <View style={styles.emptyState}>
+                <Ionicons name="people-outline" size={40} color={colors.mutedForeground} />
+                <Text style={styles.emptyText}>{t("noMembers")}</Text>
+              </View>
+            )}
+            {dashboard.memberStatuses.map((ms) => (
+              <Pressable
+                key={`member-${ms.memberId}`}
+                style={({ pressed }) => [
+                  styles.memberCard,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                  pressed && { opacity: 0.75 },
+                ]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push(`/circle/${id}/member/${ms.memberId}/report`);
+                }}
+              >
+                <View style={[styles.memberInitials, { backgroundColor: colors.primary + "20" }]}>
+                  <Text style={[styles.memberInitialsText, { color: colors.primary }]}>
+                    {ms.memberName.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.memberName, { color: colors.foreground }]}>{ms.memberName}</Text>
+                  <Text style={[styles.memberSub, { color: colors.mutedForeground }]}>
+                    ${ms.amountPaid.toLocaleString()} / ${ms.amountDue.toLocaleString()}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={colors.mutedForeground} />
+              </Pressable>
+            ))}
+
             <Text style={styles.sectionTitle}>{t("memberRatings")}</Text>
             {ratingsIsError && (
               <View style={styles.emptyState}>
@@ -346,6 +395,7 @@ export default function CircleDetailScreen() {
                 rating={r}
                 colors={colors}
                 t={t}
+                isTablet={isTablet}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push(`/circle/${id}/member/${r.memberId}/report`);
@@ -392,30 +442,31 @@ export default function CircleDetailScreen() {
 }
 
 function PaymentsPreview({
-  dashboard, id, colors, t, router,
+  dashboard, id, colors, t, router, isTablet,
 }: {
   dashboard: DashboardSummary;
   id: string;
   colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
   t: (key: TranslationKeys) => string;
   router: ReturnType<typeof import("expo-router").useRouter>;
+  isTablet: boolean;
 }) {
   const pStyles = StyleSheet.create({
     header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 16, marginBottom: 10 },
-    title: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: colors.mutedForeground, textTransform: "uppercase", letterSpacing: 0.6 },
-    viewAll: { fontSize: 13, fontFamily: "Inter_600SemiBold", color: colors.primary },
+    title: { fontSize: isTablet ? 24 : 14, fontFamily: "Inter_700Bold", color: colors.mutedForeground, textTransform: "uppercase", letterSpacing: isTablet ? 1 : 0.6 },
+    viewAll: { fontSize: isTablet ? 20 : 13, fontFamily: "Inter_700Bold", color: colors.primary },
     card: {
       flexDirection: "row", alignItems: "center",
       backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1,
-      borderRadius: 12, padding: 12, marginBottom: 8, gap: 10,
+      borderRadius: 12, padding: isTablet ? 22 : 12, marginBottom: 8, gap: isTablet ? 14 : 10,
     },
-    avatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.primary + "20", alignItems: "center", justifyContent: "center" },
-    avatarText: { fontSize: 15, fontFamily: "Inter_700Bold", color: colors.primary },
+    avatar: { width: isTablet ? 56 : 38, height: isTablet ? 56 : 38, borderRadius: isTablet ? 28 : 19, backgroundColor: colors.primary + "20", alignItems: "center", justifyContent: "center" },
+    avatarText: { fontSize: isTablet ? 24 : 15, fontFamily: "Inter_700Bold", color: colors.primary },
     info: { flex: 1 },
-    name: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: colors.foreground },
-    sub: { fontSize: 12, fontFamily: "Inter_400Regular", color: colors.mutedForeground, marginTop: 2 },
-    badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 20 },
-    badgeText: { fontSize: 10, fontFamily: "Inter_600SemiBold" },
+    name: { fontSize: isTablet ? 24 : 14, fontFamily: "Inter_700Bold", color: colors.foreground },
+    sub: { fontSize: isTablet ? 17 : 12, fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular", color: colors.mutedForeground, marginTop: 2 },
+    badge: { paddingHorizontal: isTablet ? 12 : 7, paddingVertical: isTablet ? 6 : 3, borderRadius: 20 },
+    badgeText: { fontSize: isTablet ? 15 : 10, fontFamily: "Inter_700Bold" },
   });
 
   return (
@@ -447,34 +498,38 @@ function PaymentsPreview({
 }
 
 function StatCard({
-  label, value, color, colors,
+  label, value, color, colors, isTablet,
 }: {
   label: string;
   value: string;
   color: string;
   colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
+  isTablet: boolean;
 }) {
+  const statStyles = createStatStyles(isTablet);
   return (
-    <View style={[statStyles.card, { backgroundColor: colors.card, borderColor: colors.border, flex: 1 }]}>
-      <Text style={[statStyles.value, { color }]}>{value}</Text>
-      <Text style={[statStyles.label, { color: colors.mutedForeground }]}>{label}</Text>
+    <View style={[statStyles.card, { backgroundColor: colors.card, borderColor: colors.border, flex: 1, padding: isTablet ? 18 : 14 }]}>
+      <Text style={[statStyles.value, { color, fontSize: isTablet ? 28 : 22 }]}>{value}</Text>
+      <Text style={[statStyles.label, { color: colors.mutedForeground, fontSize: isTablet ? 14 : 12 }]}>{label}</Text>
     </View>
   );
 }
 
-const statStyles = StyleSheet.create({
-  card: {
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1,
-    alignItems: "center",
-  },
-  value: { fontSize: 22, fontFamily: "Inter_700Bold" },
-  label: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 2, textAlign: "center" },
-});
+function createStatStyles(isTablet: boolean) {
+  return StyleSheet.create({
+    card: {
+      borderRadius: 12,
+      padding: isTablet ? 18 : 14,
+      borderWidth: 1,
+      alignItems: "center",
+    },
+    value: { fontSize: isTablet ? 30 : 22, fontFamily: "Inter_700Bold" },
+    label: { fontSize: isTablet ? 15 : 12, fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular", marginTop: 2, textAlign: "center" },
+  });
+}
 
 function MemberStatusRow({
-  memberStatus, circleId, colors, t, onRecordPayment,
+  memberStatus, circleId, colors, t, onRecordPayment, isTablet,
 }: {
   memberStatus: {
     memberId: number;
@@ -490,6 +545,7 @@ function MemberStatusRow({
   colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
   t: (key: TranslationKeys) => string;
   onRecordPayment: () => void;
+  isTablet: boolean;
 }) {
   const isPaid = memberStatus.isPaid;
   const isLate = memberStatus.isLate;
@@ -497,6 +553,7 @@ function MemberStatusRow({
   const statusColor = isPaid ? colors.success : isLate ? colors.destructive : colors.mutedForeground;
   const statusLabel = isPaid ? t("paid") : isLate ? t("late") : t("unpaid");
 
+  const rowStyles = createRowStyles(isTablet);
   return (
     <View style={[rowStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={[rowStyles.initials, { backgroundColor: colors.primary + "20" }]}>
@@ -524,7 +581,7 @@ function MemberStatusRow({
             onPress={onRecordPayment}
             testID={`record-payment-${memberStatus.memberId}`}
           >
-            <Ionicons name="add-circle-outline" size={13} color={colors.primaryForeground} />
+            <Ionicons name="add-circle-outline" size={isTablet ? 16 : 13} color={colors.primaryForeground} />
             <Text style={[rowStyles.recordText, { color: colors.primaryForeground }]}>{t("record")}</Text>
           </Pressable>
         )}
@@ -533,46 +590,48 @@ function MemberStatusRow({
   );
 }
 
-const rowStyles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    gap: 10,
-  },
-  initials: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  initialsText: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  info: { flex: 1 },
-  name: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
-  sub: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 2 },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 20,
-  },
-  badgeText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
-  recordBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  recordText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
-});
+function createRowStyles(isTablet: boolean) {
+  return StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderRadius: 12,
+      padding: isTablet ? 18 : 12,
+      marginBottom: 8,
+      borderWidth: 1,
+      gap: isTablet ? 14 : 10,
+    },
+    initials: {
+      width: isTablet ? 52 : 40,
+      height: isTablet ? 52 : 40,
+      borderRadius: isTablet ? 26 : 20,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    initialsText: { fontSize: isTablet ? 22 : 16, fontFamily: "Inter_700Bold" },
+    info: { flex: 1 },
+    name: { fontSize: isTablet ? 24 : 15, fontFamily: "Inter_700Bold" },
+    sub: { fontSize: isTablet ? 17 : 12, fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular", marginTop: 2 },
+    badge: {
+      paddingHorizontal: isTablet ? 10 : 8,
+      paddingVertical: isTablet ? 5 : 3,
+      borderRadius: 20,
+    },
+    badgeText: { fontSize: isTablet ? 14 : 11, fontFamily: "Inter_700Bold" },
+    recordBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 3,
+      paddingHorizontal: isTablet ? 10 : 8,
+      paddingVertical: isTablet ? 6 : 4,
+      borderRadius: 8,
+    },
+    recordText: { fontSize: isTablet ? 14 : 11, fontFamily: "Inter_700Bold" },
+  });
+}
 
 function RatingRow({
-  rating, colors, t, onPress,
+  rating, colors, t, onPress, isTablet,
 }: {
   rating: {
     memberId: number;
@@ -588,6 +647,7 @@ function RatingRow({
   colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
   t: (key: TranslationKeys) => string;
   onPress: () => void;
+  isTablet: boolean;
 }) {
   const ratingColors = {
     excellent: colors.success,
@@ -597,7 +657,8 @@ function RatingRow({
   };
   const ratingColor = ratingColors[rating.rating] ?? colors.mutedForeground;
   const ratingLabel = t(rating.rating);
-  const score = Math.round(rating.reliabilityScore * 100);
+  const score = normalizePercent(rating.reliabilityScore);
+  const ratingStyles = createRatingStyles(isTablet);
 
   return (
     <Pressable
@@ -623,44 +684,46 @@ function RatingRow({
           <Text style={[ratingStyles.badgeText, { color: ratingColor }]}>{ratingLabel}</Text>
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+      <Ionicons name="chevron-forward" size={isTablet ? 20 : 16} color={colors.mutedForeground} />
     </Pressable>
   );
 }
 
-const ratingStyles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    gap: 10,
-  },
-  initials: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  initialsText: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  info: { flex: 1 },
-  name: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
-  row: { flexDirection: "row", gap: 10, marginTop: 4 },
-  stat: { fontSize: 12, fontFamily: "Inter_500Medium" },
-  score: { fontSize: 18, fontFamily: "Inter_700Bold" },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 20,
-    marginTop: 4,
-  },
-  badgeText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
-});
+function createRatingStyles(isTablet: boolean) {
+  return StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderRadius: 12,
+      padding: isTablet ? 18 : 12,
+      marginBottom: 8,
+      borderWidth: 1,
+      gap: isTablet ? 14 : 10,
+    },
+    initials: {
+      width: isTablet ? 52 : 40,
+      height: isTablet ? 52 : 40,
+      borderRadius: isTablet ? 26 : 20,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    initialsText: { fontSize: isTablet ? 22 : 16, fontFamily: "Inter_700Bold" },
+    info: { flex: 1 },
+    name: { fontSize: isTablet ? 24 : 15, fontFamily: "Inter_700Bold" },
+    row: { flexDirection: "row", gap: isTablet ? 14 : 10, marginTop: 4 },
+    stat: { fontSize: isTablet ? 16 : 12, fontFamily: "Inter_500Medium" },
+    score: { fontSize: isTablet ? 28 : 18, fontFamily: "Inter_700Bold" },
+    badge: {
+      paddingHorizontal: isTablet ? 10 : 8,
+      paddingVertical: isTablet ? 4 : 2,
+      borderRadius: 20,
+      marginTop: 4,
+    },
+    badgeText: { fontSize: isTablet ? 14 : 11, fontFamily: "Inter_700Bold" },
+  });
+}
 
-function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useColors>) {
+function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useColors>, isTablet: boolean) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -675,14 +738,14 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
     header: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 16,
-      paddingBottom: 10,
-      paddingTop: 6,
+      paddingHorizontal: isTablet ? 22 : 16,
+      paddingBottom: isTablet ? 14 : 10,
+      paddingTop: isTablet ? 10 : 6,
     },
     backBtn: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
+      width: isTablet ? 44 : 36,
+      height: isTablet ? 44 : 36,
+      borderRadius: isTablet ? 22 : 18,
       backgroundColor: colors.muted,
       alignItems: "center",
       justifyContent: "center",
@@ -692,20 +755,20 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       marginHorizontal: 12,
     },
     headerTitle: {
-      fontSize: 18,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: isTablet ? 34 : 18,
+      fontFamily: "Inter_700Bold",
       color: colors.foreground,
     },
     headerSub: {
-      fontSize: 12,
-      fontFamily: "Inter_400Regular",
+      fontSize: isTablet ? 20 : 12,
+      fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular",
       color: colors.mutedForeground,
-      marginTop: 1,
+      marginTop: isTablet ? 2 : 1,
     },
     moreBtn: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
+      width: isTablet ? 44 : 36,
+      height: isTablet ? 44 : 36,
+      borderRadius: isTablet ? 22 : 18,
       backgroundColor: colors.muted,
       alignItems: "center",
       justifyContent: "center",
@@ -714,79 +777,79 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       flexDirection: "row",
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
-      marginHorizontal: 16,
+      marginHorizontal: isTablet ? 22 : 16,
     },
     tab: {
       flex: 1,
-      paddingVertical: 10,
+      paddingVertical: isTablet ? 14 : 10,
       alignItems: "center",
       justifyContent: "center",
       borderBottomWidth: 2,
       borderBottomColor: "transparent",
     },
     tabText: {
-      fontSize: 12,
-      fontFamily: "Inter_500Medium",
+      fontSize: isTablet ? 22 : 13,
+      fontFamily: "Inter_600SemiBold",
       textAlign: "center",
     },
     quickLinks: {
       flexDirection: "row",
-      gap: 10,
-      marginTop: 12,
+      gap: isTablet ? 14 : 10,
+      marginTop: isTablet ? 16 : 12,
       marginBottom: 4,
     },
     quickLink: {
       flex: 1,
       borderRadius: 12,
       borderWidth: 1,
-      paddingVertical: 12,
-      paddingHorizontal: 10,
+      paddingVertical: isTablet ? 18 : 12,
+      paddingHorizontal: isTablet ? 14 : 10,
       alignItems: "center",
     },
     quickLinkText: {
-      fontSize: 14,
-      fontFamily: "Inter_600SemiBold",
-      marginTop: 6,
+      fontSize: isTablet ? 24 : 14,
+      fontFamily: "Inter_700Bold",
+      marginTop: isTablet ? 8 : 6,
     },
     quickLinkHint: {
-      fontSize: 11,
-      fontFamily: "Inter_400Regular",
+      fontSize: isTablet ? 18 : 11,
+      fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular",
       marginTop: 2,
       textAlign: "center",
     },
     statsRow: {
       flexDirection: "row",
-      gap: 10,
-      marginTop: 14,
+      gap: isTablet ? 14 : 10,
+      marginTop: isTablet ? 18 : 14,
       marginBottom: 4,
     },
     sectionTitle: {
-      fontSize: 14,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: isTablet ? 24 : 14,
+      fontFamily: "Inter_700Bold",
       color: colors.mutedForeground,
       textTransform: "uppercase",
-      letterSpacing: 0.6,
-      marginTop: 20,
-      marginBottom: 10,
+      letterSpacing: isTablet ? 0.9 : 0.6,
+      marginTop: isTablet ? 26 : 20,
+      marginBottom: isTablet ? 14 : 10,
     },
     recipientCard: {
       flexDirection: "row",
       alignItems: "center",
       backgroundColor: colors.primary + "10",
       borderRadius: 12,
-      padding: 14,
-      marginTop: 12,
+      padding: isTablet ? 18 : 14,
+      marginTop: isTablet ? 16 : 12,
       borderWidth: 1,
       borderColor: colors.primary + "30",
     },
     recipientLabel: {
-      fontSize: 12,
-      fontFamily: "Inter_400Regular",
+      fontSize: isTablet ? 16 : 12,
+      fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular",
       color: colors.mutedForeground,
     },
     recipientName: {
-      fontSize: 16,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: isTablet ? 24 : 16,
+      fontFamily: "Inter_700Bold",
       color: colors.primary,
     },
     emptyState: {
@@ -794,8 +857,8 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       paddingVertical: 40,
     },
     emptyText: {
-      fontSize: 15,
-      fontFamily: "Inter_400Regular",
+      fontSize: isTablet ? 19 : 15,
+      fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular",
       color: colors.mutedForeground,
       marginTop: 10,
     },
@@ -809,13 +872,13 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       flexDirection: "row",
       alignItems: "center",
       gap: 8,
-      paddingVertical: 14,
-      paddingHorizontal: 28,
-      borderRadius: 30,
+      paddingVertical: isTablet ? 20 : 14,
+      paddingHorizontal: isTablet ? 40 : 28,
+      borderRadius: isTablet ? 36 : 30,
     },
     fabText: {
-      fontSize: 15,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: isTablet ? 26 : 15,
+      fontFamily: "Inter_700Bold",
     },
     errorText: {
       fontSize: 16,
@@ -831,8 +894,37 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       backgroundColor: colors.primary + "20",
     },
     retryText: {
-      fontSize: 15,
-      fontFamily: "Inter_600SemiBold",
+      fontSize: isTablet ? 18 : 15,
+      fontFamily: "Inter_700Bold",
+    },
+    memberCard: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderRadius: 12,
+      padding: isTablet ? 16 : 12,
+      marginBottom: 8,
+      borderWidth: 1,
+      gap: 10,
+    },
+    memberInitials: {
+      width: isTablet ? 48 : 40,
+      height: isTablet ? 48 : 40,
+      borderRadius: isTablet ? 24 : 20,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    memberInitialsText: {
+      fontSize: isTablet ? 20 : 16,
+      fontFamily: "Inter_700Bold",
+    },
+    memberName: {
+      fontSize: isTablet ? 24 : 15,
+      fontFamily: "Inter_700Bold",
+    },
+    memberSub: {
+      fontSize: isTablet ? 17 : 12,
+      fontFamily: isTablet ? "Inter_500Medium" : "Inter_400Regular",
+      marginTop: 2,
     },
   });
 }

@@ -13,18 +13,20 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { useIsTablet } from "@/hooks/useIsTablet";
 import { TabletContainer } from "@/components/TabletContainer";
 
 export default function SettingsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { lang, setLang, t } = useLang();
+  const isTablet = useIsTablet();
   const { signOut, getToken } = useAuth();
   const { user } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 + 96 : insets.bottom + 96;
+  const bottomPad = Platform.OS === "web" ? 34 + (isTablet ? 124 : 96) : insets.bottom + (isTablet ? 124 : 96);
 
   const handleSignOut = () => {
     Alert.alert(t("signOut"), t("signOut") + "?", [
@@ -62,7 +64,7 @@ export default function SettingsScreen() {
     ]);
   };
 
-  const styles = makeStyles(colors);
+  const styles = makeStyles(colors, isTablet);
 
   return (
     <TabletContainer>
@@ -79,7 +81,7 @@ export default function SettingsScreen() {
           <View style={styles.card}>
             <View style={styles.row}>
               <View style={[styles.avatar, { backgroundColor: colors.primary + "20" }]}>
-                <Ionicons name="person" size={26} color={colors.primary} />
+                <Ionicons name="person" size={isTablet ? 30 : 26} color={colors.primary} />
               </View>
               <View style={styles.userInfo}>
                 <Text style={styles.userName}>
@@ -166,7 +168,7 @@ export default function SettingsScreen() {
   );
 }
 
-function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useColors>) {
+function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useColors>, isTablet: boolean) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -174,7 +176,7 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       paddingHorizontal: 20,
     },
     headerTitle: {
-      fontSize: 32,
+      fontSize: isTablet ? 38 : 32,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
       marginBottom: 28,
@@ -184,7 +186,7 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       marginBottom: 24,
     },
     sectionLabel: {
-      fontSize: 13,
+      fontSize: isTablet ? 15 : 13,
       fontFamily: "Inter_700Bold",
       color: colors.mutedForeground,
       textTransform: "uppercase",
@@ -202,13 +204,13 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
     row: {
       flexDirection: "row",
       alignItems: "center",
-      padding: 18,
+      padding: isTablet ? 22 : 18,
       gap: 12,
     },
     avatar: {
-      width: 48,
-      height: 48,
-      borderRadius: 24,
+      width: isTablet ? 56 : 48,
+      height: isTablet ? 56 : 48,
+      borderRadius: isTablet ? 28 : 24,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -216,12 +218,12 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       flex: 1,
     },
     userName: {
-      fontSize: 18,
+      fontSize: isTablet ? 21 : 18,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
     },
     userEmail: {
-      fontSize: 14,
+      fontSize: isTablet ? 16 : 14,
       fontFamily: "Inter_500Medium",
       color: colors.mutedForeground,
       marginTop: 2,
@@ -230,10 +232,10 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      padding: 18,
+      padding: isTablet ? 22 : 18,
     },
     langText: {
-      fontSize: 17,
+      fontSize: isTablet ? 20 : 17,
       fontFamily: "Inter_600SemiBold",
       color: colors.foreground,
     },
@@ -246,7 +248,7 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       alignItems: "center",
       justifyContent: "center",
       gap: 8,
-      padding: 18,
+      padding: isTablet ? 22 : 18,
       borderRadius: 14,
       borderWidth: 1,
     },
@@ -255,12 +257,12 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       alignItems: "center",
       justifyContent: "center",
       gap: 8,
-      padding: 18,
+      padding: isTablet ? 22 : 18,
       borderRadius: 14,
       borderWidth: 1.5,
     },
     signOutText: {
-      fontSize: 17,
+      fontSize: isTablet ? 20 : 17,
       fontFamily: "Inter_700Bold",
     },
     pressed: {
