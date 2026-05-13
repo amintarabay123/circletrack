@@ -1,0 +1,17 @@
+../.. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config…
+│ Use pnpm instead
+└─ Failed in 22ms at /Users/amintarabay/Downloads/iPhone-Organizer
+[ELIFECYCLE] Command failed with exit code 1.
+[ERROR] Command failed with exit code 1: '/Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/pnpm' install
+
+pnpm: Command failed with exit code 1: '/Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/pnpm' install
+    at getFinalError (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:28547:14)
+    at makeError (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:30854:21)
+    at getSyncResult (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:32698:10)
+    at spawnSubprocessSync (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:32658:14)
+    at execaCoreSync (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:32588:23)
+    at callBoundExeca (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:35116:23)
+    at boundExeca (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:35093:49)
+    at sync (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:35252:10)
+    at runPnpmCli (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:210241:5)
+    at runDepsStatusCheck (file:///Users/amintarabay/Library/pnpm/store/v11/links/@pnpm/exe/11.0.9/978aa7baf53c882f537c1ab4f008d43279839261ff7290ce36a0fddd50b7fcef/node_modules/@pnpm/exe/dist/pnpm.mjs:211947:7)
