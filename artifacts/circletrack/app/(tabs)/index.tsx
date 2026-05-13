@@ -84,6 +84,9 @@ function CirclesList() {
         <View style={styles.centered}>
           <Ionicons name="alert-circle-outline" size={48} color={colors.mutedForeground} />
           <Text style={styles.emptyTitle}>{t("error")}</Text>
+          <Text style={[styles.emptyDesc, { color: colors.mutedForeground, fontSize: 11 }]} selectable>
+            {String((error as any)?.message ?? error)}
+          </Text>
           <Pressable style={styles.retryBtn} onPress={() => refetch()}>
             <Text style={[styles.retryText, { color: colors.primary }]}>{t("retry")}</Text>
           </Pressable>
