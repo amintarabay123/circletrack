@@ -1,0 +1,40 @@
+Result
+pnpm run typecheck passes for the whole monorepo (tsc --build + all artifact typecheck scripts).
+
+What changed
+API server (artifacts/api-server)
+
+Create/update rosca now store startDate as yyyy-MM-dd strings via format(...) so Drizzle’s text columns match CreateRoscaBody / UpdateRoscaBody (Zod coerces to Date).
+CircleTrack iOS (artifacts/circletrack)
+
+React Query (TS2741): queryKey is passed explicitly wherever query: { enabled: … } was used ([id].tsx, payments.tsx, record-payment.tsx).
+useColors (TS2352): Return type is Palette & { radius: number } with a proper Palette alias instead of casting through Record<string, …>.
+tokenCache (TS2724): TokenCache is imported from @clerk/clerk-expo (the package root re-exports it; @clerk/clerk-expo/token-cache does not export that type).
+Edit circle: Replaced raw fetch('/api/roscas/...') with useGetRosca so requests use customFetch (remote base URL + Clerk bearer token). Cache invalidation now includes getGetRoscaQueryKey.
+Member report: Replaced raw fetch with customFetch for the same reason.
+@workspace/api-client-react
+
+customFetch is exported from the package entry so the report screen (and any other ad-hoc paths) can call the API with the same auth/base URL as Orval hooks.
+Web (artifacts/rosca-manager)
+
+Rosca type for home.tsx now comes from @workspace/api-client-react (the Rosca interface in @workspace/api-zod isn’t re-exported from that package’s public entry because of overlapping names with Zod schemas).
+No extra @workspace/api-zod dependency was added.
+Mockup sandbox
+
+Same calendar ref and spinner props fixes as rosca-manager so its typecheck passes too.
+Install note
+If pnpm install aborts with ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY, you can use
+pnpm install --ignore-scripts --config.confirmModulesPurge=false
+(without setting CI=1).
+
+Web build on your Mac
+pnpm run build in artifacts/rosca-manager failed here with missing @rollup/rollup-darwin-arm64, which matches the repo’s pnpm-workspace.yaml overrides that strip Rollup’s optional native packages (intended for Linux/Replit). TypeScript is clean; fixing local macOS Vite builds would mean revisiting those overrides, which I did not change per your scope.
+
+iOS Simulator — key you need to provide
+Before starting Expo, set:
+
+EXPO_PUBLIC_DOMAIN=a28acc6e-3080-4341-9633-196d7060ff5c-00-18y6ofkjo9ink.riker.replit.dev
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=<your publishable key> — please send that value when you want to run the app; I won’t invent it.
+Then from artifacts/circletrack: start Expo and press i for the simulator (bundle ID unchanged: com.circletrack.app).
+
+I could not do an end-to-end run of circles/members/payments/ratings/PDF in a browser or simulator from this environment; after you add the Clerk key, exercising those flows on device is the right smoke test.
