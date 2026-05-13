@@ -69,7 +69,7 @@ export default function NewCircleScreen() {
           router.back();
         },
         onError: () => {
-          Alert.alert(t("error"), "No se pudo crear la tanda.");
+          Alert.alert(t("error"), t("createError"));
         },
       }
     );

@@ -35,7 +35,6 @@ function AuthSetup({ children }: { children: React.ReactNode }) {
         return null;
       }
     });
-    return () => { setAuthTokenGetter(null); };
   }, [getToken]);
 
   return <>{children}</>;

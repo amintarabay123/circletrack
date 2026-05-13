@@ -95,6 +95,10 @@ export const translations = {
     paymentStatus: "Estado de pago",
     exportCircle: "Exportar",
     importCircle: "Importar",
+    createError: "No se pudo crear la tanda. Intenta de nuevo.",
+    deleteAccount: "Eliminar cuenta",
+    deleteAccountConfirm: "¿Eliminar tu cuenta permanentemente? Esta acción no se puede deshacer y todos tus datos serán eliminados.",
+    deleteAccountError: "No se pudo eliminar la cuenta. Intenta de nuevo.",
   },
   en: {
     appName: "CircleTrack",
@@ -190,6 +194,10 @@ export const translations = {
     paymentStatus: "Payment status",
     exportCircle: "Export",
     importCircle: "Import",
+    createError: "Could not create circle. Please try again.",
+    deleteAccount: "Delete Account",
+    deleteAccountConfirm: "Permanently delete your account? This cannot be undone and all your data will be deleted.",
+    deleteAccountError: "Could not delete account. Please try again.",
   },
 };
 

@@ -1,6 +1,6 @@
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Platform,
@@ -19,8 +19,9 @@ export default function SettingsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { lang, setLang, t } = useLang();
-  const { signOut } = useAuth();
+  const { signOut, getToken } = useAuth();
   const { user } = useUser();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
@@ -32,6 +33,31 @@ export default function SettingsScreen() {
         text: t("signOut"),
         style: "destructive",
         onPress: () => signOut(),
+      },
+    ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(t("deleteAccount"), t("deleteAccountConfirm"), [
+      { text: t("cancelBtn"), style: "cancel" },
+      {
+        text: t("deleteAccount"),
+        style: "destructive",
+        onPress: async () => {
+          setIsDeleting(true);
+          try {
+            const token = await getToken();
+            const domain = process.env.EXPO_PUBLIC_DOMAIN;
+            await fetch(`https://${domain}/api/account`, {
+              method: "DELETE",
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            await user?.delete();
+          } catch {
+            setIsDeleting(false);
+            Alert.alert(t("error"), t("deleteAccountError"));
+          }
+        },
       },
     ]);
   };
@@ -112,6 +138,25 @@ export default function SettingsScreen() {
             <Ionicons name="log-out-outline" size={20} color={colors.destructive} />
             <Text style={[styles.signOutText, { color: colors.destructive }]}>
               {t("signOut")}
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
+      {user && (
+        <View style={styles.section}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.deleteAccountBtn,
+              { borderColor: colors.destructive, backgroundColor: colors.destructive + "10" },
+              pressed && styles.pressed,
+            ]}
+            onPress={handleDeleteAccount}
+            disabled={isDeleting}
+          >
+            <Ionicons name="trash-outline" size={20} color={colors.destructive} />
+            <Text style={[styles.signOutText, { color: colors.destructive }]}>
+              {isDeleting ? "..." : t("deleteAccount")}
             </Text>
           </Pressable>
         </View>
@@ -204,6 +249,15 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       padding: 16,
       borderRadius: 14,
       borderWidth: 1,
+    },
+    deleteAccountBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      padding: 16,
+      borderRadius: 14,
+      borderWidth: 1.5,
     },
     signOutText: {
       fontSize: 16,

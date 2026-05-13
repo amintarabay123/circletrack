@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and, isNull, inArray } from "drizzle-orm";
 import { db, roscasTable, membersTable, paymentsTable } from "@workspace/db";
 import {
   CreateRoscaBody,
@@ -513,6 +513,21 @@ router.get("/roscas/:id/member-ratings", async (req, res): Promise<void> => {
     return { memberId: m.id, memberName: m.name, shares: m.shares, totalPayments: mp.length, onTimePayments: onTime, latePayments: late, missedPayments: missed, reliabilityScore: score, rating };
   });
   res.json(ratings);
+});
+
+// Delete account — remove all user data
+router.delete("/account", async (req: any, res): Promise<void> => {
+  const userId = req.userId;
+  const userRoscas = await db.select({ id: roscasTable.id })
+    .from(roscasTable)
+    .where(eq(roscasTable.userId, userId));
+  if (userRoscas.length > 0) {
+    const roscaIds = userRoscas.map(r => r.id);
+    await db.delete(paymentsTable).where(inArray(paymentsTable.roscaId, roscaIds));
+    await db.delete(membersTable).where(inArray(membersTable.roscaId, roscaIds));
+    await db.delete(roscasTable).where(eq(roscasTable.userId, userId));
+  }
+  res.status(204).end();
 });
 
 export default router;
