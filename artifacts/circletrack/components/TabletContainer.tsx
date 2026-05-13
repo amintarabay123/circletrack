@@ -1,8 +1,7 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
+import { useColors } from "@/hooks/useColors";
 import { useIsTablet } from "@/hooks/useIsTablet";
-
-const MAX_WIDTH = 680;
 
 interface TabletContainerProps {
   children: React.ReactNode;
@@ -11,26 +10,15 @@ interface TabletContainerProps {
 
 export function TabletContainer({ children, style }: TabletContainerProps) {
   const isTablet = useIsTablet();
+  const colors = useColors();
 
   if (!isTablet) {
     return <>{children}</>;
   }
 
   return (
-    <View style={styles.outer}>
-      <View style={[styles.inner, style]}>{children}</View>
+    <View style={[{ flex: 1, backgroundColor: colors.background }, style]}>
+      {children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  outer: {
-    flex: 1,
-    alignItems: "center",
-  },
-  inner: {
-    flex: 1,
-    width: "100%",
-    maxWidth: MAX_WIDTH,
-  },
-});
