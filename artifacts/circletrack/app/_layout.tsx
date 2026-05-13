@@ -6,7 +6,7 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
@@ -21,11 +21,23 @@ setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);
 
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error: any) => {
+        if (error?.status === 401) return false;
+        return failureCount < 2;
+      },
+      staleTime: 30_000,
+    },
+  },
+});
+
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
 
 function AuthSetup({ children }: { children: React.ReactNode }) {
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
+  const qc = useQueryClient();
 
   useEffect(() => {
     setAuthTokenGetter(async () => {
@@ -36,6 +48,12 @@ function AuthSetup({ children }: { children: React.ReactNode }) {
       }
     });
   }, [getToken]);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      qc.invalidateQueries();
+    }
+  }, [isSignedIn, qc]);
 
   return <>{children}</>;
 }
