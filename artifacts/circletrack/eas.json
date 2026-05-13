@@ -4,6 +4,16 @@
     "appVersionSource": "remote"
   },
   "build": {
+    "preview": {
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_YnVzeS1weXRob24tMzEuY2xlcmsuYWNjb3VudHMuZGV2JA",
+        "EXPO_PUBLIC_DOMAIN": "i-phone-organizer.replit.app"
+      }
+    },
     "production": {
       "ios": {
         "buildConfiguration": "Release",
