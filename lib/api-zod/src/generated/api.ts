@@ -21,7 +21,7 @@ export const ListRoscasResponseItem = zod.object({
   id: zod.number(),
   name: zod.string(),
   startDate: zod.coerce.date(),
-  frequency: zod.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
+  frequency: zod.enum(["weekly", "biweekly", "semimonthly", "monthly"]),
   contributionAmount: zod.number(),
   currentCycle: zod.number(),
   totalCycles: zod.number(),
@@ -36,7 +36,7 @@ export const ListRoscasResponse = zod.array(ListRoscasResponseItem);
 export const CreateRoscaBody = zod.object({
   name: zod.string(),
   startDate: zod.coerce.date(),
-  frequency: zod.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
+  frequency: zod.enum(["weekly", "biweekly", "semimonthly", "monthly"]),
   contributionAmount: zod.number(),
   totalCycles: zod.number(),
 });
@@ -52,7 +52,7 @@ export const GetRoscaResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
   startDate: zod.coerce.date(),
-  frequency: zod.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
+  frequency: zod.enum(["weekly", "biweekly", "semimonthly", "monthly"]),
   contributionAmount: zod.number(),
   currentCycle: zod.number(),
   totalCycles: zod.number(),
@@ -70,7 +70,7 @@ export const UpdateRoscaParams = zod.object({
 export const UpdateRoscaBody = zod.object({
   name: zod.string(),
   startDate: zod.coerce.date(),
-  frequency: zod.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
+  frequency: zod.enum(["weekly", "biweekly", "semimonthly", "monthly"]),
   contributionAmount: zod.number(),
   totalCycles: zod.number(),
 });
@@ -79,7 +79,7 @@ export const UpdateRoscaResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
   startDate: zod.coerce.date(),
-  frequency: zod.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
+  frequency: zod.enum(["weekly", "biweekly", "semimonthly", "monthly"]),
   contributionAmount: zod.number(),
   currentCycle: zod.number(),
   totalCycles: zod.number(),
@@ -223,7 +223,7 @@ export const GetRoscaDashboardResponse = zod.object({
     id: zod.number(),
     name: zod.string(),
     startDate: zod.coerce.date(),
-    frequency: zod.enum(["weekly", "biweekly", "monthly", "semimonthly"]),
+    frequency: zod.enum(["weekly", "biweekly", "semimonthly", "monthly"]),
     contributionAmount: zod.number(),
     currentCycle: zod.number(),
     totalCycles: zod.number(),

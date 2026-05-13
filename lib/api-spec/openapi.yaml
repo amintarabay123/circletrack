@@ -345,7 +345,7 @@ components:
           format: date
         frequency:
           type: string
-          enum: [weekly, biweekly, monthly]
+          enum: [weekly, biweekly, semimonthly, monthly]
         contributionAmount:
           type: number
         currentCycle:
@@ -378,7 +378,7 @@ components:
           format: date
         frequency:
           type: string
-          enum: [weekly, biweekly, monthly]
+          enum: [weekly, biweekly, semimonthly, monthly]
         contributionAmount:
           type: number
         totalCycles:

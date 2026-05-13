@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
 import {
+  ActionSheetIOS,
   ActivityIndicator,
   Alert,
   Platform,
@@ -23,6 +24,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
+import type { TranslationKeys } from "@/constants/i18n";
+import type { DashboardSummary, MemberStatus } from "@workspace/api-client-react";
+
+type Tab = "dashboard" | "payments" | "members";
 
 export default function CircleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,7 +36,7 @@ export default function CircleDetailScreen() {
   const router = useRouter();
   const { t } = useLang();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"dashboard" | "members">("dashboard");
+  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
 
   const circleId = Number(id);
   const { data: dashboard, isLoading, error, refetch } = useGetRoscaDashboard(circleId, {
@@ -48,7 +53,30 @@ export default function CircleDetailScreen() {
 
   const styles = makeStyles(colors);
 
-  const handleDelete = () => {
+  function showOptions() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (Platform.OS === "ios") {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: [t("cancelBtn"), t("edit"), t("deleteCircle")],
+          cancelButtonIndex: 0,
+          destructiveButtonIndex: 2,
+        },
+        (idx) => {
+          if (idx === 1) router.push(`/circle/${id}/edit`);
+          if (idx === 2) confirmDelete();
+        }
+      );
+    } else {
+      Alert.alert(t("options"), undefined, [
+        { text: t("edit"), onPress: () => router.push(`/circle/${id}/edit`) },
+        { text: t("deleteCircle"), style: "destructive", onPress: confirmDelete },
+        { text: t("cancelBtn"), style: "cancel" },
+      ]);
+    }
+  }
+
+  function confirmDelete() {
     Alert.alert(t("deleteCircle"), t("deleteCircleConfirm"), [
       { text: t("deleteConfirmNo"), style: "cancel" },
       {
@@ -67,7 +95,7 @@ export default function CircleDetailScreen() {
         },
       },
     ]);
-  };
+  }
 
   if (isLoading) {
     return (
@@ -90,11 +118,19 @@ export default function CircleDetailScreen() {
   }
 
   const collectionPct = Math.round(dashboard.collectionRate * 100);
-  const freq = {
+  const freqMap: Record<string, string> = {
     weekly: t("weekly"),
     biweekly: t("biweekly"),
     monthly: t("monthly"),
-  }[dashboard.rosca.frequency] ?? dashboard.rosca.frequency;
+    semimonthly: t("semimonthly"),
+  };
+  const freq = freqMap[dashboard.rosca.frequency] ?? dashboard.rosca.frequency;
+
+  const tabs: { key: Tab; label: string }[] = [
+    { key: "dashboard", label: t("dashboard") },
+    { key: "payments", label: t("payments") },
+    { key: "members", label: t("members") },
+  ];
 
   return (
     <TabletContainer>
@@ -112,21 +148,21 @@ export default function CircleDetailScreen() {
         </View>
         <Pressable
           style={({ pressed }) => [styles.moreBtn, pressed && { opacity: 0.6 }]}
-          onPress={handleDelete}
+          onPress={showOptions}
         >
-          <Ionicons name="trash-outline" size={20} color={colors.destructive} />
+          <Ionicons name="ellipsis-horizontal" size={20} color={colors.foreground} />
         </Pressable>
       </View>
 
       <View style={styles.tabs}>
-        {(["dashboard", "members"] as const).map((tab) => (
+        {tabs.map(({ key, label }) => (
           <Pressable
-            key={tab}
-            style={[styles.tab, activeTab === tab && { borderBottomColor: colors.primary }]}
-            onPress={() => setActiveTab(tab)}
+            key={key}
+            style={[styles.tab, activeTab === key && { borderBottomColor: colors.primary }]}
+            onPress={() => setActiveTab(key)}
           >
-            <Text style={[styles.tabText, { color: activeTab === tab ? colors.primary : colors.mutedForeground }]}>
-              {tab === "dashboard" ? t("dashboard") : t("members")}
+            <Text style={[styles.tabText, { color: activeTab === key ? colors.primary : colors.mutedForeground }]}>
+              {label}
             </Text>
           </Pressable>
         ))}
@@ -208,6 +244,16 @@ export default function CircleDetailScreen() {
           </>
         )}
 
+        {activeTab === "payments" && (
+          <PaymentsPreview
+            dashboard={dashboard}
+            id={id!}
+            colors={colors}
+            t={t}
+            router={router}
+          />
+        )}
+
         {activeTab === "members" && (
           <>
             <Text style={styles.sectionTitle}>{t("memberRatings")}</Text>
@@ -218,27 +264,108 @@ export default function CircleDetailScreen() {
               </View>
             )}
             {ratings?.map((r) => (
-              <RatingRow key={r.memberId} rating={r} colors={colors} t={t} />
+              <RatingRow
+                key={r.memberId}
+                rating={r}
+                colors={colors}
+                t={t}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push(`/circle/${id}/member/${r.memberId}/report`);
+                }}
+              />
             ))}
           </>
         )}
       </ScrollView>
 
-      <View style={[styles.fab, { bottom: bottomPad + 20 }]}>
-        <Pressable
-          style={({ pressed }) => [styles.fabBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }]}
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            router.push(`/circle/${id}/add-member`);
-          }}
-          testID="add-member-fab"
-        >
-          <Ionicons name="person-add-outline" size={22} color={colors.primaryForeground} />
-          <Text style={[styles.fabText, { color: colors.primaryForeground }]}>{t("addMember")}</Text>
-        </Pressable>
-      </View>
+      {activeTab === "dashboard" && (
+        <View style={[styles.fab, { bottom: bottomPad + 20 }]}>
+          <Pressable
+            style={({ pressed }) => [styles.fabBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              router.push(`/circle/${id}/add-member`);
+            }}
+            testID="add-member-fab"
+          >
+            <Ionicons name="person-add-outline" size={22} color={colors.primaryForeground} />
+            <Text style={[styles.fabText, { color: colors.primaryForeground }]}>{t("addMember")}</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {activeTab === "payments" && (
+        <View style={[styles.fab, { bottom: bottomPad + 20 }]}>
+          <Pressable
+            style={({ pressed }) => [styles.fabBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              router.push(`/circle/${id}/payments`);
+            }}
+          >
+            <Ionicons name="card-outline" size={22} color={colors.primaryForeground} />
+            <Text style={[styles.fabText, { color: colors.primaryForeground }]}>{t("payments")}</Text>
+          </Pressable>
+        </View>
+      )}
     </View>
     </TabletContainer>
+  );
+}
+
+function PaymentsPreview({
+  dashboard, id, colors, t, router,
+}: {
+  dashboard: DashboardSummary;
+  id: string;
+  colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
+  t: (key: TranslationKeys) => string;
+  router: ReturnType<typeof import("expo-router").useRouter>;
+}) {
+  const pStyles = StyleSheet.create({
+    header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 16, marginBottom: 10 },
+    title: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: colors.mutedForeground, textTransform: "uppercase", letterSpacing: 0.6 },
+    viewAll: { fontSize: 13, fontFamily: "Inter_600SemiBold", color: colors.primary },
+    card: {
+      flexDirection: "row", alignItems: "center",
+      backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1,
+      borderRadius: 12, padding: 12, marginBottom: 8, gap: 10,
+    },
+    avatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.primary + "20", alignItems: "center", justifyContent: "center" },
+    avatarText: { fontSize: 15, fontFamily: "Inter_700Bold", color: colors.primary },
+    info: { flex: 1 },
+    name: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: colors.foreground },
+    sub: { fontSize: 12, fontFamily: "Inter_400Regular", color: colors.mutedForeground, marginTop: 2 },
+    badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 20 },
+    badgeText: { fontSize: 10, fontFamily: "Inter_600SemiBold" },
+  });
+
+  return (
+    <View>
+      <View style={pStyles.header}>
+        <Text style={pStyles.title}>{t("paymentStatus")}</Text>
+        <Pressable onPress={() => router.push(`/circle/${id}/payments` as never)}>
+          <Text style={pStyles.viewAll}>{t("viewAll")} →</Text>
+        </Pressable>
+      </View>
+      {dashboard.memberStatuses.map((ms: MemberStatus) => (
+        <View key={ms.memberId} style={pStyles.card}>
+          <View style={pStyles.avatar}>
+            <Text style={pStyles.avatarText}>{ms.memberName.charAt(0).toUpperCase()}</Text>
+          </View>
+          <View style={pStyles.info}>
+            <Text style={pStyles.name}>{ms.memberName}</Text>
+            <Text style={pStyles.sub}>${ms.amountPaid.toLocaleString()} / ${ms.amountDue.toLocaleString()}</Text>
+          </View>
+          <View style={[pStyles.badge, { backgroundColor: (ms.isPaid ? colors.success : ms.isLate ? colors.destructive : colors.mutedForeground) + "20" }]}>
+            <Text style={[pStyles.badgeText, { color: ms.isPaid ? colors.success : ms.isLate ? colors.destructive : colors.mutedForeground }]}>
+              {ms.isPaid ? t("paid") : ms.isLate ? t("late") : t("unpaid")}
+            </Text>
+          </View>
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -284,7 +411,7 @@ function MemberStatusRow({
   };
   circleId: number;
   colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
-  t: (key: string) => string;
+  t: (key: TranslationKeys) => string;
   onRecordPayment: () => void;
 }) {
   const isPaid = memberStatus.isPaid;
@@ -368,7 +495,7 @@ const rowStyles = StyleSheet.create({
 });
 
 function RatingRow({
-  rating, colors, t,
+  rating, colors, t, onPress,
 }: {
   rating: {
     memberId: number;
@@ -382,7 +509,8 @@ function RatingRow({
     rating: "excellent" | "good" | "fair" | "poor";
   };
   colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
-  t: (key: string) => string;
+  t: (key: TranslationKeys) => string;
+  onPress: () => void;
 }) {
   const ratingColors = {
     excellent: colors.success,
@@ -395,7 +523,10 @@ function RatingRow({
   const score = Math.round(rating.reliabilityScore * 100);
 
   return (
-    <View style={[ratingStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <Pressable
+      style={({ pressed }) => [ratingStyles.card, { backgroundColor: colors.card, borderColor: colors.border }, pressed && { opacity: 0.75 }]}
+      onPress={onPress}
+    >
       <View style={[ratingStyles.initials, { backgroundColor: ratingColor + "20" }]}>
         <Text style={[ratingStyles.initialsText, { color: ratingColor }]}>
           {rating.memberName.charAt(0).toUpperCase()}
@@ -415,7 +546,8 @@ function RatingRow({
           <Text style={[ratingStyles.badgeText, { color: ratingColor }]}>{ratingLabel}</Text>
         </View>
       </View>
-    </View>
+      <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+    </Pressable>
   );
 }
 
@@ -497,7 +629,7 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: colors.destructive + "12",
+      backgroundColor: colors.muted,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -508,13 +640,14 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       marginHorizontal: 16,
     },
     tab: {
+      flex: 1,
       paddingVertical: 10,
-      paddingHorizontal: 16,
+      alignItems: "center",
       borderBottomWidth: 2,
       borderBottomColor: "transparent",
     },
     tabText: {
-      fontSize: 15,
+      fontSize: 14,
       fontFamily: "Inter_500Medium",
     },
     statsRow: {

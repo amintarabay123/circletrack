@@ -131,11 +131,13 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
   const colors = useColors();
   const { t } = useLang();
 
-  const freq = {
+  const freqMap: Record<string, string> = {
     weekly: t("weekly"),
     biweekly: t("biweekly"),
     monthly: t("monthly"),
-  }[circle.frequency] ?? circle.frequency;
+    semimonthly: t("semimonthly"),
+  };
+  const freq = freqMap[circle.frequency] ?? circle.frequency;
 
   const styles = StyleSheet.create({
     card: {

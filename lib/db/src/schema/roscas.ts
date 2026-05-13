@@ -7,7 +7,7 @@ export const roscasTable = pgTable("roscas", {
   userId: text("user_id"),
   name: text("name").notNull(),
   startDate: text("start_date").notNull(),
-  frequency: text("frequency").notNull(), // 'weekly' | 'biweekly' | 'monthly'
+  frequency: text("frequency").notNull(), // 'weekly' | 'biweekly' | 'semimonthly' | 'monthly'
   contributionAmount: numeric("contribution_amount", { precision: 10, scale: 2 }).notNull(),
   currentCycle: integer("current_cycle").notNull().default(1),
   totalCycles: integer("total_cycles").notNull(),

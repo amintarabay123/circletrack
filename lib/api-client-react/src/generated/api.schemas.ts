@@ -15,6 +15,7 @@ export type RoscaFrequency =
 export const RoscaFrequency = {
   weekly: "weekly",
   biweekly: "biweekly",
+  semimonthly: "semimonthly",
   monthly: "monthly",
 } as const;
 
@@ -36,6 +37,7 @@ export type CreateRoscaBodyFrequency =
 export const CreateRoscaBodyFrequency = {
   weekly: "weekly",
   biweekly: "biweekly",
+  semimonthly: "semimonthly",
   monthly: "monthly",
 } as const;
 
