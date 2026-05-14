@@ -147,7 +147,9 @@ export default function AddMemberScreen() {
 
         <View style={styles.row}>
           <View style={[styles.field, { flex: 1 }]}>
-            <Text style={styles.label}>{t("shares")}</Text>
+            <View style={styles.labelRow}>
+              <Text style={styles.label}>{t("shares")}</Text>
+            </View>
             <TextInput
               style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
               value={shares}
@@ -158,7 +160,9 @@ export default function AddMemberScreen() {
             />
           </View>
           <View style={[styles.field, { flex: 1 }]}>
-            <Text style={styles.label}>{t("turnOrder")} <Text style={styles.optional}>({t("optional")})</Text></Text>
+            <View style={styles.labelRow}>
+              <Text style={styles.label}>{t("turnOrder")} <Text style={styles.optional}>({t("optional")})</Text></Text>
+            </View>
             <TextInput
               style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
               value={turnOrder}
@@ -207,6 +211,11 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       fontFamily: "Inter_600SemiBold",
     },
     field: { marginBottom: 20 },
+    labelRow: {
+      minHeight: 28,
+      justifyContent: "flex-end" as const,
+      marginBottom: 8,
+    },
     label: {
       fontSize: 13,
       fontFamily: "Inter_600SemiBold",

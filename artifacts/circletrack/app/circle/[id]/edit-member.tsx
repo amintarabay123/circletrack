@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -16,8 +17,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   useUpdateMember,
+  useListMembers,
   getGetRoscaDashboardQueryKey,
   getGetMemberRatingsQueryKey,
+  getListMembersQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
@@ -25,14 +28,7 @@ import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
 
 export default function EditMemberScreen() {
-  const { id, memberId, memberName, memberShares, memberTurnOrder } =
-    useLocalSearchParams<{
-      id: string;
-      memberId: string;
-      memberName: string;
-      memberShares: string;
-      memberTurnOrder: string;
-    }>();
+  const { id, memberId } = useLocalSearchParams<{ id: string; memberId: string }>();
 
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -40,16 +36,38 @@ export default function EditMemberScreen() {
   const { t } = useLang();
   const queryClient = useQueryClient();
 
-  const [name, setName] = useState(decodeURIComponent(memberName ?? ""));
-  const [shares, setShares] = useState(memberShares ?? "1");
-  const [turnOrder, setTurnOrder] = useState(
-    memberTurnOrder && memberTurnOrder !== "null" ? memberTurnOrder : ""
-  );
-
-  const { mutate: updateMember, isPending } = useUpdateMember();
   const circleId = Number(id);
   const memberIdNum = Number(memberId);
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [shares, setShares] = useState("1");
+  const [turnOrder, setTurnOrder] = useState("");
+  const [ready, setReady] = useState(false);
+
+  const { data: members, isLoading: membersLoading } = useListMembers(circleId, {
+    query: {
+      enabled: !!circleId,
+      queryKey: getListMembersQueryKey(circleId),
+    },
+  });
+
+  useEffect(() => {
+    if (!members) return;
+    const member = members.find((m) => m.id === memberIdNum);
+    if (member) {
+      setName(member.name);
+      setPhone(member.phone ?? "");
+      setEmail(member.email ?? "");
+      setShares(String(member.shares));
+      setTurnOrder(member.turnOrder != null ? String(member.turnOrder) : "");
+      setReady(true);
+    }
+  }, [members, memberIdNum]);
+
+  const { mutate: updateMember, isPending } = useUpdateMember();
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -63,32 +81,36 @@ export default function EditMemberScreen() {
         memberId: memberIdNum,
         data: {
           name: name.trim(),
+          phone: phone.trim() || null,
+          email: email.trim() || null,
           shares: parseInt(shares) || 1,
-          turnOrder: turnOrder ? parseInt(turnOrder) : undefined,
+          turnOrder: turnOrder ? parseInt(turnOrder) : null,
         },
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: getGetRoscaDashboardQueryKey(circleId),
-          });
-          queryClient.invalidateQueries({
-            queryKey: getGetMemberRatingsQueryKey(circleId),
-          });
+          queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(circleId) });
+          queryClient.invalidateQueries({ queryKey: getGetMemberRatingsQueryKey(circleId) });
+          queryClient.invalidateQueries({ queryKey: getListMembersQueryKey(circleId) });
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.back();
         },
         onError: (err) => {
-          Alert.alert(
-            t("error"),
-            String((err as { message?: string })?.message ?? err)
-          );
+          Alert.alert(t("error"), String((err as { message?: string })?.message ?? err));
         },
       }
     );
   };
 
   const styles = makeStyles(colors);
+
+  if (membersLoading || !ready) {
+    return (
+      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+        <ActivityIndicator color={colors.primary} size="large" />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -97,19 +119,13 @@ export default function EditMemberScreen() {
     >
       <TabletContainer>
         <ScrollView
-          contentContainerStyle={[
-            styles.content,
-            { paddingBottom: bottomPad + 40 },
-          ]}
+          contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 40 }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
             <Pressable
-              style={({ pressed }) => [
-                styles.closeBtn,
-                pressed && { opacity: 0.6 },
-              ]}
+              style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.6 }]}
               onPress={() => router.back()}
             >
               <Ionicons name="close" size={22} color={colors.foreground} />
@@ -118,27 +134,14 @@ export default function EditMemberScreen() {
             <Pressable
               style={({ pressed }) => [
                 styles.saveBtn,
-                {
-                  backgroundColor: isPending
-                    ? colors.muted
-                    : colors.primary,
-                },
+                { backgroundColor: isPending ? colors.muted : colors.primary },
                 pressed && { opacity: 0.8 },
               ]}
               onPress={handleSave}
               disabled={isPending}
               testID="edit-member-submit"
             >
-              <Text
-                style={[
-                  styles.saveBtnText,
-                  {
-                    color: isPending
-                      ? colors.mutedForeground
-                      : colors.primaryForeground,
-                  },
-                ]}
-              >
+              <Text style={[styles.saveBtnText, { color: isPending ? colors.mutedForeground : colors.primaryForeground }]}>
                 {isPending ? "..." : t("saveBtn")}
               </Text>
             </Pressable>
@@ -147,14 +150,7 @@ export default function EditMemberScreen() {
           <View style={styles.field}>
             <Text style={styles.label}>{t("memberName")}</Text>
             <TextInput
-              style={[
-                styles.input,
-                {
-                  color: colors.foreground,
-                  borderColor: colors.border,
-                  backgroundColor: colors.card,
-                },
-              ]}
+              style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
               value={name}
               onChangeText={setName}
               placeholder="Nombre completo"
@@ -164,18 +160,42 @@ export default function EditMemberScreen() {
             />
           </View>
 
+          <View style={styles.field}>
+            <Text style={styles.label}>
+              {t("phone")} <Text style={styles.optional}>({t("optional")})</Text>
+            </Text>
+            <TextInput
+              style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="+52 55 1234 5678"
+              placeholderTextColor={colors.mutedForeground}
+              keyboardType="phone-pad"
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>
+              {t("email")} <Text style={styles.optional}>({t("optional")})</Text>
+            </Text>
+            <TextInput
+              style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="correo@ejemplo.com"
+              placeholderTextColor={colors.mutedForeground}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
           <View style={styles.row}>
             <View style={[styles.field, { flex: 1 }]}>
-              <Text style={styles.label}>{t("shares")}</Text>
+              <View style={styles.labelRow}>
+                <Text style={styles.label}>{t("shares")}</Text>
+              </View>
               <TextInput
-                style={[
-                  styles.input,
-                  {
-                    color: colors.foreground,
-                    borderColor: colors.border,
-                    backgroundColor: colors.card,
-                  },
-                ]}
+                style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
                 value={shares}
                 onChangeText={setShares}
                 placeholder="1"
@@ -184,19 +204,13 @@ export default function EditMemberScreen() {
               />
             </View>
             <View style={[styles.field, { flex: 1 }]}>
-              <Text style={styles.label}>
-                {t("turnOrder")}{" "}
-                <Text style={styles.optional}>({t("optional")})</Text>
-              </Text>
+              <View style={styles.labelRow}>
+                <Text style={styles.label}>
+                  {t("turnOrder")} <Text style={styles.optional}>({t("optional")})</Text>
+                </Text>
+              </View>
               <TextInput
-                style={[
-                  styles.input,
-                  {
-                    color: colors.foreground,
-                    borderColor: colors.border,
-                    backgroundColor: colors.card,
-                  },
-                ]}
+                style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
                 value={turnOrder}
                 onChangeText={setTurnOrder}
                 placeholder="1"
@@ -211,10 +225,9 @@ export default function EditMemberScreen() {
   );
 }
 
-function makeStyles(
-  colors: ReturnType<typeof import("@/hooks/useColors").useColors>
-) {
+function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useColors>) {
   return StyleSheet.create({
+    centered: { flex: 1, alignItems: "center", justifyContent: "center" },
     content: { padding: 20 },
     header: {
       flexDirection: "row",
@@ -245,11 +258,15 @@ function makeStyles(
       fontFamily: "Inter_600SemiBold",
     },
     field: { marginBottom: 20 },
+    labelRow: {
+      minHeight: 28,
+      justifyContent: "flex-end",
+      marginBottom: 8,
+    },
     label: {
       fontSize: 13,
       fontFamily: "Inter_600SemiBold",
       color: colors.mutedForeground,
-      marginBottom: 8,
       textTransform: "uppercase",
       letterSpacing: 0.5,
     },
