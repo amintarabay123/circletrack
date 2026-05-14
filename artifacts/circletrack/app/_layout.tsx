@@ -21,6 +21,17 @@ import { tokenCache } from "@/lib/tokenCache";
 
 SplashScreen.preventAutoHideAsync();
 
+// Module-level token cache — prevents N concurrent getToken() calls for N simultaneous queries,
+// which was causing intermittent 401s when multiple queries fired on navigation.
+let _cachedToken: string | null = null;
+let _tokenExpiry = 0;
+const TOKEN_TTL_MS = 50_000; // 50 s — JWT is valid 60 s; refresh 10 s before expiry
+
+function clearTokenCache() {
+  _cachedToken = null;
+  _tokenExpiry = 0;
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -43,17 +54,23 @@ interface ClerkConfig {
 function AuthSetup({ children }: { children: React.ReactNode }) {
   const { getToken, isSignedIn, isLoaded } = useAuth();
   const qc = useQueryClient();
-  /** Avoid refetching every mounted screen on each effect run; only refresh when session becomes signed-in. */
   const wasSignedIn = useRef(false);
 
   useEffect(() => {
     setAuthTokenGetter(async () => {
       try {
+        const now = Date.now();
+        if (_cachedToken && now < _tokenExpiry) return _cachedToken;
         const token = await getToken();
-        console.log("[Auth] getToken →", token ? `${token.slice(0, 30)}…` : "NULL");
+        if (token) {
+          _cachedToken = token;
+          _tokenExpiry = now + TOKEN_TTL_MS;
+        } else {
+          clearTokenCache();
+        }
         return token;
-      } catch (e) {
-        console.log("[Auth] getToken threw:", e);
+      } catch {
+        clearTokenCache();
         return null;
       }
     });
@@ -63,8 +80,11 @@ function AuthSetup({ children }: { children: React.ReactNode }) {
     if (!isLoaded) return;
     const signed = Boolean(isSignedIn);
     if (signed && !wasSignedIn.current) {
-      console.log("[Auth] session became signed-in, invalidating queries");
+      clearTokenCache();
       qc.invalidateQueries();
+    }
+    if (!signed && wasSignedIn.current) {
+      clearTokenCache();
     }
     wasSignedIn.current = signed;
   }, [isSignedIn, isLoaded, qc]);
@@ -151,10 +171,8 @@ export default function RootLayout() {
         if (!r.ok) throw new Error(`config HTTP ${r.status}`);
         const cfg = (await r.json()) as ClerkConfig;
         const key = cfg.publishableKey && cfg.publishableKey.length > 0 ? cfg.publishableKey : envKey;
-        console.log("[ClerkConfig] publishableKey:", key?.slice(0, 20), "proxyUrl:", cfg.proxyUrl ?? "none");
         setClerkConfig({ publishableKey: key, ...(cfg.proxyUrl ? { proxyUrl: cfg.proxyUrl } : {}) });
-      } catch (err) {
-        console.log("[ClerkConfig] fetch failed, using env fallback:", (err as Error)?.message);
+      } catch {
         setClerkConfig({ publishableKey: envKey });
       } finally {
         clearTimeout(t);
