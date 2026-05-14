@@ -4,9 +4,9 @@ import {
   Inter_500Medium,
   Inter_600SemiBold,
   Inter_700Bold,
-  useFonts,
 } from "@expo-google-fonts/inter";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import * as Font from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useRef, useState } from "react";
@@ -109,11 +109,19 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts(
-    Platform.OS === "web"
-      ? {}
-      : { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold }
-  );
+  const [fontsReady, setFontsReady] = useState(Platform.OS === "web");
+
+  useEffect(() => {
+    if (Platform.OS === "web") return;
+    Font.loadAsync({
+      Inter_400Regular,
+      Inter_500Medium,
+      Inter_600SemiBold,
+      Inter_700Bold,
+    })
+      .catch(() => {/* non-fatal — fall back to system fonts */})
+      .finally(() => setFontsReady(true));
+  }, []);
 
   const [clerkConfig, setClerkConfig] = useState<ClerkConfig | null>(null);
 
@@ -155,7 +163,6 @@ export default function RootLayout() {
     };
   }, []);
 
-  const fontsReady = Boolean(fontsLoaded || fontError);
   const appReady = fontsReady && clerkConfig !== null;
 
   useEffect(() => {
