@@ -115,32 +115,38 @@ export default function RootLayout() {
     Inter_700Bold,
   });
 
-  const [clerkConfig, setClerkConfig] = useState<ClerkConfig | null>(null);
+  const [clerkConfig, setClerkConfig] = useState<ClerkConfig>({
+    publishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "",
+  });
 
   useEffect(() => {
     const domain = process.env.EXPO_PUBLIC_DOMAIN;
+    if (!domain) return;
 
-    if (domain) {
-      const baseUrl = `https://${domain}`;
-      setBaseUrl(baseUrl);
+    const baseUrl = `https://${domain}`;
+    setBaseUrl(baseUrl);
 
-      fetch(`${baseUrl}/api/config`)
-        .then((r) => r.json())
-        .then((cfg: ClerkConfig) => {
-          console.log("[ClerkConfig] publishableKey:", cfg.publishableKey?.slice(0, 20), "proxyUrl:", cfg.proxyUrl ?? "none");
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    fetch(`${baseUrl}/api/config`, { signal: controller.signal })
+      .then((r) => r.json())
+      .then((cfg: ClerkConfig) => {
+        clearTimeout(timeout);
+        if (cfg.publishableKey) {
+          console.log("[ClerkConfig] remote key:", cfg.publishableKey?.slice(0, 20), "proxyUrl:", cfg.proxyUrl ?? "none");
           setClerkConfig(cfg);
-        })
-        .catch((err) => {
-          console.log("[ClerkConfig] fetch failed, using env fallback:", err?.message);
-          setClerkConfig({
-            publishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "",
-          });
-        });
-    } else {
-      setClerkConfig({
-        publishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "",
+        }
+      })
+      .catch((err) => {
+        clearTimeout(timeout);
+        console.log("[ClerkConfig] fetch failed, keeping env key:", err?.message);
       });
-    }
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -149,7 +155,7 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
-  if ((!fontsLoaded && !fontError) || !clerkConfig) return null;
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <ClerkProvider
