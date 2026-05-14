@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActionSheetIOS,
   ActivityIndicator,
@@ -58,7 +58,7 @@ export default function EditCircleScreen() {
   });
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const freqLabel = (f: Frequency): string => {
     const map: Record<Frequency, string> = {

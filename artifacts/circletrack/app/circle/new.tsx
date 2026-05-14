@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -110,7 +110,7 @@ export default function NewCircleScreen() {
     );
   };
 
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const freqOptions: { key: NewFrequency; label: string }[] = [
     { key: CreateRoscaBodyFrequency.weekly, label: t("weekly") },
     { key: CreateRoscaBodyFrequency.first_fifteenth, label: t("firstFifteenth") },

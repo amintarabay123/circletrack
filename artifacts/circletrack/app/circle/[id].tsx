@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { getCurrencySymbol } from "@/constants/currencies";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActionSheetIOS,
   ActivityIndicator,
@@ -78,7 +78,7 @@ export default function CircleDetailScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? (isTablet ? 46 : 34) : insets.bottom;
 
-  const styles = makeStyles(colors, isTablet);
+  const styles = useMemo(() => makeStyles(colors, isTablet), [colors, isTablet]);
 
   function showOptions() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

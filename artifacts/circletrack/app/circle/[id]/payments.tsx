@@ -3,7 +3,7 @@ import { getCurrencySymbol } from "@/constants/currencies";
 import { PaymentReceiptModal, type ReceiptData } from "@/components/PaymentReceiptModal";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -63,7 +63,7 @@ export default function PaymentsScreen() {
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { data: dashboard } = useGetRoscaDashboard(circleId, {
     query: { enabled: !!circleId, queryKey: getGetRoscaDashboardQueryKey(circleId) },
@@ -88,10 +88,10 @@ export default function PaymentsScreen() {
   const currencySymbol = getCurrencySymbol(dashboard?.rosca.currency ?? "USD");
   const cycleOptions = Array.from({ length: totalCycles }, (_, i) => i + 1);
 
-  const invalidate = () => {
+  const invalidate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: getListPaymentsQueryKey(circleId) });
     queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(circleId) });
-  };
+  }, [queryClient, circleId]);
 
   const { mutate: deletePayment } = useDeletePayment({
     mutation: { onSuccess: () => { invalidate(); } },
@@ -177,6 +177,27 @@ export default function PaymentsScreen() {
     setMemberDropOpen(false);
   }
 
+  const handleViewReceipt = useCallback((payment: {
+    id: number;
+    memberName?: string | null;
+    amount: number | string;
+    cycle: number;
+    paidAt: string;
+    notes?: string | null;
+  }) => {
+    setReceiptData({
+      paymentId: payment.id,
+      circleName: dashboard?.rosca.name ?? "",
+      memberName: payment.memberName ?? "",
+      amount: Number(payment.amount),
+      currency: dashboard?.rosca.currency ?? "USD",
+      cycle: payment.cycle,
+      totalCycles: dashboard?.rosca.totalCycles ?? payment.cycle,
+      paidAt: payment.paidAt,
+      notes: payment.notes ?? null,
+    });
+  }, [dashboard]);
+
   const selectedMember = members?.find((m) => m.id === selectedMemberId);
 
   return (
@@ -260,7 +281,7 @@ export default function PaymentsScreen() {
             {payments.map((payment) => {
               const isLate = payment.isLate;
               return (
-                <View key={payment.id} style={[styles.paymentCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                <Pressable key={payment.id} onPress={() => handleViewReceipt(payment)} style={({ pressed }) => [styles.paymentCard, { backgroundColor: colors.card, borderColor: colors.border }, pressed && { opacity: 0.88 }]}>
                   <View style={[styles.avatar, { backgroundColor: colors.primary + "20" }]}>
                     <Text style={[styles.avatarText, { color: colors.primary }]}>
                       {(payment.memberName ?? "?").charAt(0).toUpperCase()}
@@ -291,7 +312,7 @@ export default function PaymentsScreen() {
                   >
                     <Ionicons name="trash-outline" size={16} color={colors.destructive} />
                   </Pressable>
-                </View>
+                </Pressable>
               );
             })}
           </ScrollView>

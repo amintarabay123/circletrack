@@ -368,21 +368,8 @@ export function PaymentReceiptModal({ data, onClose }: Props) {
             </View>
           </ScrollView>
 
-          {/* Action buttons */}
+          {/* Share button */}
           <View style={styles.actions}>
-            <Pressable
-              style={({ pressed }) => [styles.actionBtn, styles.waBtn, pressed && { opacity: 0.85 }, sharing && { opacity: 0.6 }]}
-              onPress={() => generateAndShare("WhatsApp")}
-              disabled={sharing}
-            >
-              {sharing ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Ionicons name="logo-whatsapp" size={20} color="#fff" />
-              )}
-              <Text style={styles.waBtnText}>WhatsApp</Text>
-            </Pressable>
-
             <Pressable
               style={({ pressed }) => [styles.actionBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }, sharing && { opacity: 0.6 }]}
               onPress={() => generateAndShare()}
@@ -394,7 +381,7 @@ export function PaymentReceiptModal({ data, onClose }: Props) {
                 <Ionicons name="share-outline" size={20} color={colors.primaryForeground} />
               )}
               <Text style={[styles.actionBtnText, { color: colors.primaryForeground }]}>
-                {isEs ? "Compartir" : "Share"}
+                {isEs ? "Compartir recibo" : "Share Receipt"}
               </Text>
             </Pressable>
           </View>
