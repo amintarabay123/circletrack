@@ -52,6 +52,7 @@ export default function PaymentsScreen() {
 
   const [cycleFilter, setCycleFilter] = useState<number | undefined>(undefined);
   const [addOpen, setAddOpen] = useState(false);
+  const [memberDropOpen, setMemberDropOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number>(0);
   const [paymentCycle, setPaymentCycle] = useState("1");
   const [paymentAmount, setPaymentAmount] = useState("");
@@ -149,22 +150,14 @@ export default function PaymentsScreen() {
     });
   }
 
-  function pickMember() {
-    if (!members?.length) return;
-    Alert.alert(
-      t("selectMember"),
-      undefined,
-      [
-        ...members.map((m) => ({
-          text: `${m.name} — $${(contributionAmount * m.shares).toLocaleString()}`,
-          onPress: () => {
-            setSelectedMemberId(m.id);
-            setPaymentAmount(String(contributionAmount * m.shares));
-          },
-        })),
-        { text: t("cancel"), style: "cancel" },
-      ]
-    );
+  function toggleMemberDrop() {
+    setMemberDropOpen((v) => !v);
+  }
+
+  function selectMember(id: number, shareCount: number) {
+    setSelectedMemberId(id);
+    setPaymentAmount(String(contributionAmount * shareCount));
+    setMemberDropOpen(false);
   }
 
   const selectedMember = members?.find((m) => m.id === selectedMemberId);
@@ -297,16 +290,55 @@ export default function PaymentsScreen() {
 
               <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>{t("member")}</Text>
               <Pressable
-                style={({ pressed }) => [styles.fieldInput, { backgroundColor: colors.card, borderColor: colors.border }, pressed && { opacity: 0.7 }]}
-                onPress={pickMember}
+                style={({ pressed }) => [
+                  styles.fieldInput,
+                  { backgroundColor: colors.card, borderColor: memberDropOpen ? colors.primary : colors.border },
+                  pressed && { opacity: 0.85 },
+                ]}
+                onPress={toggleMemberDrop}
               >
-                <Text style={{ color: selectedMember ? colors.foreground : colors.mutedForeground, fontFamily: "Inter_400Regular", fontSize: 16 }}>
+                <Text style={{ color: selectedMember ? colors.foreground : colors.mutedForeground, fontFamily: "Inter_400Regular", fontSize: 16, flex: 1 }}>
                   {selectedMember
                     ? `${selectedMember.name} — $${(contributionAmount * selectedMember.shares).toLocaleString()}`
                     : t("selectMember")}
                 </Text>
-                <Ionicons name="chevron-down" size={16} color={colors.mutedForeground} />
+                <Ionicons
+                  name={memberDropOpen ? "chevron-up" : "chevron-down"}
+                  size={16}
+                  color={memberDropOpen ? colors.primary : colors.mutedForeground}
+                />
               </Pressable>
+              {memberDropOpen && (
+                <View style={[styles.dropdownList, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                  {(members ?? []).map((m, idx) => (
+                    <Pressable
+                      key={m.id}
+                      style={({ pressed }) => [
+                        styles.dropdownItem,
+                        idx < (members?.length ?? 1) - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+                        m.id === selectedMemberId && { backgroundColor: colors.primary + "12" },
+                        pressed && { opacity: 0.7 },
+                      ]}
+                      onPress={() => selectMember(m.id, m.shares)}
+                    >
+                      <View style={[styles.dropdownAvatar, { backgroundColor: colors.primary + "20" }]}>
+                        <Text style={[styles.dropdownAvatarText, { color: colors.primary }]}>
+                          {m.name.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.dropdownName, { color: colors.foreground }]}>{m.name}</Text>
+                        <Text style={[styles.dropdownAmount, { color: colors.mutedForeground }]}>
+                          ${(contributionAmount * m.shares).toLocaleString()}
+                        </Text>
+                      </View>
+                      {m.id === selectedMemberId && (
+                        <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+                      )}
+                    </Pressable>
+                  ))}
+                </View>
+              )}
 
               <View style={{ flexDirection: "row", gap: 12 }}>
                 <View style={{ flex: 1 }}>
@@ -491,5 +523,28 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       alignItems: "center",
     },
     modalSaveText: { fontSize: 15, fontFamily: "Inter_700Bold" },
+    dropdownList: {
+      borderWidth: 1,
+      borderRadius: 12,
+      marginTop: 4,
+      overflow: "hidden",
+    },
+    dropdownItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      gap: 10,
+    },
+    dropdownAvatar: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    dropdownAvatarText: { fontSize: 13, fontFamily: "Inter_700Bold" },
+    dropdownName: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
+    dropdownAmount: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 1 },
   });
 }

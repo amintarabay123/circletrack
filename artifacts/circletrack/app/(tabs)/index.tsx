@@ -143,73 +143,98 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
     semimonthly: t("semimonthly"),
   };
   const freq = freqMap[circle.frequency] ?? circle.frequency;
-
-  const styles = StyleSheet.create({
-    card: {
-      backgroundColor: colors.card,
-      borderRadius: 16,
-      padding: isTablet ? 20 : 16,
-      marginBottom: isTablet ? 16 : 12,
-      borderWidth: 1,
-      borderColor: colors.border,
-    },
-    pressed: { opacity: 0.8 },
-    row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    name: { fontSize: isTablet ? 24 : 18, fontFamily: "Inter_700Bold", color: colors.foreground, flex: 1 },
-    badge: {
-      paddingHorizontal: 10,
-      paddingVertical: 3,
-      borderRadius: 20,
-      backgroundColor: circle.isActive ? colors.primary + "20" : colors.muted,
-    },
-    badgeText: {
-      fontSize: isTablet ? 14 : 12,
-      fontFamily: "Inter_700Bold",
-      color: circle.isActive ? colors.primary : colors.mutedForeground,
-    },
-    meta: { flexDirection: "row", gap: isTablet ? 16 : 12, marginTop: isTablet ? 12 : 10, alignItems: "center" },
-    metaItem: { flexDirection: "row", alignItems: "center", gap: 4 },
-    metaText: { fontSize: isTablet ? 18 : 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
-    divider: { flex: 1, height: 1, backgroundColor: colors.border, marginVertical: isTablet ? 14 : 10 },
-    amount: { fontSize: isTablet ? 30 : 22, fontFamily: "Inter_700Bold", color: colors.primary },
-    amountLabel: { fontSize: isTablet ? 15 : 12, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginTop: 2 },
-    cycleRow: { flexDirection: "row", alignItems: "baseline", gap: 4 },
-    cycle: { fontSize: isTablet ? 18 : 14, fontFamily: "Inter_600SemiBold", color: colors.foreground },
-    cycleMuted: { fontSize: isTablet ? 18 : 14, fontFamily: "Inter_500Medium", color: colors.mutedForeground },
-  });
+  const progress = circle.totalCycles > 0 ? circle.currentCycle / circle.totalCycles : 0;
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        {
+          backgroundColor: colors.card,
+          borderRadius: isTablet ? 20 : 18,
+          marginBottom: isTablet ? 16 : 12,
+          borderWidth: 1,
+          borderColor: colors.border,
+          overflow: "hidden",
+          opacity: pressed ? 0.82 : 1,
+        },
+      ]}
       onPress={onPress}
       testID={`circle-card-${circle.id}`}
     >
-      <View style={styles.row}>
-        <Text style={styles.name} numberOfLines={1}>{circle.name}</Text>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{circle.isActive ? t("active") : t("inactive")}</Text>
-        </View>
-      </View>
+      {/* Accent bar */}
+      <View style={{ height: 4, backgroundColor: circle.isActive ? colors.primary : colors.muted }} />
 
-      <View style={styles.meta}>
-        <View style={styles.metaItem}>
-          <Ionicons name="repeat" size={isTablet ? 20 : 16} color={colors.mutedForeground} />
-          <Text style={styles.metaText}>{freq}</Text>
+      <View style={{ padding: isTablet ? 20 : 16 }}>
+        {/* Top row: name + status badge */}
+        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+          <Text
+            style={{ fontSize: isTablet ? 22 : 18, fontFamily: "Inter_700Bold", color: colors.foreground, flex: 1 }}
+            numberOfLines={1}
+          >
+            {circle.name}
+          </Text>
+          <View style={{
+            paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20,
+            backgroundColor: circle.isActive ? colors.primary + "18" : colors.muted,
+          }}>
+            <Text style={{
+              fontSize: isTablet ? 13 : 11, fontFamily: "Inter_700Bold",
+              color: circle.isActive ? colors.primary : colors.mutedForeground,
+            }}>
+              {circle.isActive ? t("active") : t("inactive")}
+            </Text>
+          </View>
         </View>
-        <View style={styles.metaItem}>
-          <Ionicons name="people-outline" size={isTablet ? 20 : 16} color={colors.mutedForeground} />
-          <Text style={styles.metaText}>{t("cycle")} {circle.currentCycle}/{circle.totalCycles}</Text>
-        </View>
-      </View>
 
-      <View style={styles.divider} />
-
-      <View style={styles.row}>
-        <View>
-          <Text style={styles.amount}>${circle.contributionAmount.toLocaleString()}</Text>
-          <Text style={styles.amountLabel}>{t("contributionAmount")}</Text>
+        {/* Meta row: frequency + cycle text */}
+        <View style={{ flexDirection: "row", gap: isTablet ? 16 : 12, marginTop: isTablet ? 10 : 8, alignItems: "center" }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Ionicons name="repeat-outline" size={isTablet ? 16 : 14} color={colors.mutedForeground} />
+            <Text style={{ fontSize: isTablet ? 14 : 12, fontFamily: "Inter_500Medium", color: colors.mutedForeground }}>
+              {freq}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Ionicons name="layers-outline" size={isTablet ? 16 : 14} color={colors.mutedForeground} />
+            <Text style={{ fontSize: isTablet ? 14 : 12, fontFamily: "Inter_500Medium", color: colors.mutedForeground }}>
+              {t("cycle")} {circle.currentCycle}/{circle.totalCycles}
+            </Text>
+          </View>
         </View>
-        <Ionicons name="chevron-forward" size={isTablet ? 24 : 20} color={colors.mutedForeground} />
+
+        {/* Progress bar */}
+        <View style={{ marginTop: isTablet ? 14 : 12 }}>
+          <View style={{
+            height: isTablet ? 6 : 5, borderRadius: 3,
+            backgroundColor: colors.muted, overflow: "hidden",
+          }}>
+            <View style={{
+              height: "100%",
+              width: `${Math.min(progress * 100, 100)}%`,
+              borderRadius: 3,
+              backgroundColor: circle.isActive ? colors.primary : colors.mutedForeground,
+            }} />
+          </View>
+        </View>
+
+        {/* Bottom row: amount + chevron */}
+        <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", marginTop: isTablet ? 14 : 12 }}>
+          <View>
+            <Text style={{ fontSize: isTablet ? 28 : 24, fontFamily: "Inter_700Bold", color: colors.primary, lineHeight: isTablet ? 34 : 28 }}>
+              ${circle.contributionAmount.toLocaleString()}
+            </Text>
+            <Text style={{ fontSize: isTablet ? 13 : 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginTop: 2 }}>
+              {t("contributionAmount")}
+            </Text>
+          </View>
+          <View style={{
+            width: isTablet ? 36 : 30, height: isTablet ? 36 : 30, borderRadius: isTablet ? 18 : 15,
+            backgroundColor: colors.primary + "14",
+            alignItems: "center", justifyContent: "center",
+          }}>
+            <Ionicons name="chevron-forward" size={isTablet ? 18 : 16} color={colors.primary} />
+          </View>
+        </View>
       </View>
     </Pressable>
   );

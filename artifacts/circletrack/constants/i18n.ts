@@ -151,6 +151,7 @@ export const translations = {
     deleteMember: "Eliminar integrante",
     deleteMemberConfirm: "¿Eliminar este integrante? Esta acción no se puede deshacer.",
     editMemberName: "Editar nombre",
+    editMember: "Editar Integrante",
   },
   en: {
     appName: "CircleTrack",
@@ -302,6 +303,7 @@ export const translations = {
     deleteMember: "Delete member",
     deleteMemberConfirm: "Delete this member? This cannot be undone.",
     editMemberName: "Edit name",
+    editMember: "Edit Member",
   },
 };
 
