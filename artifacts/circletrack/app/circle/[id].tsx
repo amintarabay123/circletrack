@@ -19,6 +19,8 @@ import {
   useGetRoscaDashboard,
   useGetMemberRatings,
   useDeleteRosca,
+  useDeleteMember,
+  useUpdateMember,
   getGetRoscaDashboardQueryKey,
   getGetMemberRatingsQueryKey,
   getListRoscasQueryKey,
@@ -70,6 +72,8 @@ export default function CircleDetailScreen() {
   });
 
   const { mutate: deleteRosca } = useDeleteRosca();
+  const { mutate: deleteMemberMutate } = useDeleteMember();
+  const { mutate: updateMemberMutate } = useUpdateMember();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? (isTablet ? 46 : 34) : insets.bottom;
@@ -121,6 +125,75 @@ export default function CircleDetailScreen() {
                   String((err as { message?: string })?.message ?? err),
                 );
               },
+            }
+          );
+        },
+      },
+    ]);
+  }
+
+  function showMemberOptions(memberId: number, memberName: string, memberShares: number, memberTurnOrder: number | null) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const options = [t("cancelBtn"), t("editMemberName"), t("deleteMember")];
+    if (Platform.OS === "ios") {
+      ActionSheetIOS.showActionSheetWithOptions(
+        { options, cancelButtonIndex: 0, destructiveButtonIndex: 2 },
+        (idx) => {
+          if (idx === 1) promptEditName(memberId, memberName, memberShares, memberTurnOrder);
+          if (idx === 2) confirmDeleteMember(memberId, memberName);
+        }
+      );
+    } else {
+      Alert.alert(memberName, undefined, [
+        { text: t("editMemberName"), onPress: () => promptEditName(memberId, memberName, memberShares, memberTurnOrder) },
+        { text: t("deleteMember"), style: "destructive", onPress: () => confirmDeleteMember(memberId, memberName) },
+        { text: t("cancelBtn"), style: "cancel" },
+      ]);
+    }
+  }
+
+  function promptEditName(memberId: number, currentName: string, shares: number, turnOrder: number | null) {
+    if (Platform.OS === "ios") {
+      Alert.prompt(
+        t("editMemberName"),
+        undefined,
+        (newName) => {
+          if (newName?.trim() && newName.trim() !== currentName) {
+            updateMemberMutate(
+              { id: circleId, memberId, data: { name: newName.trim(), shares, turnOrder: turnOrder ?? undefined } },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(circleId) });
+                  queryClient.invalidateQueries({ queryKey: getGetMemberRatingsQueryKey(circleId) });
+                },
+                onError: (err) => Alert.alert(t("error"), String((err as { message?: string })?.message ?? err)),
+              }
+            );
+          }
+        },
+        "plain-text",
+        currentName
+      );
+    } else {
+      Alert.alert(t("editMemberName"), currentName);
+    }
+  }
+
+  function confirmDeleteMember(memberId: number, memberName: string) {
+    Alert.alert(t("deleteMember"), t("deleteMemberConfirm"), [
+      { text: t("deleteConfirmNo"), style: "cancel" },
+      {
+        text: t("deleteConfirmYes"),
+        style: "destructive",
+        onPress: () => {
+          deleteMemberMutate(
+            { id: circleId, memberId },
+            {
+              onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(circleId) });
+                queryClient.invalidateQueries({ queryKey: getGetMemberRatingsQueryKey(circleId) });
+              },
+              onError: (err) => Alert.alert(t("error"), String((err as { message?: string })?.message ?? err)),
             }
           );
         },
@@ -361,7 +434,16 @@ export default function CircleDetailScreen() {
                     ${ms.amountPaid.toLocaleString()} / ${ms.amountDue.toLocaleString()}
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.mutedForeground} />
+                <Pressable
+                  hitSlop={12}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    showMemberOptions(ms.memberId, ms.memberName, ms.shares, null);
+                  }}
+                  style={({ pressed }) => [{ padding: 6, borderRadius: 20 }, pressed && { opacity: 0.5 }]}
+                >
+                  <Ionicons name="ellipsis-horizontal" size={isTablet ? 22 : 18} color={colors.mutedForeground} />
+                </Pressable>
               </Pressable>
             ))}
 
@@ -406,7 +488,7 @@ export default function CircleDetailScreen() {
         )}
       </ScrollView>
 
-      {activeTab === "dashboard" && (
+      {activeTab === "members" && (
         <View style={[styles.fab, { bottom: bottomPad + 20 }]}>
           <Pressable
             style={({ pressed }) => [styles.fabBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }]}

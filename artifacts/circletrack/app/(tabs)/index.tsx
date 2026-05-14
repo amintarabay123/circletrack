@@ -209,13 +209,7 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
           <Text style={styles.amount}>${circle.contributionAmount.toLocaleString()}</Text>
           <Text style={styles.amountLabel}>{t("contributionAmount")}</Text>
         </View>
-        <View style={{ alignItems: "flex-end" }}>
-          <View style={styles.cycleRow}>
-            <Text style={styles.cycle}>{t("cycle")} {circle.currentCycle}</Text>
-            <Text style={styles.cycleMuted}>{t("of")} {circle.totalCycles}</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={isTablet ? 24 : 20} color={colors.mutedForeground} style={{ marginTop: 4 }} />
-        </View>
+        <Ionicons name="chevron-forward" size={isTablet ? 24 : 20} color={colors.mutedForeground} />
       </View>
     </Pressable>
   );
