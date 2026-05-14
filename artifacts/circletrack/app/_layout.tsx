@@ -97,6 +97,10 @@ function RootLayoutNav() {
         options={{ presentation: "modal", headerShown: false }}
       />
       <Stack.Screen
+        name="circle/[id]/edit-member"
+        options={{ presentation: "modal", headerShown: false }}
+      />
+      <Stack.Screen
         name="circle/[id]/payments"
         options={{ headerShown: false }}
       />

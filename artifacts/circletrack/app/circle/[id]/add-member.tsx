@@ -43,6 +43,10 @@ export default function AddMemberScreen() {
       Alert.alert(t("error"), t("requireNameError"));
       return;
     }
+    if (!turnOrder || isNaN(parseInt(turnOrder))) {
+      Alert.alert(t("error"), t("requireTurnOrderError"));
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     addMember(
       {
@@ -161,7 +165,7 @@ export default function AddMemberScreen() {
           </View>
           <View style={[styles.field, { flex: 1 }]}>
             <View style={styles.labelRow}>
-              <Text style={styles.label}>{t("turnOrder")} <Text style={styles.optional}>({t("optional")})</Text></Text>
+              <Text style={styles.label}>{t("turnOrder")}</Text>
             </View>
             <TextInput
               style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}

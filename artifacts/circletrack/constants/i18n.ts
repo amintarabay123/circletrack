@@ -152,6 +152,7 @@ export const translations = {
     deleteMemberConfirm: "¿Eliminar este integrante? Esta acción no se puede deshacer.",
     editMemberName: "Editar nombre",
     editMember: "Editar Integrante",
+    requireTurnOrderError: "El orden de turno es obligatorio",
   },
   en: {
     appName: "CircleTrack",
@@ -304,6 +305,7 @@ export const translations = {
     deleteMemberConfirm: "Delete this member? This cannot be undone.",
     editMemberName: "Edit name",
     editMember: "Edit Member",
+    requireTurnOrderError: "Turn order is required",
   },
 };
 

@@ -74,6 +74,10 @@ export default function EditMemberScreen() {
       Alert.alert(t("error"), t("requireNameError"));
       return;
     }
+    if (!turnOrder || isNaN(parseInt(turnOrder))) {
+      Alert.alert(t("error"), t("requireTurnOrderError"));
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     updateMember(
       {
@@ -84,7 +88,7 @@ export default function EditMemberScreen() {
           phone: phone.trim() || null,
           email: email.trim() || null,
           shares: parseInt(shares) || 1,
-          turnOrder: turnOrder ? parseInt(turnOrder) : null,
+          turnOrder: parseInt(turnOrder),
         },
       },
       {
@@ -205,9 +209,7 @@ export default function EditMemberScreen() {
             </View>
             <View style={[styles.field, { flex: 1 }]}>
               <View style={styles.labelRow}>
-                <Text style={styles.label}>
-                  {t("turnOrder")} <Text style={styles.optional}>({t("optional")})</Text>
-                </Text>
+                <Text style={styles.label}>{t("turnOrder")}</Text>
               </View>
               <TextInput
                 style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
