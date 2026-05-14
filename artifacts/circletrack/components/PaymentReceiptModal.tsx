@@ -1,12 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import React from "react";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
+import React, { useState } from "react";
 import {
-  Linking,
+  ActivityIndicator,
   Modal,
   Pressable,
   ScrollView,
-  Share,
   StyleSheet,
   Text,
   View,
@@ -49,44 +50,187 @@ function pad(n: number): string {
   return String(n).padStart(4, "0");
 }
 
-function buildShareText(d: ReceiptData, lang: string): string {
+function escHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildReceiptHtml(d: ReceiptData, lang: string): string {
+  const isEs = lang === "es";
   const sym = getCurrencySymbol(d.currency);
   const dateStr = formatReceiptDate(d.paidAt, lang);
-  const amtStr = `${sym}${d.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  if (lang === "es") {
-    return [
-      "🧾 *RECIBO DE PAGO — CircleTrack*",
-      "─────────────────────────",
-      `🏦 Círculo:     ${d.circleName}`,
-      `👤 Integrante:  ${d.memberName}`,
-      `💰 Monto:       ${amtStr}`,
-      `🔄 Ciclo:       ${d.cycle} de ${d.totalCycles}`,
-      `📅 Fecha:       ${dateStr}`,
-      `🔖 Ref.:        #${pad(d.paymentId)}`,
-      ...(d.notes ? [`📝 Notas:       ${d.notes}`] : []),
-      "─────────────────────────",
-      "✅ ¡Pago confirmado!",
-      "¡Gracias por tu pago puntual! 🎉",
-      "",
-      "_Generado con CircleTrack_",
-    ].join("\n");
-  }
-  return [
-    "🧾 *PAYMENT RECEIPT — CircleTrack*",
-    "─────────────────────────",
-    `🏦 Circle:      ${d.circleName}`,
-    `👤 Member:      ${d.memberName}`,
-    `💰 Amount:      ${amtStr}`,
-    `🔄 Cycle:       ${d.cycle} of ${d.totalCycles}`,
-    `📅 Date:        ${dateStr}`,
-    `🔖 Ref.:        #${pad(d.paymentId)}`,
-    ...(d.notes ? [`📝 Notes:       ${d.notes}`] : []),
-    "─────────────────────────",
-    "✅ Payment confirmed!",
-    "Thank you for your payment! 🎉",
-    "",
-    "_Generated with CircleTrack_",
-  ].join("\n");
+  const amtStr = d.amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const noteRow = d.notes
+    ? `<div class="ir"><span class="ik">${isEs ? "NOTAS" : "NOTES"}</span><span class="iv">${escHtml(d.notes)}</span></div>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background: #fff;
+  color: #111;
+  -webkit-print-color-adjust: exact;
+}
+.receipt {
+  width: 100%;
+  padding: 8px 16px 16px;
+}
+.perf {
+  text-align: center;
+  font-size: 9px;
+  color: #ccc;
+  letter-spacing: 5px;
+  margin: 8px 0;
+}
+.logo {
+  text-align: center;
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  margin: 14px 0 4px;
+}
+.subtitle {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 6px;
+  color: #666;
+  margin-bottom: 12px;
+}
+.dash {
+  text-align: center;
+  font-size: 8px;
+  color: #ccc;
+  margin: 10px 0;
+}
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #888;
+  margin: 2px 0;
+}
+.fk {
+  font-size: 7px;
+  font-weight: bold;
+  color: #aaa;
+  letter-spacing: 3px;
+  margin: 12px 0 3px;
+}
+.fv {
+  font-size: 14px;
+  font-weight: bold;
+  color: #111;
+  word-break: break-word;
+}
+.al {
+  text-align: center;
+  font-size: 7px;
+  font-weight: bold;
+  color: #aaa;
+  letter-spacing: 4px;
+  margin-bottom: 5px;
+}
+.amt {
+  text-align: center;
+  font-size: 38px;
+  font-weight: bold;
+  color: #111;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+.ir {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 5px 0;
+  gap: 8px;
+}
+.ik {
+  font-size: 7px;
+  font-weight: bold;
+  color: #aaa;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.iv {
+  font-size: 10px;
+  color: #333;
+  text-align: right;
+  word-break: break-word;
+}
+.confirmed {
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #16a34a;
+  letter-spacing: 2px;
+  margin: 6px 0;
+}
+.thanks {
+  text-align: center;
+  font-size: 9px;
+  font-weight: bold;
+  color: #444;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+.footer {
+  text-align: center;
+  font-size: 8px;
+  color: #aaa;
+  letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+<div class="receipt">
+  <div class="perf">&#9660; &#9660; &#9660; &#9660; &#9660; &#9660; &#9660; &#9660; &#9660;</div>
+  <div class="logo">&#9670; CIRCLETRACK &#9670;</div>
+  <div class="subtitle">${isEs ? "RECIBO DE PAGO" : "PAYMENT RECEIPT"}</div>
+  <div class="dash">- - - - - - - - - - - - - - - - - - -</div>
+  <div class="meta">
+    <span>Ref. #${pad(d.paymentId)}</span>
+    <span>${escHtml(d.paidAt.slice(0, 10))}</span>
+  </div>
+  <div class="dash">- - - - - - - - - - - - - - - - - - -</div>
+  <div class="fk">${isEs ? "C&Iacute;RCULO" : "CIRCLE"}</div>
+  <div class="fv">${escHtml(d.circleName)}</div>
+  <div class="fk">${isEs ? "INTEGRANTE" : "MEMBER"}</div>
+  <div class="fv">${escHtml(d.memberName)}</div>
+  <div class="dash">- - - - - - - - - - - - - - - - - - -</div>
+  <div class="al">${isEs ? "MONTO PAGADO" : "AMOUNT PAID"}</div>
+  <div class="amt">${escHtml(sym)}${escHtml(amtStr)}</div>
+  <div class="dash">- - - - - - - - - - - - - - - - - - -</div>
+  <div class="ir">
+    <span class="ik">${isEs ? "CICLO" : "CYCLE"}</span>
+    <span class="iv">${d.cycle} ${isEs ? "de" : "of"} ${d.totalCycles}</span>
+  </div>
+  <div class="ir">
+    <span class="ik">${isEs ? "FECHA" : "DATE"}</span>
+    <span class="iv">${escHtml(dateStr)}</span>
+  </div>
+  ${noteRow}
+  <div class="dash">- - - - - - - - - - - - - - - - - - -</div>
+  <div class="confirmed">&#10003;&nbsp;${isEs ? "PAGO CONFIRMADO" : "PAYMENT CONFIRMED"}</div>
+  <div class="dash">- - - - - - - - - - - - - - - - - - -</div>
+  <div class="thanks">${isEs ? "* GRACIAS POR SU PAGO *" : "* THANK YOU FOR YOUR PAYMENT *"}</div>
+  <div class="footer">CircleTrack &mdash; ${isEs ? "Tu c&iacute;rculo de confianza" : "Your trusted circle"}</div>
+  <div class="perf" style="margin-top:14px;">&#9650; &#9650; &#9650; &#9650; &#9650; &#9650; &#9650; &#9650; &#9650;</div>
+</div>
+</body>
+</html>`;
 }
 
 const DASH = "- - - - - - - - - - - - - - - - - - -";
@@ -95,36 +239,36 @@ export function PaymentReceiptModal({ data, onClose }: Props) {
   const { lang } = useLang();
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const [sharing, setSharing] = useState(false);
 
   if (!data) return null;
 
+  const isEs = lang === "es";
   const sym = getCurrencySymbol(data.currency);
   const amtStr = data.amount.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
   const dateStr = formatReceiptDate(data.paidAt, lang);
-  const shareText = buildShareText(data, lang);
 
-  const isEs = lang === "es";
-
-  const handleShare = async () => {
+  async function generateAndShare(dialogTitle?: string) {
+    if (sharing) return;
+    setSharing(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await Share.share({ message: shareText });
-    } catch {}
-  };
-
-  const handleWhatsApp = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const url = `whatsapp://send?text=${encodeURIComponent(shareText)}`;
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) {
-      Linking.openURL(url);
-    } else {
-      Share.share({ message: shareText });
+      const html = buildReceiptHtml(data!, lang);
+      const { uri } = await Print.printToFileAsync({ html, width: 226 });
+      await Sharing.shareAsync(uri, {
+        mimeType: "application/pdf",
+        UTI: "com.adobe.pdf",
+        dialogTitle: dialogTitle ?? (isEs ? "Compartir recibo" : "Share receipt"),
+      });
+    } catch {
+      // user cancelled or device error — do nothing
+    } finally {
+      setSharing(false);
     }
-  };
+  }
 
   return (
     <Modal
@@ -211,7 +355,9 @@ export function PaymentReceiptModal({ data, onClose }: Props) {
               <Text style={styles.thanks}>
                 {isEs ? "* GRACIAS POR SU PAGO *" : "* THANK YOU FOR YOUR PAYMENT *"}
               </Text>
-              <Text style={styles.footer}>CircleTrack — {isEs ? "Tu círculo de confianza" : "Your trusted circle"}</Text>
+              <Text style={styles.footer}>
+                CircleTrack — {isEs ? "Tu círculo de confianza" : "Your trusted circle"}
+              </Text>
 
               {/* Perforated bottom edge */}
               <View style={[styles.perfRow, { marginTop: 16 }]}>
@@ -225,18 +371,28 @@ export function PaymentReceiptModal({ data, onClose }: Props) {
           {/* Action buttons */}
           <View style={styles.actions}>
             <Pressable
-              style={({ pressed }) => [styles.actionBtn, styles.waBtn, pressed && { opacity: 0.85 }]}
-              onPress={handleWhatsApp}
+              style={({ pressed }) => [styles.actionBtn, styles.waBtn, pressed && { opacity: 0.85 }, sharing && { opacity: 0.6 }]}
+              onPress={() => generateAndShare("WhatsApp")}
+              disabled={sharing}
             >
-              <Ionicons name="logo-whatsapp" size={20} color="#fff" />
+              {sharing ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Ionicons name="logo-whatsapp" size={20} color="#fff" />
+              )}
               <Text style={styles.waBtnText}>WhatsApp</Text>
             </Pressable>
 
             <Pressable
-              style={({ pressed }) => [styles.actionBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }]}
-              onPress={handleShare}
+              style={({ pressed }) => [styles.actionBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }, sharing && { opacity: 0.6 }]}
+              onPress={() => generateAndShare()}
+              disabled={sharing}
             >
-              <Ionicons name="share-outline" size={20} color={colors.primaryForeground} />
+              {sharing ? (
+                <ActivityIndicator size="small" color={colors.primaryForeground} />
+              ) : (
+                <Ionicons name="share-outline" size={20} color={colors.primaryForeground} />
+              )}
               <Text style={[styles.actionBtnText, { color: colors.primaryForeground }]}>
                 {isEs ? "Compartir" : "Share"}
               </Text>

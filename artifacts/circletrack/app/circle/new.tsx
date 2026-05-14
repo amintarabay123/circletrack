@@ -65,6 +65,7 @@ export default function NewCircleScreen() {
   const [startDate, setStartDate] = useState(() => toYMD(new Date()));
   const [currency, setCurrency] = useState("USD");
   const [showCurrencyPicker, setShowCurrencyPicker] = useState(false);
+  const [currencySearch, setCurrencySearch] = useState("");
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [draftDate, setDraftDate] = useState(() => parseYMD(toYMD(new Date())));
@@ -251,7 +252,11 @@ export default function NewCircleScreen() {
                 { flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderColor: showCurrencyPicker ? colors.primary : colors.border, backgroundColor: colors.card },
                 pressed && { opacity: 0.85 },
               ]}
-              onPress={() => setShowCurrencyPicker(!showCurrencyPicker)}
+              onPress={() => {
+                const next = !showCurrencyPicker;
+                setShowCurrencyPicker(next);
+                if (!next) setCurrencySearch("");
+              }}
             >
               <Text style={{ color: colors.foreground, fontFamily: "Inter_400Regular", fontSize: 15 }}>
                 {CURRENCIES.find((c) => c.code === currency)?.label ?? currency}
@@ -260,29 +265,49 @@ export default function NewCircleScreen() {
             </Pressable>
             {showCurrencyPicker && (
               <View style={[styles.currencyList, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                {CURRENCIES.map((c, idx) => (
-                  <Pressable
-                    key={c.code}
-                    style={({ pressed }) => [
-                      styles.currencyItem,
-                      idx < CURRENCIES.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
-                      c.code === currency && { backgroundColor: colors.primary + "12" },
-                      pressed && { opacity: 0.7 },
-                    ]}
-                    onPress={() => {
-                      setCurrency(c.code);
-                      setShowCurrencyPicker(false);
-                      Haptics.selectionAsync();
-                    }}
-                  >
-                    <Text style={{ color: colors.foreground, fontFamily: "Inter_400Regular", fontSize: 15, flex: 1 }}>
-                      {c.label}
-                    </Text>
-                    {c.code === currency && (
-                      <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
-                    )}
-                  </Pressable>
-                ))}
+                <View style={[styles.currencySearchRow, { borderBottomColor: colors.border }]}>
+                  <Ionicons name="search-outline" size={15} color={colors.mutedForeground} />
+                  <TextInput
+                    style={[styles.currencySearchInput, { color: colors.foreground }]}
+                    value={currencySearch}
+                    onChangeText={setCurrencySearch}
+                    placeholder="Buscar moneda..."
+                    placeholderTextColor={colors.mutedForeground}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    clearButtonMode="while-editing"
+                  />
+                </View>
+                {CURRENCIES
+                  .filter((c) =>
+                    !currencySearch ||
+                    c.label.toLowerCase().includes(currencySearch.toLowerCase()) ||
+                    c.code.toLowerCase().includes(currencySearch.toLowerCase())
+                  )
+                  .map((c, idx, arr) => (
+                    <Pressable
+                      key={c.code}
+                      style={({ pressed }) => [
+                        styles.currencyItem,
+                        idx < arr.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+                        c.code === currency && { backgroundColor: colors.primary + "12" },
+                        pressed && { opacity: 0.7 },
+                      ]}
+                      onPress={() => {
+                        setCurrency(c.code);
+                        setShowCurrencyPicker(false);
+                        setCurrencySearch("");
+                        Haptics.selectionAsync();
+                      }}
+                    >
+                      <Text style={{ color: colors.foreground, fontFamily: "Inter_400Regular", fontSize: 15, flex: 1 }}>
+                        {c.label}
+                      </Text>
+                      {c.code === currency && (
+                        <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
+                      )}
+                    </Pressable>
+                  ))}
               </View>
             )}
           </View>
@@ -478,6 +503,20 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       alignItems: "center",
       paddingHorizontal: 14,
       paddingVertical: 12,
+    },
+    currencySearchRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderBottomWidth: 1,
+    },
+    currencySearchInput: {
+      flex: 1,
+      fontSize: 15,
+      fontFamily: "Inter_400Regular",
+      height: 36,
     },
     dateBtn: {
       flexDirection: "row",
