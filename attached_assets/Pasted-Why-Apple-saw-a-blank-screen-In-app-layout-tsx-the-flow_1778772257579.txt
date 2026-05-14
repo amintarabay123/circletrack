@@ -1,0 +1,31 @@
+Why Apple saw a blank screen
+In app/_layout.tsx the flow was:
+
+Fonts finish loading → SplashScreen.hideAsync() ran immediately
+Clerk config was still loading from https://<EXPO_PUBLIC_DOMAIN>/api/config
+During that wait the root component returned null
+Result: splash gone + nothing rendered = white/blank screen
+On review networks, that /api/config request can be slow, blocked, or fail, so the blank state lasted long enough that it looked like “app blank after launch.”
+If /api/config returned publishableKey: "" (missing CLERK_PUBLISHABLE_KEY on the server), the app could also hand Clerk an empty key and fail badly.
+
+What we fixed (in code)
+10s timeout + abort on /api/config so you never hang forever.
+Splash stays up until fonts are ready and Clerk config is resolved (no more “splash dismissed then blank”).
+While config is loading after fonts: show a spinner instead of null.
+If the server returns an empty key, fall back to EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY from the build.
+If there is still no key, show a short configuration message instead of a blank screen.
+What you should verify before resubmitting
+EAS production (and preview) eas.json → EXPO_PUBLIC_DOMAIN = the live API host reviewers can reach.
+On Replit / API server env: set CLERK_PUBLISHABLE_KEY (or VITE_CLERK_PUBLISHABLE_KEY) so GET https://<domain>/api/config returns a non-empty publishableKey.
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in the mobile build should match that Clerk instance (you already embed it; it’s the safety net).
+Optional reply to App Review (short)
+You can paste something like:
+
+We identified a cold-start issue where the splash could dismiss before remote configuration finished, producing a blank screen on slow networks. We now keep the splash visible until configuration completes, add a loading state and network timeout with safe fallbacks, and validate Clerk keys. We also verified /api/config on our production host. Please test build 1.0 (16) or newer.
+
+Ship a new build (bump build number) with this commit, then resubmit.
+
+I can commit and push this fix to main if you want it on GitHub/Replit immediately.
+
+commit and push
+

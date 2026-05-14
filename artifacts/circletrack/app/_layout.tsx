@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/reac
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setBaseUrl, setAuthTokenGetter } from "@workspace/api-client-react";
@@ -115,47 +116,76 @@ export default function RootLayout() {
     Inter_700Bold,
   });
 
-  const [clerkConfig, setClerkConfig] = useState<ClerkConfig>({
-    publishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "",
-  });
+  const [clerkConfig, setClerkConfig] = useState<ClerkConfig | null>(null);
 
   useEffect(() => {
-    const domain = process.env.EXPO_PUBLIC_DOMAIN;
-    if (!domain) return;
+    const envKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
+    const domain = process.env.EXPO_PUBLIC_DOMAIN?.trim();
+
+    if (!domain) {
+      setClerkConfig({ publishableKey: envKey });
+      return;
+    }
 
     const baseUrl = `https://${domain}`;
     setBaseUrl(baseUrl);
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const ac = new AbortController();
+    const timeoutMs = 10_000;
+    const t = setTimeout(() => ac.abort(), timeoutMs);
 
-    fetch(`${baseUrl}/api/config`, { signal: controller.signal })
-      .then((r) => r.json())
-      .then((cfg: ClerkConfig) => {
-        clearTimeout(timeout);
-        if (cfg.publishableKey) {
-          console.log("[ClerkConfig] remote key:", cfg.publishableKey?.slice(0, 20), "proxyUrl:", cfg.proxyUrl ?? "none");
-          setClerkConfig(cfg);
-        }
-      })
-      .catch((err) => {
-        clearTimeout(timeout);
-        console.log("[ClerkConfig] fetch failed, keeping env key:", err?.message);
-      });
+    (async () => {
+      try {
+        const r = await fetch(`${baseUrl}/api/config`, { signal: ac.signal });
+        if (!r.ok) throw new Error(`config HTTP ${r.status}`);
+        const cfg = (await r.json()) as ClerkConfig;
+        const key = cfg.publishableKey && cfg.publishableKey.length > 0 ? cfg.publishableKey : envKey;
+        console.log("[ClerkConfig] publishableKey:", key?.slice(0, 20), "proxyUrl:", cfg.proxyUrl ?? "none");
+        setClerkConfig({ publishableKey: key, ...(cfg.proxyUrl ? { proxyUrl: cfg.proxyUrl } : {}) });
+      } catch (err) {
+        console.log("[ClerkConfig] fetch failed, using env fallback:", (err as Error)?.message);
+        setClerkConfig({ publishableKey: envKey });
+      } finally {
+        clearTimeout(t);
+      }
+    })();
 
     return () => {
-      clearTimeout(timeout);
-      controller.abort();
+      clearTimeout(t);
+      ac.abort();
     };
   }, []);
 
+  const fontsReady = Boolean(fontsLoaded || fontError);
+  const appReady = fontsReady && clerkConfig !== null;
+
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if (appReady) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [appReady]);
 
-  if (!fontsLoaded && !fontError) return null;
+  if (!fontsReady) {
+    return null;
+  }
+
+  if (!clerkConfig) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#f6f8fb" }}>
+        <ActivityIndicator size="large" color="#18a574" />
+      </View>
+    );
+  }
+
+  if (!clerkConfig.publishableKey) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#f6f8fb", padding: 24 }}>
+        <Text style={{ fontSize: 16, textAlign: "center", color: "#141c2e" }}>
+          Missing Clerk configuration. Set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY for this build.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ClerkProvider
