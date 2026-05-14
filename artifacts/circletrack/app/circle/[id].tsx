@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
+import { getCurrencySymbol } from "@/constants/currencies";
 import React, { useState } from "react";
 import {
   ActionSheetIOS,
@@ -57,6 +58,7 @@ export default function CircleDetailScreen() {
       queryKey: getGetRoscaDashboardQueryKey(circleId),
     },
   });
+  const currencySymbol = getCurrencySymbol(dashboard?.rosca.currency ?? "USD");
   const {
     data: ratings,
     refetch: refetchRatings,
@@ -299,7 +301,7 @@ export default function CircleDetailScreen() {
             <View style={styles.statsRow}>
               <StatCard
                 label={t("potAmount")}
-                value={`$${dashboard.potAmount.toLocaleString()}`}
+                value={`${currencySymbol}${dashboard.potAmount.toLocaleString()}`}
                 color={colors.primary}
                 colors={colors}
                 isTablet={isTablet}
@@ -356,6 +358,7 @@ export default function CircleDetailScreen() {
                 colors={colors}
                 t={t}
                 isTablet={isTablet}
+                currencySymbol={currencySymbol}
                 onRecordPayment={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push(`/circle/${id}/record-payment?memberId=${ms.memberId}&memberName=${encodeURIComponent(ms.memberName)}&amountDue=${ms.amountDue}`);
@@ -373,6 +376,7 @@ export default function CircleDetailScreen() {
             t={t}
             router={router}
             isTablet={isTablet}
+            currencySymbol={currencySymbol}
           />
         )}
 
@@ -406,7 +410,7 @@ export default function CircleDetailScreen() {
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.memberName, { color: colors.foreground }]}>{ms.memberName}</Text>
                   <Text style={[styles.memberSub, { color: colors.mutedForeground }]}>
-                    ${ms.amountPaid.toLocaleString()} / ${ms.amountDue.toLocaleString()}
+                    {currencySymbol}{ms.amountPaid.toLocaleString()} / {currencySymbol}{ms.amountDue.toLocaleString()}
                   </Text>
                 </View>
                 <Pressable
@@ -499,7 +503,7 @@ export default function CircleDetailScreen() {
 }
 
 function PaymentsPreview({
-  dashboard, id, colors, t, router, isTablet,
+  dashboard, id, colors, t, router, isTablet, currencySymbol,
 }: {
   dashboard: DashboardSummary;
   id: string;
@@ -507,6 +511,7 @@ function PaymentsPreview({
   t: (key: TranslationKeys) => string;
   router: ReturnType<typeof import("expo-router").useRouter>;
   isTablet: boolean;
+  currencySymbol: string;
 }) {
   const pStyles = StyleSheet.create({
     header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 16, marginBottom: 10 },
@@ -541,7 +546,7 @@ function PaymentsPreview({
           </View>
           <View style={pStyles.info}>
             <Text style={pStyles.name}>{ms.memberName}</Text>
-            <Text style={pStyles.sub}>${ms.amountPaid.toLocaleString()} / ${ms.amountDue.toLocaleString()}</Text>
+            <Text style={pStyles.sub}>{currencySymbol}{ms.amountPaid.toLocaleString()} / {currencySymbol}{ms.amountDue.toLocaleString()}</Text>
           </View>
           <View style={[pStyles.badge, { backgroundColor: (ms.isPaid ? colors.success : ms.isLate ? colors.destructive : colors.mutedForeground) + "20" }]}>
             <Text style={[pStyles.badgeText, { color: ms.isPaid ? colors.success : ms.isLate ? colors.destructive : colors.mutedForeground }]}>
@@ -586,7 +591,7 @@ function createStatStyles(isTablet: boolean) {
 }
 
 function MemberStatusRow({
-  memberStatus, circleId, colors, t, onRecordPayment, isTablet,
+  memberStatus, circleId, colors, t, onRecordPayment, isTablet, currencySymbol,
 }: {
   memberStatus: {
     memberId: number;
@@ -602,6 +607,7 @@ function MemberStatusRow({
   colors: ReturnType<typeof import("@/hooks/useColors").useColors>;
   t: (key: TranslationKeys) => string;
   onRecordPayment: () => void;
+  currencySymbol: string;
   isTablet: boolean;
 }) {
   const isPaid = memberStatus.isPaid;
@@ -621,7 +627,7 @@ function MemberStatusRow({
       <View style={rowStyles.info}>
         <Text style={[rowStyles.name, { color: colors.foreground }]}>{memberStatus.memberName}</Text>
         <Text style={[rowStyles.sub, { color: colors.mutedForeground }]}>
-          ${memberStatus.amountPaid.toLocaleString()} / ${memberStatus.amountDue.toLocaleString()}
+          {currencySymbol}{memberStatus.amountPaid.toLocaleString()} / {currencySymbol}{memberStatus.amountDue.toLocaleString()}
         </Text>
       </View>
       <View style={{ alignItems: "flex-end", gap: 6 }}>

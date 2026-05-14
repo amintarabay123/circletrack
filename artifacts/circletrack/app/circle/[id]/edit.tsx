@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
+import { CURRENCIES, getCurrencySymbol } from "@/constants/currencies";
 
 const FREQUENCIES = [
   CreateRoscaBodyFrequency.weekly,
@@ -45,6 +46,8 @@ export default function EditCircleScreen() {
   const [frequency, setFrequency] = useState<Frequency>("monthly");
   const [contributionAmount, setContributionAmount] = useState("100");
   const [totalCycles, setTotalCycles] = useState("10");
+  const [currency, setCurrency] = useState("USD");
+  const [showCurrencyPicker, setShowCurrencyPicker] = useState(false);
 
   const { data: rosca, isLoading } = useGetRosca(circleId, {
     query: {
@@ -74,6 +77,7 @@ export default function EditCircleScreen() {
     setFrequency((rosca.frequency as Frequency) ?? "monthly");
     setContributionAmount(String(rosca.contributionAmount ?? 100));
     setTotalCycles(String(rosca.totalCycles ?? 10));
+    setCurrency(rosca.currency ?? "USD");
   }, [rosca]);
 
   const { mutate: updateRosca, isPending } = useUpdateRosca({
@@ -119,6 +123,7 @@ export default function EditCircleScreen() {
         frequency,
         contributionAmount: amount,
         totalCycles: cycles,
+        currency,
       },
     });
   }
@@ -208,11 +213,56 @@ export default function EditCircleScreen() {
                 </Pressable>
               </View>
 
+              <View style={styles.section}>
+                <Text style={styles.label}>{t("currency")}</Text>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.input,
+                    styles.picker,
+                    { borderColor: showCurrencyPicker ? colors.primary : colors.border },
+                    pressed && { opacity: 0.7 },
+                  ]}
+                  onPress={() => setShowCurrencyPicker(!showCurrencyPicker)}
+                >
+                  <Text style={[styles.pickerText, { color: colors.foreground }]}>
+                    {CURRENCIES.find((c) => c.code === currency)?.label ?? currency}
+                  </Text>
+                  <Ionicons name={showCurrencyPicker ? "chevron-up" : "chevron-down"} size={16} color={showCurrencyPicker ? colors.primary : colors.mutedForeground} />
+                </Pressable>
+                {showCurrencyPicker && (
+                  <View style={[styles.currencyList, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                    {CURRENCIES.map((c, idx) => (
+                      <Pressable
+                        key={c.code}
+                        style={({ pressed }) => [
+                          styles.currencyItem,
+                          idx < CURRENCIES.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+                          c.code === currency && { backgroundColor: colors.primary + "12" },
+                          pressed && { opacity: 0.7 },
+                        ]}
+                        onPress={() => {
+                          setCurrency(c.code);
+                          setShowCurrencyPicker(false);
+                          Haptics.selectionAsync();
+                        }}
+                      >
+                        <Text style={{ color: colors.foreground, fontFamily: "Inter_400Regular", fontSize: 15, flex: 1 }}>
+                          {c.label}
+                        </Text>
+                        {c.code === currency && (
+                          <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
+                        )}
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
+              </View>
+
               <View style={styles.row}>
                 <View style={[styles.section, { flex: 1 }]}>
                   <Text style={styles.label}>{t("baseAmount")}</Text>
                   <View style={styles.amountRow}>
-                    <Text style={styles.dollar}>$</Text>
+                    <Text style={styles.dollar}>{getCurrencySymbol(currency)}</Text>
                     <TextInput
                       style={[styles.input, { flex: 1 }]}
                       value={contributionAmount}
@@ -321,6 +371,18 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       fontFamily: "Inter_500Medium",
       color: colors.mutedForeground,
       marginRight: 2,
+    },
+    currencyList: {
+      marginTop: 4,
+      borderWidth: 1,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    currencyItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 14,
+      paddingVertical: 12,
     },
     saveBtn: {
       marginTop: 12,

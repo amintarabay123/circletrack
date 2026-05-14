@@ -13,4 +13,5 @@ export interface CreateRoscaBody {
   frequency: CreateRoscaBodyFrequency;
   contributionAmount: number;
   totalCycles: number;
+  currency?: string;
 }

@@ -11,6 +11,7 @@ export const roscasTable = pgTable("roscas", {
   contributionAmount: numeric("contribution_amount", { precision: 10, scale: 2 }).notNull(),
   currentCycle: integer("current_cycle").notNull().default(1),
   totalCycles: integer("total_cycles").notNull(),
+  currency: text("currency").notNull().default("USD"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

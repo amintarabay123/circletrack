@@ -153,6 +153,8 @@ export const translations = {
     editMemberName: "Editar nombre",
     editMember: "Editar Integrante",
     requireTurnOrderError: "El orden de turno es obligatorio",
+    currency: "Moneda",
+    selectCurrency: "Seleccionar moneda",
   },
   en: {
     appName: "CircleTrack",
@@ -306,6 +308,8 @@ export const translations = {
     editMemberName: "Edit name",
     editMember: "Edit Member",
     requireTurnOrderError: "Turn order is required",
+    currency: "Currency",
+    selectCurrency: "Select currency",
   },
 };
 

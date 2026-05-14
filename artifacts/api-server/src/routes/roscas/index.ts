@@ -186,6 +186,7 @@ router.post("/roscas", async (req: any, res): Promise<void> => {
       frequency: parsed.data.frequency,
       contributionAmount: String(parsed.data.contributionAmount),
       totalCycles: parsed.data.totalCycles,
+      currency: parsed.data.currency ?? "USD",
       currentCycle: 1,
       isActive: true,
     }).returning();
@@ -226,6 +227,7 @@ router.put("/roscas/:id", async (req: any, res): Promise<void> => {
       frequency: parsed.data.frequency,
       contributionAmount: String(parsed.data.contributionAmount),
       totalCycles: parsed.data.totalCycles,
+      currency: parsed.data.currency ?? "USD",
     }).where(eq(roscasTable.id, id)).returning();
     if (!rosca) { res.status(404).json({ error: "Rosca not found" }); return; }
     res.json(formatRosca(rosca));

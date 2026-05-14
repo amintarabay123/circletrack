@@ -352,6 +352,8 @@ components:
           type: integer
         totalCycles:
           type: integer
+        currency:
+          type: string
         isActive:
           type: boolean
         createdAt:
@@ -365,6 +367,7 @@ components:
         - contributionAmount
         - currentCycle
         - totalCycles
+        - currency
         - isActive
         - createdAt
 
@@ -383,6 +386,8 @@ components:
           type: number
         totalCycles:
           type: integer
+        currency:
+          type: string
       required:
         - name
         - startDate

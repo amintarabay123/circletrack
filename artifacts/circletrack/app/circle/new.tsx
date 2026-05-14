@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
+import { CURRENCIES, getCurrencySymbol } from "@/constants/currencies";
 
 function toYMD(d: Date): string {
   const y = d.getFullYear();
@@ -62,6 +63,8 @@ export default function NewCircleScreen() {
   const [amount, setAmount] = useState("");
   const [totalCycles, setTotalCycles] = useState("12");
   const [startDate, setStartDate] = useState(() => toYMD(new Date()));
+  const [currency, setCurrency] = useState("USD");
+  const [showCurrencyPicker, setShowCurrencyPicker] = useState(false);
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [draftDate, setDraftDate] = useState(() => parseYMD(toYMD(new Date())));
@@ -88,6 +91,7 @@ export default function NewCircleScreen() {
           contributionAmount: parseFloat(amount),
           totalCycles: parseInt(totalCycles, 10) || 12,
           startDate,
+          currency,
         },
       },
       {
@@ -213,7 +217,7 @@ export default function NewCircleScreen() {
             <View style={[styles.field, { flex: 1 }]}>
               <Text style={styles.label}>{t("contributionAmount")}</Text>
               <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.card }]}>
-                <Text style={[styles.prefix, { color: colors.mutedForeground }]}>$</Text>
+                <Text style={[styles.prefix, { color: colors.mutedForeground }]}>{getCurrencySymbol(currency)}</Text>
                 <TextInput
                   style={[styles.inputInner, { color: colors.foreground }]}
                   value={amount}
@@ -237,6 +241,50 @@ export default function NewCircleScreen() {
                 keyboardType="number-pad"
               />
             </View>
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>{t("currency")}</Text>
+            <Pressable
+              style={({ pressed }) => [
+                styles.input,
+                { flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderColor: showCurrencyPicker ? colors.primary : colors.border, backgroundColor: colors.card },
+                pressed && { opacity: 0.85 },
+              ]}
+              onPress={() => setShowCurrencyPicker(!showCurrencyPicker)}
+            >
+              <Text style={{ color: colors.foreground, fontFamily: "Inter_400Regular", fontSize: 15 }}>
+                {CURRENCIES.find((c) => c.code === currency)?.label ?? currency}
+              </Text>
+              <Ionicons name={showCurrencyPicker ? "chevron-up" : "chevron-down"} size={16} color={showCurrencyPicker ? colors.primary : colors.mutedForeground} />
+            </Pressable>
+            {showCurrencyPicker && (
+              <View style={[styles.currencyList, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                {CURRENCIES.map((c, idx) => (
+                  <Pressable
+                    key={c.code}
+                    style={({ pressed }) => [
+                      styles.currencyItem,
+                      idx < CURRENCIES.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+                      c.code === currency && { backgroundColor: colors.primary + "12" },
+                      pressed && { opacity: 0.7 },
+                    ]}
+                    onPress={() => {
+                      setCurrency(c.code);
+                      setShowCurrencyPicker(false);
+                      Haptics.selectionAsync();
+                    }}
+                  >
+                    <Text style={{ color: colors.foreground, fontFamily: "Inter_400Regular", fontSize: 15, flex: 1 }}>
+                      {c.label}
+                    </Text>
+                    {c.code === currency && (
+                      <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
+                    )}
+                  </Pressable>
+                ))}
+              </View>
+            )}
           </View>
 
           <View style={styles.field}>
@@ -418,6 +466,18 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
     row: {
       flexDirection: "row",
       gap: 12,
+    },
+    currencyList: {
+      marginTop: 4,
+      borderWidth: 1,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    currencyItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 14,
+      paddingVertical: 12,
     },
     dateBtn: {
       flexDirection: "row",

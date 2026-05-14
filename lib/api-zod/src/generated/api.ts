@@ -31,6 +31,7 @@ export const ListRoscasResponseItem = zod.object({
   contributionAmount: zod.number(),
   currentCycle: zod.number(),
   totalCycles: zod.number(),
+  currency: zod.string(),
   isActive: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -51,6 +52,7 @@ export const CreateRoscaBody = zod.object({
   ]),
   contributionAmount: zod.number(),
   totalCycles: zod.number(),
+  currency: zod.string().optional(),
 });
 
 /**
@@ -74,6 +76,7 @@ export const GetRoscaResponse = zod.object({
   contributionAmount: zod.number(),
   currentCycle: zod.number(),
   totalCycles: zod.number(),
+  currency: zod.string(),
   isActive: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -97,6 +100,7 @@ export const UpdateRoscaBody = zod.object({
   ]),
   contributionAmount: zod.number(),
   totalCycles: zod.number(),
+  currency: zod.string().optional(),
 });
 
 export const UpdateRoscaResponse = zod.object({
@@ -113,6 +117,7 @@ export const UpdateRoscaResponse = zod.object({
   contributionAmount: zod.number(),
   currentCycle: zod.number(),
   totalCycles: zod.number(),
+  currency: zod.string(),
   isActive: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -263,6 +268,7 @@ export const GetRoscaDashboardResponse = zod.object({
     contributionAmount: zod.number(),
     currentCycle: zod.number(),
     totalCycles: zod.number(),
+    currency: zod.string(),
     isActive: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),

@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
+import { getCurrencySymbol } from "@/constants/currencies";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
@@ -221,7 +222,7 @@ function CircleCard({ circle, onPress }: { circle: Rosca; onPress: () => void })
         <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", marginTop: isTablet ? 14 : 12 }}>
           <View>
             <Text style={{ fontSize: isTablet ? 28 : 24, fontFamily: "Inter_700Bold", color: colors.primary, lineHeight: isTablet ? 34 : 28 }}>
-              ${circle.contributionAmount.toLocaleString()}
+              {getCurrencySymbol(circle.currency)}{circle.contributionAmount.toLocaleString()}
             </Text>
             <Text style={{ fontSize: isTablet ? 13 : 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginTop: 2 }}>
               {t("contributionAmount")}

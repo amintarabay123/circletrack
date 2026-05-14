@@ -28,6 +28,7 @@ export interface Rosca {
   contributionAmount: number;
   currentCycle: number;
   totalCycles: number;
+  currency: string;
   isActive: boolean;
   createdAt: string;
 }
@@ -49,6 +50,7 @@ export interface CreateRoscaBody {
   frequency: CreateRoscaBodyFrequency;
   contributionAmount: number;
   totalCycles: number;
+  currency?: string;
 }
 
 export interface Member {

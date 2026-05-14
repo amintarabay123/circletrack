@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { getCurrencySymbol } from "@/constants/currencies";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
@@ -82,6 +83,7 @@ export default function PaymentsScreen() {
   const totalCycles = dashboard?.rosca.totalCycles ?? 1;
   const currentCycle = dashboard?.rosca.currentCycle ?? 1;
   const contributionAmount = dashboard?.rosca.contributionAmount ?? 0;
+  const currencySymbol = getCurrencySymbol(dashboard?.rosca.currency ?? "USD");
   const cycleOptions = Array.from({ length: totalCycles }, (_, i) => i + 1);
 
   const invalidate = () => {
@@ -257,7 +259,7 @@ export default function PaymentsScreen() {
                   </View>
                   <View style={styles.paymentRight}>
                     <Text style={[styles.paymentAmount, { color: colors.foreground }]}>
-                      ${Number(payment.amount).toLocaleString()}
+                      {currencySymbol}{Number(payment.amount).toLocaleString()}
                     </Text>
                     <View style={[
                       styles.badge,
@@ -299,7 +301,7 @@ export default function PaymentsScreen() {
               >
                 <Text style={{ color: selectedMember ? colors.foreground : colors.mutedForeground, fontFamily: "Inter_400Regular", fontSize: 16, flex: 1 }}>
                   {selectedMember
-                    ? `${selectedMember.name} — $${(contributionAmount * selectedMember.shares).toLocaleString()}`
+                    ? `${selectedMember.name} — ${currencySymbol}${(contributionAmount * selectedMember.shares).toLocaleString()}`
                     : t("selectMember")}
                 </Text>
                 <Ionicons
@@ -329,7 +331,7 @@ export default function PaymentsScreen() {
                       <View style={{ flex: 1 }}>
                         <Text style={[styles.dropdownName, { color: colors.foreground }]}>{m.name}</Text>
                         <Text style={[styles.dropdownAmount, { color: colors.mutedForeground }]}>
-                          ${(contributionAmount * m.shares).toLocaleString()}
+                          {currencySymbol}{(contributionAmount * m.shares).toLocaleString()}
                         </Text>
                       </View>
                       {m.id === selectedMemberId && (

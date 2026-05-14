@@ -15,6 +15,7 @@ export interface Rosca {
   contributionAmount: number;
   currentCycle: number;
   totalCycles: number;
+  currency: string;
   isActive: boolean;
   createdAt: Date;
 }
