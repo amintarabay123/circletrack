@@ -1,4 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
+import { PaymentReceiptModal, type ReceiptData } from "@/components/PaymentReceiptModal";
+import { getCurrencySymbol } from "@/constants/currencies";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
@@ -49,6 +51,7 @@ export default function RecordPaymentScreen() {
   const [amount, setAmount] = useState(amountDue ? parseFloat(amountDue).toFixed(2) : "");
   const [notes, setNotes] = useState("");
   const [paidAt, setPaidAt] = useState(() => new Date().toISOString().split("T")[0]);
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
 
   const { mutate: recordPayment, isPending } = useRecordPayment();
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
@@ -71,12 +74,22 @@ export default function RecordPaymentScreen() {
         },
       },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: ["getRoscaDashboard", circleId] });
           queryClient.invalidateQueries({ queryKey: ["listPayments", circleId] });
           queryClient.invalidateQueries({ queryKey: ["getMemberRatings", circleId] });
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          router.back();
+          setReceiptData({
+            paymentId: data.id,
+            circleName: dashboard?.rosca.name ?? "",
+            memberName: memberName ? decodeURIComponent(memberName) : "",
+            amount: data.amount,
+            currency: dashboard?.rosca.currency ?? "USD",
+            cycle: data.cycle,
+            totalCycles: dashboard?.rosca.totalCycles ?? 1,
+            paidAt: data.paidAt,
+            notes: data.notes ?? null,
+          });
         },
         onError: () => {
           Alert.alert(t("error"), "No se pudo registrar el pago.");
@@ -88,6 +101,7 @@ export default function RecordPaymentScreen() {
   const styles = makeStyles(colors);
 
   return (
+    <>
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -138,7 +152,7 @@ export default function RecordPaymentScreen() {
         <View style={styles.field}>
           <Text style={styles.label}>{t("amount")}</Text>
           <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.card }]}>
-            <Text style={[styles.prefix, { color: colors.mutedForeground }]}>$</Text>
+            <Text style={[styles.prefix, { color: colors.mutedForeground }]}>{getCurrencySymbol(dashboard?.rosca.currency ?? "USD")}</Text>
             <TextInput
               style={[styles.inputInner, { color: colors.foreground }]}
               value={amount}
@@ -183,6 +197,14 @@ export default function RecordPaymentScreen() {
       </ScrollView>
     </TabletContainer>
     </KeyboardAvoidingView>
+    <PaymentReceiptModal
+      data={receiptData}
+      onClose={() => {
+        setReceiptData(null);
+        router.back();
+      }}
+    />
+    </>
   );
 }
 

@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { getCurrencySymbol } from "@/constants/currencies";
+import { PaymentReceiptModal, type ReceiptData } from "@/components/PaymentReceiptModal";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
@@ -58,6 +59,7 @@ export default function PaymentsScreen() {
   const [paymentCycle, setPaymentCycle] = useState("1");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentNotes, setPaymentNotes] = useState("");
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
@@ -97,7 +99,20 @@ export default function PaymentsScreen() {
 
   const { mutate: recordPayment, isPending: recording } = useRecordPayment({
     mutation: {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        const cycle = parseInt(paymentCycle, 10);
+        const member = members?.find((m) => m.id === selectedMemberId);
+        setReceiptData({
+          paymentId: data.id,
+          circleName: dashboard?.rosca.name ?? "",
+          memberName: member?.name ?? "",
+          amount: data.amount,
+          currency: dashboard?.rosca.currency ?? "USD",
+          cycle: data.cycle,
+          totalCycles: dashboard?.rosca.totalCycles ?? cycle,
+          paidAt: data.paidAt,
+          notes: data.notes ?? null,
+        });
         invalidate();
         setAddOpen(false);
         resetForm();
@@ -401,6 +416,10 @@ export default function PaymentsScreen() {
           </KeyboardAvoidingView>
         </Modal>
       </View>
+      <PaymentReceiptModal
+        data={receiptData}
+        onClose={() => setReceiptData(null)}
+      />
     </TabletContainer>
   );
 }
