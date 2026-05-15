@@ -43,3 +43,8 @@ externalPort = 3000
 [[ports]]
 localPort = 25112
 externalPort = 3001
+
+[userenv]
+
+[userenv.production]
+CLERK_LIVE_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuY2lyY2xldHJhY2suaXNsYW5kdGFjb3NidmkuY29tJA"
