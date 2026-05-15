@@ -14,7 +14,12 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAddMember } from "@workspace/api-client-react";
+import {
+  useAddMember,
+  getListMembersQueryKey,
+  getGetRoscaDashboardQueryKey,
+  getGetMemberRatingsQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
@@ -61,11 +66,13 @@ export default function AddMemberScreen() {
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["listMembers", circleId] });
-          queryClient.invalidateQueries({ queryKey: ["getRoscaDashboard", circleId] });
-          queryClient.invalidateQueries({ queryKey: ["getMemberRatings", circleId] });
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.back();
+          queueMicrotask(() => {
+            queryClient.invalidateQueries({ queryKey: getListMembersQueryKey(circleId) });
+            queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(circleId) });
+            queryClient.invalidateQueries({ queryKey: getGetMemberRatingsQueryKey(circleId) });
+          });
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         },
         onError: () => {
           Alert.alert(t("error"), "No se pudo agregar el integrante.");
