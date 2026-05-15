@@ -1,5 +1,6 @@
 export type CustomFetchOptions = RequestInit & {
   responseType?: "json" | "text" | "blob" | "auto";
+  timeoutMs?: number;
 };
 
 export type ErrorType<T = unknown> = ApiError<T>;
@@ -322,16 +323,26 @@ async function parseSuccessBody(
   }
 }
 
+const DEFAULT_TIMEOUT_MS = 10_000;
+
 export async function customFetch<T = unknown>(
   input: RequestInfo | URL,
   options: CustomFetchOptions = {},
 ): Promise<T> {
   input = applyBaseUrl(input);
-  const { responseType = "auto", headers: headersInit, ...init } = options;
+  const { responseType = "auto", headers: headersInit, timeoutMs = DEFAULT_TIMEOUT_MS, signal: callerSignal, ...init } = options;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  if (callerSignal) {
+    callerSignal.addEventListener("abort", () => controller.abort());
+  }
 
   const method = resolveMethod(input, init.method);
 
   if (init.body != null && (method === "GET" || method === "HEAD")) {
+    clearTimeout(timeoutId);
     throw new TypeError(`customFetch: ${method} requests cannot have a body.`);
   }
 
@@ -360,7 +371,12 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  let response: Response;
+  try {
+    response = await fetch(input, { ...init, method, headers, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);

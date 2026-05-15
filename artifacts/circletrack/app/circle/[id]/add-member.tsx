@@ -74,8 +74,9 @@ export default function AddMemberScreen() {
           });
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         },
-        onError: () => {
-          Alert.alert(t("error"), "No se pudo agregar el integrante.");
+        onError: (err: unknown) => {
+          const msg = err instanceof Error ? err.message : "No se pudo agregar el integrante.";
+          Alert.alert(t("error"), msg);
         },
       }
     );
