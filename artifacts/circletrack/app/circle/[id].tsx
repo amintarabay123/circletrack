@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { getCurrencySymbol } from "@/constants/currencies";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   ActionSheetIOS,
   ActivityIndicator,
@@ -74,6 +74,15 @@ export default function CircleDetailScreen() {
 
   const { mutate: deleteRosca } = useDeleteRosca();
   const { mutate: deleteMemberMutate } = useDeleteMember();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isNaN(circleId)) {
+        refetch();
+        refetchRatings();
+      }
+    }, [circleId, refetch, refetchRatings])
+  );
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? (isTablet ? 46 : 34) : insets.bottom;
