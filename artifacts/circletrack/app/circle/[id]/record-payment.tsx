@@ -20,6 +20,9 @@ import {
   useRecordPayment,
   useGetRoscaDashboard,
   getGetRoscaDashboardQueryKey,
+  getGetMemberRatingsQueryKey,
+  getListPaymentsQueryKey,
+  getListMembersQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/context/LanguageContext";
@@ -75,9 +78,10 @@ export default function RecordPaymentScreen() {
       },
       {
         onSuccess: (data) => {
-          queryClient.invalidateQueries({ queryKey: ["getRoscaDashboard", circleId] });
-          queryClient.invalidateQueries({ queryKey: ["listPayments", circleId] });
-          queryClient.invalidateQueries({ queryKey: ["getMemberRatings", circleId] });
+          queryClient.invalidateQueries({ queryKey: getGetRoscaDashboardQueryKey(circleId) });
+          queryClient.invalidateQueries({ queryKey: getListPaymentsQueryKey(circleId) });
+          queryClient.invalidateQueries({ queryKey: getGetMemberRatingsQueryKey(circleId) });
+          queryClient.invalidateQueries({ queryKey: getListMembersQueryKey(circleId) });
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           setReceiptData({
             paymentId: data.id,
@@ -91,8 +95,9 @@ export default function RecordPaymentScreen() {
             notes: data.notes ?? null,
           });
         },
-        onError: () => {
-          Alert.alert(t("error"), "No se pudo registrar el pago.");
+        onError: (err: unknown) => {
+          const msg = err instanceof Error ? err.message : "No se pudo registrar el pago.";
+          Alert.alert(t("error"), msg);
         },
       }
     );
