@@ -41,6 +41,10 @@ export default function SignInScreen() {
 
   const handleSSO = useCallback(
     async (strategy: "oauth_google" | "oauth_apple") => {
+      if (!isLoaded) {
+        Alert.alert("Not ready", "Clerk has not finished loading. Please wait a moment and try again.");
+        return;
+      }
       setLoading(strategy);
       try {
         const { createdSessionId, setActive } = await startSSOFlow({
@@ -52,12 +56,12 @@ export default function SignInScreen() {
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        Alert.alert(t("error"), msg);
+        Alert.alert("Sign-in error", msg);
       } finally {
         setLoading(null);
       }
     },
-    [startSSOFlow, t]
+    [startSSOFlow, t, isLoaded]
   );
 
   const styles = makeStyles(colors);
@@ -109,7 +113,7 @@ export default function SignInScreen() {
               pressed && styles.pressed,
             ]}
             onPress={() => handleSSO("oauth_google")}
-            disabled={!isLoaded || !!loading}
+            disabled={!!loading}
             testID="sign-in-google"
           >
             {loading === "oauth_google" ? (
@@ -131,7 +135,7 @@ export default function SignInScreen() {
                 pressed && styles.pressed,
               ]}
               onPress={() => handleSSO("oauth_apple")}
-              disabled={!isLoaded || !!loading}
+              disabled={!!loading}
               testID="sign-in-apple"
             >
               {loading === "oauth_apple" ? (
