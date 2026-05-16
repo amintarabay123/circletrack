@@ -18,7 +18,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
-import { tokenCache } from "@/lib/tokenCache";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -50,12 +49,7 @@ export default function SignInScreen() {
       setLoading(strategy);
       try {
         const redirectUrl = AuthSession.makeRedirectUri({ scheme: "circletrack" });
-        let result = await startSSOFlow({ strategy, redirectUrl });
-        // If Clerk rejects with 401 (stale cached JWT), clear cache and retry once
-        if (!result.createdSessionId) {
-          await tokenCache.clearToken?.("__clerk_client_jwt");
-          result = await startSSOFlow({ strategy, redirectUrl });
-        }
+        const result = await startSSOFlow({ strategy, redirectUrl });
         if (result.createdSessionId && result.setActive) {
           await result.setActive({ session: result.createdSessionId });
         }
