@@ -1,4 +1,4 @@
-import { useSSO } from "@clerk/clerk-expo";
+import { useSSO, useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
@@ -25,6 +25,7 @@ export default function SignInScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useLang();
+  const { isLoaded } = useAuth();
   const { startSSOFlow } = useSSO();
   const [loading, setLoading] = useState<string | null>(null);
 
