@@ -14,12 +14,4 @@ router.get("/me", (req, res) => {
   res.json({ userId: userId ?? null });
 });
 
-router.get("/admin/migrate-user/:newUserId", async (req, res) => {
-  const { db, roscasTable } = await import("@workspace/db");
-  const { sql } = await import("drizzle-orm");
-  const newUserId = req.params.newUserId;
-  const result = await db.execute(sql`UPDATE roscas SET user_id = ${newUserId} WHERE user_id != ${newUserId} RETURNING id, name, user_id`);
-  res.json({ updated: result.rows });
-});
-
 export default router;
