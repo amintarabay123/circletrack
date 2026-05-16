@@ -50,7 +50,6 @@ const queryClient = new QueryClient({
 
 interface ClerkConfig {
   publishableKey: string;
-  proxyUrl?: string;
 }
 
 function AuthSetup({ children }: { children: React.ReactNode }) {
@@ -195,9 +194,12 @@ export default function RootLayout() {
       try {
         const r = await fetch(`${baseUrl}/api/config`, { signal: ac.signal });
         if (!r.ok) throw new Error(`config HTTP ${r.status}`);
+        // Baked-in env key always wins — the config endpoint may be tied to a
+        // different Clerk instance (dev/Replit internal) and its proxyUrl uses an
+        // ephemeral internal domain that is unreachable from mobile devices.
         const cfg = (await r.json()) as ClerkConfig;
-        const key = cfg.publishableKey && cfg.publishableKey.length > 0 ? cfg.publishableKey : envKey;
-        setClerkConfig({ publishableKey: key, ...(cfg.proxyUrl ? { proxyUrl: cfg.proxyUrl } : {}) });
+        const key = envKey || cfg.publishableKey || "";
+        setClerkConfig({ publishableKey: key });
       } catch {
         setClerkConfig({ publishableKey: envKey });
       } finally {
@@ -245,7 +247,6 @@ export default function RootLayout() {
     <ClerkProvider
       publishableKey={clerkConfig.publishableKey}
       tokenCache={tokenCache}
-      {...(clerkConfig.proxyUrl ? { proxyUrl: clerkConfig.proxyUrl } : {})}
     >
       <ClerkLoaded>
         <SafeAreaProvider>
