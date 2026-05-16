@@ -32,11 +32,13 @@ app.use(
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// CLERK_LIVE_SECRET_KEY is the sk_live_... key for the production Clerk instance.
-// Replit's auth integration resets CLERK_SECRET_KEY to sk_test_... on sync,
-// so we use a separate env var that it will never touch.
+// Replit's auth integration keeps CLERK_PUBLISHABLE_KEY and VITE_CLERK_PUBLISHABLE_KEY
+// as pk_test_... (dev instance). The production iOS app uses the live Clerk instance,
+// so we must explicitly pass both live keys — mismatched publishable+secret keys cause
+// clerkMiddleware to fetch JWKS from the wrong instance and reject every live JWT (401).
 app.use(clerkMiddleware({
-  secretKey: process.env.CLERK_LIVE_SECRET_KEY || process.env.CLERK_SECRET_KEY,
+  publishableKey: process.env.CLERK_LIVE_PUBLISHABLE_KEY || process.env.CLERK_PUBLISHABLE_KEY,
+  secretKey: process.env.CLERK_SECRET_KEY,
 }));
 
 app.use("/api", router);
