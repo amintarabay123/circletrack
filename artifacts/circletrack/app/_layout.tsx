@@ -1,4 +1,4 @@
-import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -90,6 +90,22 @@ function AuthSetup({ children }: { children: React.ReactNode }) {
     wasSignedIn.current = signed;
   }, [isSignedIn, isLoaded, qc]);
 
+  return <>{children}</>;
+}
+
+/**
+ * Replaces <ClerkLoaded> which renders nothing while Clerk initializes,
+ * causing a white screen. This shows a spinner instead.
+ */
+function ClerkLoadingFallback({ children }: { children: React.ReactNode }) {
+  const { isLoaded } = useAuth();
+  if (!isLoaded) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#f6f8fb" }}>
+        <ActivityIndicator size="large" color="#18a574" />
+      </View>
+    );
+  }
   return <>{children}</>;
 }
 
@@ -221,11 +237,7 @@ export default function RootLayout() {
     }
   }, [appReady]);
 
-  if (!fontsReady) {
-    return null;
-  }
-
-  if (!clerkConfig) {
+  if (!fontsReady || !clerkConfig) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#f6f8fb" }}>
         <ActivityIndicator size="large" color="#18a574" />
@@ -248,7 +260,7 @@ export default function RootLayout() {
       publishableKey={clerkConfig.publishableKey}
       tokenCache={tokenCache}
     >
-      <ClerkLoaded>
+      <ClerkLoadingFallback>
         <SafeAreaProvider>
           <ErrorBoundary>
             <QueryClientProvider client={queryClient}>
@@ -264,7 +276,7 @@ export default function RootLayout() {
             </QueryClientProvider>
           </ErrorBoundary>
         </SafeAreaProvider>
-      </ClerkLoaded>
+      </ClerkLoadingFallback>
     </ClerkProvider>
   );
 }
