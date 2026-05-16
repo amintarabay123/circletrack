@@ -33,6 +33,7 @@ export default function SignInScreen() {
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   useEffect(() => {
+    if (Platform.OS === "web") return;
     void WebBrowser.warmUpAsync();
     return () => {
       void WebBrowser.coolDownAsync();
@@ -152,6 +153,11 @@ export default function SignInScreen() {
 
         <Text style={[styles.disclaimer, { color: colors.mutedForeground }]}>
           {t("signInDesc")}
+        </Text>
+
+        {/* DEBUG — remove before final release */}
+        <Text style={{ fontSize: 11, color: colors.mutedForeground, textAlign: "center", opacity: 0.5 }}>
+          {isLoaded ? "✓ Auth ready" : "⏳ Auth loading…"}
         </Text>
       </ScrollView>
     </KeyboardAvoidingView>
