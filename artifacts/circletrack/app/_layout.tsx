@@ -8,9 +8,11 @@ import {
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import * as Font from "expo-font";
 import { Stack } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Platform, Text, View } from "react-native";
+import { OnboardingModal } from "@/components/OnboardingModal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setBaseUrl, setAuthTokenGetter } from "@workspace/api-client-react";
@@ -90,6 +92,30 @@ function AuthSetup({ children }: { children: React.ReactNode }) {
   }, [isSignedIn, isLoaded, qc]);
 
   return <>{children}</>;
+}
+
+const ONBOARDING_KEY = "circletrack_onboarding_v1";
+
+function RootLayoutWithOnboarding() {
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    SecureStore.getItemAsync(ONBOARDING_KEY)
+      .then((val) => setShowOnboarding(!val))
+      .catch(() => setShowOnboarding(false));
+  }, []);
+
+  const handleComplete = async () => {
+    await SecureStore.setItemAsync(ONBOARDING_KEY, "1").catch(() => {});
+    setShowOnboarding(false);
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <RootLayoutNav />
+      {showOnboarding === true && <OnboardingModal onComplete={handleComplete} />}
+    </View>
+  );
 }
 
 function RootLayoutNav() {
@@ -229,7 +255,7 @@ export default function RootLayout() {
                 <LanguageProvider>
                   <AuthSetup>
                     <ClerkApiReadyGate>
-                      <RootLayoutNav />
+                      <RootLayoutWithOnboarding />
                     </ClerkApiReadyGate>
                   </AuthSetup>
                 </LanguageProvider>

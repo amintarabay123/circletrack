@@ -115,6 +115,15 @@ function CirclesList() {
               <Ionicons name="people-circle-outline" size={72} color={colors.mutedForeground} />
               <Text style={styles.emptyTitle}>{t("noCircles")}</Text>
               <Text style={styles.emptyDesc}>{t("noCirclesDesc")}</Text>
+              <Pressable
+                style={({ pressed }) => [styles.emptyBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.85 : 1 }]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  router.push("/circle/new");
+                }}
+              >
+                <Text style={[styles.emptyBtnText, { color: colors.primaryForeground }]}>{t("createCircle")}</Text>
+              </Pressable>
             </View>
           }
           refreshControl={
@@ -297,6 +306,16 @@ function makeStyles(colors: ReturnType<typeof import("@/hooks/useColors").useCol
       backgroundColor: colors.primary + "20",
     },
     retryText: {
+      fontSize: isTablet ? 18 : 16,
+      fontFamily: "Inter_700Bold",
+    },
+    emptyBtn: {
+      marginTop: 24,
+      paddingHorizontal: 32,
+      paddingVertical: 14,
+      borderRadius: 28,
+    },
+    emptyBtnText: {
       fontSize: isTablet ? 18 : 16,
       fontFamily: "Inter_700Bold",
     },
