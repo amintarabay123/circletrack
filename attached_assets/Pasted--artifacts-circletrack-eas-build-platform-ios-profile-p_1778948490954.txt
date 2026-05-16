@@ -1,0 +1,38 @@
+~/.../artifacts/circletrack$ eas build --platform ios --profile production
+★ eas-cli@18.13.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+
+⚠️ Detected that your app uses Expo Go for development, this is not recommended when building production apps.
+Learn more: https://expo.fyi/why-not-build-expo-go-for-production
+To suppress this warning, set EAS_BUILD_NO_EXPO_GO_WARNING=true.
+
+Resolved "production" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "production" environment on EAS.
+Environment variables loaded from the "production" build profile "env" configuration: EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY, EXPO_PUBLIC_DOMAIN, EXPO_NO_CAPABILITY_SYNC.
+
+✔ Incremented buildNumber from 24 to 25.
+
+
+✔ Using remote iOS credentials (Expo server)
+
+If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
+This is optional, but without Apple account access you will need to provide all the missing values manually and we can only run minimal validation on them.
+✔ Do you want to log in to your Apple account? … yes
+
+› Log in to your Apple Developer account to continue
+✔ Apple ID: … amintarabay@mac.com
+› Restoring session /home/runner/.app-store/auth/amintarabay@mac.com/cookie
+› Team Amin Tarabay (6C792B9LG7)
+› Provider Amin Tarabay (624074)
+✔ Logged in Local session
+✔ Bundle identifier registered com.circletrack.app
+Failed to patch capabilities: [ { capabilityType: 'APPLE_ID_AUTH', option: 'OFF' } ]
+✖ Failed to sync capabilities com.circletrack.app
+Unexpected error occurred while attempting to update capabilities for app "com.circletrack.app".
+Capabilities can be modified manually in the Apple developer console at https://developer-mdn.apple.com/account/resources/identifiers/bundleId/edit/8A9WTV7GJT.
+Auto capability syncing can be disabled with the environment variable `EXPO_NO_CAPABILITY_SYNC=1`.
+There is a problem with the request entity - The bundle '8A9WTV7GJT' cannot be deleted. Delete all the Apps related to this bundle to proceed.
+    Error: build command failed.
