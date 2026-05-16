@@ -28,5 +28,8 @@ export const modules: ModuleMap = {
   "./components/mockups/screenshot-circles-list.tsx": () => import("../components/mockups/screenshot-circles-list.tsx"),
   "./components/mockups/screenshot-record-payment-en.tsx": () => import("../components/mockups/screenshot-record-payment-en.tsx"),
   "./components/mockups/screenshot-record-payment.tsx": () => import("../components/mockups/screenshot-record-payment.tsx"),
-  "./components/mockups/settings.tsx": () => import("../components/mockups/settings.tsx")
+  "./components/mockups/settings.tsx": () => import("../components/mockups/settings.tsx"),
+  "./components/mockups/dashboard-stats/ArcGauge.tsx": () => import("../components/mockups/dashboard-stats/ArcGauge.tsx"),
+  "./components/mockups/dashboard-stats/DonutChart.tsx": () => import("../components/mockups/dashboard-stats/DonutChart.tsx"),
+  "./components/mockups/dashboard-stats/ProgressBars.tsx": () => import("../components/mockups/dashboard-stats/ProgressBars.tsx")
 };
