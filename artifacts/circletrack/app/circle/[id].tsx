@@ -30,6 +30,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
 import { useIsTablet } from "@/hooks/useIsTablet";
+import { CollectionGauge, PaymentDonut, MemberProgressBar } from "@/components/DashboardCharts";
 import type { TranslationKeys } from "@/constants/i18n";
 import type { DashboardSummary, MemberStatus } from "@workspace/api-client-react";
 
@@ -307,46 +308,26 @@ export default function CircleDetailScreen() {
               </Pressable>
             </View>
 
-            <View style={styles.statsRow}>
-              <StatCard
-                label={t("potAmount")}
-                value={`${currencySymbol}${dashboard.potAmount.toLocaleString()}`}
-                color={colors.primary}
-                colors={colors}
-                isTablet={isTablet}
-              />
-              <StatCard
-                label={t("collectionRate")}
-                value={`${collectionPct}%`}
-                color={collectionPct >= 80 ? colors.success : colors.destructive}
-                colors={colors}
-                isTablet={isTablet}
-              />
-            </View>
+            <CollectionGauge
+              collectionRate={dashboard.collectionRate <= 1 ? dashboard.collectionRate : dashboard.collectionRate / 100}
+              potAmount={dashboard.potAmount}
+              currencySymbol={currencySymbol}
+              paidCount={dashboard.paidCount}
+              unpaidCount={dashboard.unpaidCount}
+              lateCount={dashboard.lateCount}
+              colors={colors}
+              isTablet={isTablet}
+              t={t}
+            />
 
-            <View style={styles.statsRow}>
-              <StatCard
-                label={t("paidCount")}
-                value={String(dashboard.paidCount)}
-                color={colors.success}
-                colors={colors}
-                isTablet={isTablet}
-              />
-              <StatCard
-                label={t("unpaidCount")}
-                value={String(dashboard.unpaidCount)}
-                color={colors.mutedForeground}
-                colors={colors}
-                isTablet={isTablet}
-              />
-              <StatCard
-                label={t("lateCount")}
-                value={String(dashboard.lateCount)}
-                color={colors.destructive}
-                colors={colors}
-                isTablet={isTablet}
-              />
-            </View>
+            <PaymentDonut
+              paidCount={dashboard.paidCount}
+              unpaidCount={dashboard.unpaidCount}
+              lateCount={dashboard.lateCount}
+              colors={colors}
+              isTablet={isTablet}
+              t={t}
+            />
 
             {dashboard.potRecipient && (
               <View style={styles.recipientCard}>
@@ -628,36 +609,45 @@ function MemberStatusRow({
   const rowStyles = createRowStyles(isTablet);
   return (
     <View style={[rowStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <View style={[rowStyles.initials, { backgroundColor: colors.primary + "20" }]}>
-        <Text style={[rowStyles.initialsText, { color: colors.primary }]}>
-          {memberStatus.memberName.charAt(0).toUpperCase()}
-        </Text>
-      </View>
-      <View style={rowStyles.info}>
-        <Text style={[rowStyles.name, { color: colors.foreground }]}>{memberStatus.memberName}</Text>
-        <Text style={[rowStyles.sub, { color: colors.mutedForeground }]}>
-          {currencySymbol}{memberStatus.amountPaid.toLocaleString()} / {currencySymbol}{memberStatus.amountDue.toLocaleString()}
-        </Text>
-      </View>
-      <View style={{ alignItems: "flex-end", gap: 6 }}>
-        <View style={[rowStyles.badge, { backgroundColor: statusColor + "20" }]}>
-          <Text style={[rowStyles.badgeText, { color: statusColor }]}>{statusLabel}</Text>
+      <View style={rowStyles.topRow}>
+        <View style={[rowStyles.initials, { backgroundColor: colors.primary + "20" }]}>
+          <Text style={[rowStyles.initialsText, { color: colors.primary }]}>
+            {memberStatus.memberName.charAt(0).toUpperCase()}
+          </Text>
         </View>
-        {!isPaid && (
-          <Pressable
-            style={({ pressed }) => [
-              rowStyles.recordBtn,
-              { backgroundColor: colors.primary },
-              pressed && { opacity: 0.75 },
-            ]}
-            onPress={onRecordPayment}
-            testID={`record-payment-${memberStatus.memberId}`}
-          >
-            <Ionicons name="add-circle-outline" size={isTablet ? 16 : 13} color={colors.primaryForeground} />
-            <Text style={[rowStyles.recordText, { color: colors.primaryForeground }]}>{t("record")}</Text>
-          </Pressable>
-        )}
+        <View style={rowStyles.info}>
+          <Text style={[rowStyles.name, { color: colors.foreground }]}>{memberStatus.memberName}</Text>
+          <Text style={[rowStyles.sub, { color: colors.mutedForeground }]}>
+            {currencySymbol}{memberStatus.amountPaid.toLocaleString()} / {currencySymbol}{memberStatus.amountDue.toLocaleString()}
+          </Text>
+        </View>
+        <View style={{ alignItems: "flex-end", gap: 6 }}>
+          <View style={[rowStyles.badge, { backgroundColor: statusColor + "20" }]}>
+            <Text style={[rowStyles.badgeText, { color: statusColor }]}>{statusLabel}</Text>
+          </View>
+          {!isPaid && (
+            <Pressable
+              style={({ pressed }) => [
+                rowStyles.recordBtn,
+                { backgroundColor: colors.primary },
+                pressed && { opacity: 0.75 },
+              ]}
+              onPress={onRecordPayment}
+              testID={`record-payment-${memberStatus.memberId}`}
+            >
+              <Ionicons name="add-circle-outline" size={isTablet ? 16 : 13} color={colors.primaryForeground} />
+              <Text style={[rowStyles.recordText, { color: colors.primaryForeground }]}>{t("record")}</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
+      <MemberProgressBar
+        amountPaid={memberStatus.amountPaid}
+        amountDue={memberStatus.amountDue}
+        isPaid={isPaid}
+        isLate={isLate}
+        colors={colors}
+      />
     </View>
   );
 }
@@ -665,12 +655,14 @@ function MemberStatusRow({
 function createRowStyles(isTablet: boolean) {
   return StyleSheet.create({
     card: {
-      flexDirection: "row",
-      alignItems: "center",
       borderRadius: 12,
       padding: isTablet ? 18 : 12,
       marginBottom: 8,
       borderWidth: 1,
+    },
+    topRow: {
+      flexDirection: "row",
+      alignItems: "center",
       gap: isTablet ? 14 : 10,
     },
     initials: {
