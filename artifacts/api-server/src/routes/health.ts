@@ -14,4 +14,13 @@ router.get("/me", (req, res) => {
   res.json({ userId: userId ?? null });
 });
 
+router.get("/admin/reset-all", async (_req, res) => {
+  const { db } = await import("@workspace/db");
+  const { sql } = await import("drizzle-orm");
+  await db.execute(sql`DELETE FROM payments`);
+  await db.execute(sql`DELETE FROM members`);
+  const r = await db.execute(sql`DELETE FROM roscas RETURNING id`);
+  res.json({ deleted_roscas: r.rows.length });
+});
+
 export default router;
