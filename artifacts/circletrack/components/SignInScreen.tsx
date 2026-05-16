@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
+import { tokenCache } from "@/lib/tokenCache";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -48,6 +49,10 @@ export default function SignInScreen() {
       }
       setLoading(strategy);
       try {
+        // Clear any stale JWT from a previous/different Clerk instance before signing in.
+        // Accounts that previously used the dev Clerk instance have an old token in
+        // SecureStore that corrupts the SSO flow — clearing it first fixes those accounts.
+        await tokenCache.clearToken?.("__clerk_client_jwt");
         const redirectUrl = AuthSession.makeRedirectUri({ scheme: "circletrack" });
         const result = await startSSOFlow({ strategy, redirectUrl });
         if (result.createdSessionId && result.setActive) {
