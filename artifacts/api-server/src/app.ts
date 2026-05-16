@@ -32,7 +32,12 @@ app.use(
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(clerkMiddleware());
+// CLERK_LIVE_SECRET_KEY is the sk_live_... key for the production Clerk instance.
+// Replit's auth integration resets CLERK_SECRET_KEY to sk_test_... on sync,
+// so we use a separate env var that it will never touch.
+app.use(clerkMiddleware({
+  secretKey: process.env.CLERK_LIVE_SECRET_KEY || process.env.CLERK_SECRET_KEY,
+}));
 
 app.use("/api", router);
 
