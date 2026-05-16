@@ -15,6 +15,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { useIsTablet } from "@/hooks/useIsTablet";
 import { TabletContainer } from "@/components/TabletContainer";
+import { tokenCache } from "@/lib/tokenCache";
 
 export default function SettingsScreen() {
   const colors = useColors();
@@ -34,7 +35,10 @@ export default function SettingsScreen() {
       {
         text: t("signOut"),
         style: "destructive",
-        onPress: () => signOut(),
+        onPress: async () => {
+          await tokenCache.clearToken?.("__clerk_client_jwt");
+          await signOut();
+        },
       },
     ]);
   };

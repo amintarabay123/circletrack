@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { TabletContainer } from "@/components/TabletContainer";
+import { tokenCache } from "@/lib/tokenCache";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -43,21 +44,24 @@ export default function SignInScreen() {
   const handleSSO = useCallback(
     async (strategy: "oauth_google" | "oauth_apple") => {
       if (!isLoaded) {
-        Alert.alert("Not ready", "Clerk has not finished loading. Please wait a moment and try again.");
+        Alert.alert(t("error"), "Auth not ready — please wait a moment and try again.");
         return;
       }
       setLoading(strategy);
       try {
-        const { createdSessionId, setActive } = await startSSOFlow({
-          strategy,
-          redirectUrl: AuthSession.makeRedirectUri({ scheme: "circletrack" }),
-        });
-        if (createdSessionId && setActive) {
-          await setActive({ session: createdSessionId });
+        const redirectUrl = AuthSession.makeRedirectUri({ scheme: "circletrack" });
+        let result = await startSSOFlow({ strategy, redirectUrl });
+        // If Clerk rejects with 401 (stale cached JWT), clear cache and retry once
+        if (!result.createdSessionId) {
+          await tokenCache.clearToken?.("__clerk_client_jwt");
+          result = await startSSOFlow({ strategy, redirectUrl });
+        }
+        if (result.createdSessionId && result.setActive) {
+          await result.setActive({ session: result.createdSessionId });
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        Alert.alert("Sign-in error", msg);
+        Alert.alert(t("error"), msg);
       } finally {
         setLoading(null);
       }
