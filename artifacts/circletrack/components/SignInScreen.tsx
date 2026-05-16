@@ -109,7 +109,7 @@ export default function SignInScreen() {
               pressed && styles.pressed,
             ]}
             onPress={() => handleSSO("oauth_google")}
-            disabled={!!loading}
+            disabled={!isLoaded || !!loading}
             testID="sign-in-google"
           >
             {loading === "oauth_google" ? (
@@ -131,7 +131,7 @@ export default function SignInScreen() {
                 pressed && styles.pressed,
               ]}
               onPress={() => handleSSO("oauth_apple")}
-              disabled={!!loading}
+              disabled={!isLoaded || !!loading}
               testID="sign-in-apple"
             >
               {loading === "oauth_apple" ? (
