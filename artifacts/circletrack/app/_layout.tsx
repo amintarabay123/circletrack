@@ -93,22 +93,6 @@ function AuthSetup({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-/**
- * Replaces <ClerkLoaded> which renders nothing while Clerk initializes,
- * causing a white screen. This shows a spinner instead.
- */
-function ClerkLoadingFallback({ children }: { children: React.ReactNode }) {
-  const { isLoaded } = useAuth();
-  if (!isLoaded) {
-    return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#f6f8fb" }}>
-        <ActivityIndicator size="large" color="#18a574" />
-      </View>
-    );
-  }
-  return <>{children}</>;
-}
-
 const ONBOARDING_KEY = "circletrack_onboarding_v1";
 
 function RootLayoutWithOnboarding() {
@@ -260,23 +244,21 @@ export default function RootLayout() {
       publishableKey={clerkConfig.publishableKey}
       tokenCache={tokenCache}
     >
-      <ClerkLoadingFallback>
-        <SafeAreaProvider>
-          <ErrorBoundary>
-            <QueryClientProvider client={queryClient}>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <LanguageProvider>
-                  <AuthSetup>
-                    <ClerkApiReadyGate>
-                      <RootLayoutWithOnboarding />
-                    </ClerkApiReadyGate>
-                  </AuthSetup>
-                </LanguageProvider>
-              </GestureHandlerRootView>
-            </QueryClientProvider>
-          </ErrorBoundary>
-        </SafeAreaProvider>
-      </ClerkLoadingFallback>
+      <SafeAreaProvider>
+        <ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <LanguageProvider>
+                <AuthSetup>
+                  <ClerkApiReadyGate>
+                    <RootLayoutWithOnboarding />
+                  </ClerkApiReadyGate>
+                </AuthSetup>
+              </LanguageProvider>
+            </GestureHandlerRootView>
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </SafeAreaProvider>
     </ClerkProvider>
   );
 }
