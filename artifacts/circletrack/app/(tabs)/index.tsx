@@ -3,8 +3,7 @@ import { getCurrencySymbol } from "@/constants/currencies";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import { reloadAppAsync } from "expo";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -25,61 +24,13 @@ import { TabletContainer } from "@/components/TabletContainer";
 import type { Rosca } from "@workspace/api-client-react";
 
 export default function CirclesScreen() {
-  const { isSignedIn, isLoaded } = useAuth();
-
-  if (!isLoaded) {
-    return <LoadingView />;
-  }
+  const { isSignedIn } = useAuth();
 
   if (!isSignedIn) {
     return <SignInScreen />;
   }
 
   return <CirclesList />;
-}
-
-function LoadingView() {
-  const colors = useColors();
-  const { t } = useLang();
-  const [timedOut, setTimedOut] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setTimedOut(true), 15_000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (timedOut) {
-    return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.background, padding: 32, gap: 20 }}>
-        <Text style={{ fontSize: 18, fontFamily: "Inter_600SemiBold", color: colors.foreground, textAlign: "center" }}>
-          {t("connectionError")}
-        </Text>
-        <Text style={{ fontSize: 14, fontFamily: "Inter_400Regular", color: colors.mutedForeground, textAlign: "center" }}>
-          {t("checkConnectionAndRetry")}
-        </Text>
-        <Pressable
-          onPress={() => reloadAppAsync()}
-          style={({ pressed }) => ({
-            backgroundColor: colors.primary,
-            paddingVertical: 14,
-            paddingHorizontal: 32,
-            borderRadius: 12,
-            opacity: pressed ? 0.85 : 1,
-          })}
-        >
-          <Text style={{ fontSize: 16, fontFamily: "Inter_600SemiBold", color: colors.primaryForeground }}>
-            {t("retry")}
-          </Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.background }}>
-      <ActivityIndicator color={colors.primary} size="large" />
-    </View>
-  );
 }
 
 function CirclesList() {
