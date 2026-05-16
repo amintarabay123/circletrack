@@ -1,10 +1,11 @@
 import { useSSO } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import * as Linking from "expo-linking";
+import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -30,24 +31,32 @@ export default function SignInScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
 
+  useEffect(() => {
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+
   const handleSSO = useCallback(
     async (strategy: "oauth_google" | "oauth_apple") => {
       setLoading(strategy);
       try {
         const { createdSessionId, setActive } = await startSSOFlow({
           strategy,
-          redirectUrl: Linking.createURL("/", { scheme: "circletrack" }),
+          redirectUrl: AuthSession.makeRedirectUri({ scheme: "circletrack" }),
         });
         if (createdSessionId && setActive) {
           await setActive({ session: createdSessionId });
         }
       } catch (err) {
-        console.error("SSO error:", err);
+        const msg = err instanceof Error ? err.message : String(err);
+        Alert.alert(t("error"), msg);
       } finally {
         setLoading(null);
       }
     },
-    [startSSOFlow]
+    [startSSOFlow, t]
   );
 
   const styles = makeStyles(colors);
