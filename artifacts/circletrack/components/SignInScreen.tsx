@@ -155,10 +155,6 @@ export default function SignInScreen() {
           {t("signInDesc")}
         </Text>
 
-        {/* DEBUG — remove before final release */}
-        <Text style={{ fontSize: 11, color: colors.mutedForeground, textAlign: "center", opacity: 0.5 }}>
-          {isLoaded ? "✓ Auth ready" : "⏳ Auth loading…"}
-        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
     </TabletContainer>
