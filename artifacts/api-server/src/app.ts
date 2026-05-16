@@ -38,10 +38,14 @@ app.use(express.urlencoded({ extended: true }));
 // mismatch causes it to look up the wrong instance and reject every live JWT with 401.
 // CLERK_LIVE_PUBLISHABLE_KEY overrides this; the hardcoded value is the safe fallback
 // (publishable keys are not secret — they are already baked into the iOS binary in eas.json).
+// Replit manages CLERK_SECRET_KEY and CLERK_PUBLISHABLE_KEY for its own Clerk instance
+// (i-phone-organizer.replit.app). The iOS app uses a separate live Clerk instance
+// (circletrack.islandtacosbvi.com). CLERK_LIVE_SECRET_KEY must be set in Replit secrets
+// to the sk_live_... key from the circletrack.islandtacosbvi.com Clerk dashboard.
 const LIVE_PK = "pk_live_Y2xlcmsuY2lyY2xldHJhY2suaXNsYW5kdGFjb3NidmkuY29tJA";
 app.use(clerkMiddleware({
-  publishableKey: process.env.CLERK_LIVE_PUBLISHABLE_KEY || LIVE_PK,
-  secretKey: process.env.CLERK_SECRET_KEY,
+  publishableKey: LIVE_PK,
+  secretKey: process.env.CLERK_LIVE_SECRET_KEY,
 }));
 
 app.use("/api", router);

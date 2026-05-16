@@ -1,0 +1,96 @@
+Your diagnosis is directionally right
+clerkMiddleware() + getAuth(req) need the same Clerk application as the app that issued the JWT. Mixing:
+
+Client: live (pk_live_…, circletrack.islandtacosbvi.com)
+Server verify path: test (pk_test_…, Replit dev Clerk)
+→ 401 on every protected route is expected.
+
+Why hardcoding publishableKey: LIVE_PK may still have failed
+1. Deploy / code path didn’t actually change (very common)
+Replit didn’t redeploy, wrong branch, or old process still running.
+Change was in a file that isn’t what production runs.
+Check: Log at startup: which publishableKey prefix the server uses (pk_live vs pk_test).
+
+2. Only publishableKey was fixed; secretKey pairing still wrong
+@clerk/express uses CLERK_SECRET_KEY for verification. You need both from the same Clerk app:
+
+publishableKey = pk_live_…
+secretKey = sk_live_… (matching that app)
+Passing live publishable + sk_live is correct if they’re the same Clerk application. Passing live publishable + env still exposing pk_test elsewhere can still break things.
+
+Current repo: app.ts still has plain clerkMiddleware() with no explicit keys — it uses env only.
+
+3. Second mismatch: /api/config overwrites the app’s Clerk key (high probability)
+On launch, _layout.tsx does:
+
+GET https://<EXPO_PUBLIC_DOMAIN>/api/config
+→ uses cfg.publishableKey (server’s CLERK_PUBLISHABLE_KEY = pk_test)
+→ ClerkProvider(publishableKey: pk_test, proxyUrl: …)
+So even a TestFlight build baked with pk_live can switch to pk_test at runtime.
+
+routes/config.ts returns:
+
+publishableKey from CLERK_PUBLISHABLE_KEY (Replit = pk_test)
+proxyUrl → https://…/api/__clerk when CLERK_PROXY_URL is set
+That’s a client-side reconfiguration, independent of clerkMiddleware({ publishableKey: LIVE_PK }).
+
+4. Clerk proxy: live secret + test publishable key (high probability on Replit prod)
+In production, clerkProxyMiddleware sends Clerk-Secret-Key: CLERK_SECRET_KEY (sk_live_…) to Clerk’s FAPI, while the app may use pk_test_… from /api/config.
+
+So sign-in can “work” in the UI but tokens may not match what API middleware expects.
+
+Symptom: SSO OK, API 401 — matches your report.
+
+5. getToken() is probably fine
+getToken() from @clerk/clerk-expo normally returns a session JWT suitable for Authorization: Bearer. Unlikely the root cause unless:
+
+token is null (you’d often see intermittent 401, not always)
+wrong template / org claim (less common here)
+Bearer is attached per your note — so the issue is verification, not missing header.
+
+6. eas.json in repo may not match what you think
+In the repo on disk, both preview and production use:
+
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY = pk_test_…
+
+not pk_live_…. If TestFlight was built from this repo without changing eas.json, the client is also on test, and the story is “everything test except sk_live on server” — still inconsistent.
+
+Worth confirming which key the actual TestFlight build was made with (EAS build logs).
+
+Probable solutions (in order)
+Priority	Fix	Why
+1
+One Clerk app everywhere
+Same pk_* + sk_* pair on server, in /api/config, and in eas.json production.
+2
+Server: clerkMiddleware({ secretKey: process.env.CLERK_SECRET_KEY, publishableKey: '<pk_live matching sk_live>' })
+Explicit live pair; don’t rely on Replit’s CLERK_PUBLISHABLE_KEY.
+3
+/api/config: return live publishable key (new env e.g. CLERK_LIVE_PUBLISHABLE_KEY or hardcode live pk that matches sk_live)
+Stops app from downgrading to pk_test at launch.
+4
+eas.json production: set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to same pk_live_…
+Build-time fallback if config fetch fails.
+5
+Proxy alignment
+Proxy secret and client publishable key must be the same Clerk instance. Either both live or disable proxy for mobile and use Clerk’s hosted FAPI with live pk_live.
+6
+Replit secrets
+Set CLERK_LIVE_PUBLISHABLE_KEY (or replace what /api/config reads) so you’re not stuck with immutable pk_test.
+7
+New EAS production build + reinstall
+Old TestFlight build may still have old keys / cached sessions. Delete app, install new build, sign in again.
+Quick verification (before more code)
+Decode JWT from device (jwt.io): check iss / azp — should match live Clerk frontend API host, not busy-python-31.clerk.accounts.dev.
+Hit API with curl:
+Authorization: Bearer <token> → GET https://i-phone-organizer.replit.app/api/roscas
+401 → server verification still wrong instance.
+200 → problem is app timing / token getter, not middleware keys.
+Check GET /api/config response on production — if publishableKey starts with pk_test_, that explains client override.
+EAS build log — which EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY was injected for that TestFlight build.
+Bottom line
+Most likely it’s not “@clerk/express ignores publishableKey” — it’s multiple layers still pointing at test on the client (/api/config, maybe eas.json) while the server proxy / secret is live, plus clerkMiddleware env using mismatched pk_test + sk_live.
+
+Probable fix: align server middleware, /api/config, Clerk proxy secret, and mobile build on the same live Clerk application, then ship a new TestFlight build and test with a fresh install.
+
+When you’re ready, we can walk through exact env names and minimal code edits in app.ts + config.ts + eas.json — or you can paste your current Replit secrets list (names only, not values) and I’ll map them.
