@@ -449,3 +449,9 @@ id = "7M3ZwOyAqMYKOumZDsdnp"
 uri = "file://screenshots/fresh-en-4.jpg"
 type = "image"
 title = "English 4 — Record Payment"
+
+[[outputs]]
+id = "tQUULu9W1xg_ZtWlfCOxp"
+uri = "file://Shirley_SAN_1.json"
+type = "unspecified"
+title = "Shirley SAN 1 — Circle Export"
