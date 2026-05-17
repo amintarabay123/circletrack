@@ -55,8 +55,20 @@ export default function SignInScreen() {
         await tokenCache.clearToken?.("__clerk_client_jwt");
         const redirectUrl = AuthSession.makeRedirectUri({ scheme: "circletrack" });
         const result = await startSSOFlow({ strategy, redirectUrl });
-        if (result.createdSessionId && result.setActive) {
-          await result.setActive({ session: result.createdSessionId });
+        const { createdSessionId, setActive, signIn, signUp } = result;
+
+        if (createdSessionId && setActive) {
+          await setActive({ session: createdSessionId });
+        } else if (signIn?.status === "complete" && signIn.createdSessionId && setActive) {
+          await setActive({ session: signIn.createdSessionId });
+        } else if (signUp?.status === "complete" && signUp.createdSessionId && setActive) {
+          await setActive({ session: signUp.createdSessionId });
+        } else if (signIn || signUp) {
+          const status = signIn?.status ?? signUp?.status ?? "unknown";
+          Alert.alert(
+            t("error"),
+            `Sign-in incomplete (status: ${status}). Please try again or contact support.`
+          );
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
