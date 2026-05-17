@@ -11,7 +11,10 @@
       },
       "env": {
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_YnVzeS1weXRob24tMzEuY2xlcmsuYWNjb3VudHMuZGV2JA",
-        "EXPO_PUBLIC_DOMAIN": "i-phone-organizer.replit.app"
+        "EXPO_PUBLIC_DOMAIN": "i-phone-organizer.replit.app",
+        "EXPO_PUBLIC_CLERK_GOOGLE_WEB_CLIENT_ID": "",
+        "EXPO_PUBLIC_CLERK_GOOGLE_IOS_CLIENT_ID": "",
+        "EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME": ""
       }
     },
     "production": {
@@ -25,14 +28,9 @@
       "env": {
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuY2lyY2xldHJhY2suaXNsYW5kdGFjb3NidmkuY29tJA",
         "EXPO_PUBLIC_DOMAIN": "i-phone-organizer.replit.app",
-        "EXPO_NO_CAPABILITY_SYNC": "1"
-      }
-    }
-  },
-  "submit": {
-    "production": {
-      "ios": {
-        "ascAppId": "6762312729"
+        "EXPO_PUBLIC_CLERK_GOOGLE_WEB_CLIENT_ID": "",
+        "EXPO_PUBLIC_CLERK_GOOGLE_IOS_CLIENT_ID": "",
+        "EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME": ""
       }
     }
   }

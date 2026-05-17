@@ -1,6 +1,7 @@
-import { useSSO, useAuth } from "@clerk/clerk-expo";
+import { useSSO } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import * as AuthSession from "expo-auth-session";
+import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -17,68 +18,133 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLang } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
-import { TabletContainer } from "@/components/TabletContainer";
+import {
+  isGoogleSignInCancelledError,
+  useNativeGoogleSignIn,
+} from "@/hooks/useNativeGoogleSignIn";
+import { isGoogleNativeSignInConfigured } from "@/lib/googleClientIds";
 import { tokenCache } from "@/lib/tokenCache";
+import { TabletContainer } from "@/components/TabletContainer";
 
 WebBrowser.maybeCompleteAuthSession();
+
+async function activateSession(result: {
+  createdSessionId: string | null;
+  setActive?: (params: { session: string }) => Promise<void>;
+  signIn?: { status: string | null; createdSessionId: string | null };
+  signUp?: { status: string | null; createdSessionId: string | null };
+}): Promise<boolean> {
+  const { createdSessionId, setActive, signIn, signUp } = result;
+
+  if (createdSessionId && setActive) {
+    await setActive({ session: createdSessionId });
+    return true;
+  }
+  if (signIn?.status === "complete" && signIn.createdSessionId && setActive) {
+    await setActive({ session: signIn.createdSessionId });
+    return true;
+  }
+  if (signUp?.status === "complete" && signUp.createdSessionId && setActive) {
+    await setActive({ session: signUp.createdSessionId });
+    return true;
+  }
+  return false;
+}
 
 export default function SignInScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useLang();
-  const { isLoaded } = useAuth();
   const { startSSOFlow } = useSSO();
+  const { startGoogleAuthenticationFlow } = useNativeGoogleSignIn();
   const [loading, setLoading] = useState<string | null>(null);
+  const useNativeGoogle =
+    (Platform.OS === "ios" || Platform.OS === "android") && isGoogleNativeSignInConfigured();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   useEffect(() => {
-    if (Platform.OS === "web") return;
     void WebBrowser.warmUpAsync();
     return () => {
       void WebBrowser.coolDownAsync();
     };
   }, []);
 
-  const handleSSO = useCallback(
-    async (strategy: "oauth_google" | "oauth_apple") => {
-      if (!isLoaded) {
-        Alert.alert(t("error"), "Auth not ready — please wait a moment and try again.");
-        return;
+  const handleAppleSSO = useCallback(async () => {
+    setLoading("oauth_apple");
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_apple",
+        redirectUrl: Linking.createURL("/", { scheme: "circletrack" }),
+      });
+      if (createdSessionId && setActive) {
+        await setActive({ session: createdSessionId });
       }
-      setLoading(strategy);
-      try {
-        // Clear any stale JWT from a previous/different Clerk instance before signing in.
-        // Accounts that previously used the dev Clerk instance have an old token in
-        // SecureStore that corrupts the SSO flow — clearing it first fixes those accounts.
-        await tokenCache.clearToken?.("__clerk_client_jwt");
-        const redirectUrl = AuthSession.makeRedirectUri({ scheme: "circletrack" });
-        const result = await startSSOFlow({ strategy, redirectUrl });
-        const { createdSessionId, setActive, signIn, signUp } = result;
+    } catch (err) {
+      console.error("SSO error:", err);
+    } finally {
+      setLoading(null);
+    }
+  }, [startSSOFlow]);
 
+  const handleGoogleSignIn = useCallback(async () => {
+    setLoading("oauth_google");
+    try {
+      await tokenCache.clearToken?.("__clerk_client_jwt");
+
+      if (useNativeGoogle) {
+        const { createdSessionId, setActive, signIn, signUp } =
+          await startGoogleAuthenticationFlow();
         if (createdSessionId && setActive) {
           await setActive({ session: createdSessionId });
-        } else if (signIn?.status === "complete" && signIn.createdSessionId && setActive) {
-          await setActive({ session: signIn.createdSessionId });
-        } else if (signUp?.status === "complete" && signUp.createdSessionId && setActive) {
-          await setActive({ session: signUp.createdSessionId });
-        } else if (signIn || signUp) {
-          const status = signIn?.status ?? signUp?.status ?? "unknown";
+          return;
+        }
+        const ok = await activateSession({ createdSessionId, setActive, signIn, signUp });
+        if (!ok && (signIn || signUp)) {
           Alert.alert(
-            t("error"),
-            `Sign-in incomplete (status: ${status}). Please try again or contact support.`
+            "Sign-in incomplete",
+            `Status: ${signIn?.status ?? signUp?.status ?? "unknown"}`,
           );
         }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        Alert.alert(t("error"), msg);
-      } finally {
-        setLoading(null);
+        return;
       }
-    },
-    [startSSOFlow, t, isLoaded]
-  );
+
+      // Fallback: browser OAuth (requires redirect URI registered in Clerk + Google Cloud)
+      const redirectUrl = AuthSession.makeRedirectUri({
+        scheme: "circletrack",
+        path: "sso-callback",
+      });
+      const result = await startSSOFlow({
+        strategy: "oauth_google",
+        redirectUrl,
+      });
+
+      if (result.authSessionResult && result.authSessionResult.type !== "success") {
+        if (result.authSessionResult.type !== "cancel" && result.authSessionResult.type !== "dismiss") {
+          Alert.alert(
+            "Google sign-in",
+            `Could not complete sign-in (${result.authSessionResult.type}). Use native Google credentials in EAS for production.`,
+          );
+        }
+        return;
+      }
+
+      const ok = await activateSession(result);
+      if (!ok) {
+        Alert.alert(
+          "Sign-in incomplete",
+          `Status: ${result.signIn?.status ?? result.signUp?.status ?? "unknown"}`,
+        );
+      }
+    } catch (err) {
+      if (isGoogleSignInCancelledError(err)) return;
+      console.error("Google sign-in error:", err);
+      Alert.alert("Sign-in failed", err instanceof Error ? err.message : "Google sign-in failed.");
+    } finally {
+      setLoading(null);
+    }
+  }, [startSSOFlow, startGoogleAuthenticationFlow, useNativeGoogle]);
 
   const styles = makeStyles(colors);
 
@@ -128,7 +194,7 @@ export default function SignInScreen() {
               { borderColor: colors.border },
               pressed && styles.pressed,
             ]}
-            onPress={() => handleSSO("oauth_google")}
+            onPress={handleGoogleSignIn}
             disabled={!!loading}
             testID="sign-in-google"
           >
@@ -150,7 +216,7 @@ export default function SignInScreen() {
                 { backgroundColor: colors.foreground },
                 pressed && styles.pressed,
               ]}
-              onPress={() => handleSSO("oauth_apple")}
+              onPress={handleAppleSSO}
               disabled={!!loading}
               testID="sign-in-apple"
             >
@@ -169,7 +235,6 @@ export default function SignInScreen() {
         <Text style={[styles.disclaimer, { color: colors.mutedForeground }]}>
           {t("signInDesc")}
         </Text>
-
       </ScrollView>
     </KeyboardAvoidingView>
     </TabletContainer>
