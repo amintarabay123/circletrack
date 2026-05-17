@@ -1,0 +1,1089 @@
+{
+  "exportVersion": 1,
+  "exportedAt": "2026-05-17T00:53:58.003Z",
+  "rosca": {
+    "id": 10,
+    "name": "Shirley SAN 1",
+    "startDate": "2026-01-30",
+    "frequency": "monthly",
+    "contributionAmount": 300,
+    "currentCycle": 8,
+    "totalCycles": 20,
+    "isActive": true,
+    "currency": "USD",
+    "userId": "user_3CPMYWRqvCG4gPuiVFyaHGGZvvv",
+    "createdAt": "2026-04-12T21:15:12.174815+00:00"
+  },
+  "members": [
+    {
+      "name": "Shirley Sanchez",
+      "phone": null,
+      "email": null,
+      "shares": 2,
+      "turnOrder": 1
+    },
+    {
+      "name": "Amin Tarabay",
+      "phone": "499-1449",
+      "email": "amintarabay@gmail.com",
+      "shares": 1,
+      "turnOrder": 2
+    },
+    {
+      "name": "Lochy Minier",
+      "phone": null,
+      "email": null,
+      "shares": 2,
+      "turnOrder": 3
+    },
+    {
+      "name": "Toni Sastre",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 4
+    },
+    {
+      "name": "Mariela ",
+      "phone": null,
+      "email": null,
+      "shares": 2,
+      "turnOrder": 5
+    },
+    {
+      "name": "Janet",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 6
+    },
+    {
+      "name": "Flaca",
+      "phone": null,
+      "email": null,
+      "shares": 2,
+      "turnOrder": 7
+    },
+    {
+      "name": "Kelly",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 8
+    },
+    {
+      "name": "Rafael",
+      "phone": null,
+      "email": null,
+      "shares": 2,
+      "turnOrder": 9
+    },
+    {
+      "name": "Amparo",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 10
+    },
+    {
+      "name": "Crucita/Anneris",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 11
+    },
+    {
+      "name": "Yanelis",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 12
+    },
+    {
+      "name": "Vicky/Minga",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 13
+    },
+    {
+      "name": "Yesenia",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 14
+    },
+    {
+      "name": "Nova",
+      "phone": null,
+      "email": null,
+      "shares": 1,
+      "turnOrder": 15
+    }
+  ],
+  "payments": [
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:15:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:17:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T01:17:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Shirley Sanchez",
+      "cycle": 1,
+      "amount": 600,
+      "paidAt": "2026-01-31T01:18:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T01:20:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T01:20:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Lochy Minier",
+      "cycle": 1,
+      "amount": 600,
+      "paidAt": "2026-01-31T01:26:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Toni Sastre",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:27:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Mariela ",
+      "cycle": 1,
+      "amount": 600,
+      "paidAt": "2026-01-31T01:27:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Janet",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:27:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Flaca",
+      "cycle": 1,
+      "amount": 600,
+      "paidAt": "2026-01-31T01:27:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Kelly",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:28:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Rafael",
+      "cycle": 1,
+      "amount": 600,
+      "paidAt": "2026-01-31T01:28:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:28:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:28:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yanelis",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:29:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Vicky/Minga",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:29:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yesenia",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:30:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Nova",
+      "cycle": 1,
+      "amount": 300,
+      "paidAt": "2026-01-31T01:30:00.000Z",
+      "dueDate": "2026-02-28",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Shirley Sanchez",
+      "cycle": 2,
+      "amount": 600,
+      "paidAt": "2026-02-16T01:30:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Lochy Minier",
+      "cycle": 2,
+      "amount": 600,
+      "paidAt": "2026-02-16T01:31:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Toni Sastre",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:31:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Mariela ",
+      "cycle": 2,
+      "amount": 600,
+      "paidAt": "2026-02-16T01:31:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Janet",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:31:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Flaca",
+      "cycle": 2,
+      "amount": 600,
+      "paidAt": "2026-02-16T01:32:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Kelly",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:32:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Rafael",
+      "cycle": 2,
+      "amount": 600,
+      "paidAt": "2026-02-16T01:32:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:32:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:32:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yanelis",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:32:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Vicky/Minga",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:32:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yesenia",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:33:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Nova",
+      "cycle": 2,
+      "amount": 300,
+      "paidAt": "2026-02-16T01:33:00.000Z",
+      "dueDate": "2026-03-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Shirley Sanchez",
+      "cycle": 3,
+      "amount": 600,
+      "paidAt": "2026-03-01T01:34:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Lochy Minier",
+      "cycle": 3,
+      "amount": 600,
+      "paidAt": "2026-03-01T01:58:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Toni Sastre",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T01:59:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Mariela ",
+      "cycle": 3,
+      "amount": 600,
+      "paidAt": "2026-03-01T01:59:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Janet",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:00:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Flaca",
+      "cycle": 3,
+      "amount": 600,
+      "paidAt": "2026-03-01T02:00:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Kelly",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:01:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Rafael",
+      "cycle": 3,
+      "amount": 600,
+      "paidAt": "2026-03-01T02:01:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:01:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:02:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yanelis",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:02:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Vicky/Minga",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:02:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yesenia",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:02:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Nova",
+      "cycle": 3,
+      "amount": 300,
+      "paidAt": "2026-03-01T02:02:00.000Z",
+      "dueDate": "2026-04-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Shirley Sanchez",
+      "cycle": 4,
+      "amount": 600,
+      "paidAt": "2026-03-16T02:03:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Lochy Minier",
+      "cycle": 4,
+      "amount": 600,
+      "paidAt": "2026-03-16T02:04:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Toni Sastre",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:04:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Mariela ",
+      "cycle": 4,
+      "amount": 600,
+      "paidAt": "2026-03-16T02:04:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Janet",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:04:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Flaca",
+      "cycle": 4,
+      "amount": 600,
+      "paidAt": "2026-03-16T02:42:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Kelly",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:43:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Rafael",
+      "cycle": 4,
+      "amount": 600,
+      "paidAt": "2026-03-16T02:43:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:43:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:43:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yanelis",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:43:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Vicky/Minga",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:53:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yesenia",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:54:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Nova",
+      "cycle": 4,
+      "amount": 300,
+      "paidAt": "2026-03-16T02:54:00.000Z",
+      "dueDate": "2026-05-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Shirley Sanchez",
+      "cycle": 5,
+      "amount": 600,
+      "paidAt": "2026-03-31T03:15:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Lochy Minier",
+      "cycle": 5,
+      "amount": 600,
+      "paidAt": "2026-03-31T03:16:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Toni Sastre",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:19:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Mariela ",
+      "cycle": 5,
+      "amount": 600,
+      "paidAt": "2026-03-31T03:20:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Janet",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:20:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Flaca",
+      "cycle": 5,
+      "amount": 600,
+      "paidAt": "2026-03-31T03:21:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Kelly",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:21:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Rafael",
+      "cycle": 5,
+      "amount": 600,
+      "paidAt": "2026-03-31T03:21:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:21:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:22:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yanelis",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:22:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Vicky/Minga",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:23:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yesenia",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:23:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Nova",
+      "cycle": 5,
+      "amount": 300,
+      "paidAt": "2026-03-31T03:23:00.000Z",
+      "dueDate": "2026-06-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-15T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Toni Sastre",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-16T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Flaca",
+      "cycle": 6,
+      "amount": 600,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Shirley Sanchez",
+      "cycle": 6,
+      "amount": 600,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Lochy Minier",
+      "cycle": 6,
+      "amount": 600,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Nova",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yesenia",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-22T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Janet",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Mariela ",
+      "cycle": 6,
+      "amount": 600,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yanelis",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Kelly",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Rafael",
+      "cycle": 6,
+      "amount": 600,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Vicky/Minga",
+      "cycle": 6,
+      "amount": 300,
+      "paidAt": "2026-04-18T16:00:00.000Z",
+      "dueDate": "2026-07-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Toni Sastre",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-01T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-04-30T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Nova",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-02T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-02T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Flaca",
+      "cycle": 7,
+      "amount": 600,
+      "paidAt": "2026-05-05T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Janet",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-05T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Mariela ",
+      "cycle": 7,
+      "amount": 600,
+      "paidAt": "2026-05-05T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Kelly",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-05T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yanelis",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-05T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Vicky/Minga",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-01T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Lochy Minier",
+      "cycle": 7,
+      "amount": 600,
+      "paidAt": "2026-05-06T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Shirley Sanchez",
+      "cycle": 7,
+      "amount": 600,
+      "paidAt": "2026-05-03T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amin Tarabay",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-04T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Amparo",
+      "cycle": 8,
+      "amount": 300,
+      "paidAt": "2026-05-16T16:00:00.000Z",
+      "dueDate": "2026-09-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Crucita/Anneris",
+      "cycle": 8,
+      "amount": 300,
+      "paidAt": "2026-05-16T16:00:00.000Z",
+      "dueDate": "2026-09-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Rafael",
+      "cycle": 7,
+      "amount": 600,
+      "paidAt": "2026-05-04T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    },
+    {
+      "memberName": "Yesenia",
+      "cycle": 7,
+      "amount": 300,
+      "paidAt": "2026-05-05T16:00:00.000Z",
+      "dueDate": "2026-08-30",
+      "isLate": false,
+      "notes": null
+    }
+  ]
+}
