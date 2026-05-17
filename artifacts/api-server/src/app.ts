@@ -32,21 +32,32 @@ app.use(
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Replit's auth integration keeps CLERK_PUBLISHABLE_KEY as pk_test_... (dev Replit instance).
-// The production iOS app sends JWTs from the live Clerk instance (circletrack.islandtacosbvi.com).
-// clerkMiddleware uses the publishable key to derive the JWKS endpoint — a pk_test/sk_live
-// mismatch causes it to look up the wrong instance and reject every live JWT with 401.
-// CLERK_LIVE_PUBLISHABLE_KEY overrides this; the hardcoded value is the safe fallback
-// (publishable keys are not secret — they are already baked into the iOS binary in eas.json).
-// Replit manages CLERK_SECRET_KEY and CLERK_PUBLISHABLE_KEY for its own Clerk instance
-// (i-phone-organizer.replit.app). The iOS app uses a separate live Clerk instance
-// (circletrack.islandtacosbvi.com). CLERK_LIVE_SECRET_KEY must be set in Replit secrets
-// to the sk_live_... key from the circletrack.islandtacosbvi.com Clerk dashboard.
+// Two Clerk instances are in use:
+//   1. Live CircleTrack Clerk (circletrack.islandtacosbvi.com) — used by the iOS app.
+//      iOS sends a Bearer token in the Authorization header.
+//   2. Replit-managed Clerk (i-phone-organizer.replit.app) — used by the rosca-manager webapp.
+//      Webapp uses session cookies; no Authorization header.
+// We branch on the presence of an Authorization header so each client hits the right JWKS.
+// Publishable keys are not secret — the live key is already baked into the iOS binary.
 const LIVE_PK = "pk_live_Y2xlcmsuY2lyY2xldHJhY2suaXNsYW5kdGFjb3NidmkuY29tJA";
-app.use(clerkMiddleware({
+
+const liveClerkMiddleware = clerkMiddleware({
   publishableKey: LIVE_PK,
   secretKey: process.env.CLERK_LIVE_SECRET_KEY,
-}));
+});
+
+const replitClerkMiddleware = clerkMiddleware({
+  publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
+
+app.use((req: any, res: any, next: any) => {
+  if (req.headers.authorization?.startsWith("Bearer ")) {
+    liveClerkMiddleware(req, res, next);
+  } else {
+    replitClerkMiddleware(req, res, next);
+  }
+});
 
 app.use("/api", router);
 
