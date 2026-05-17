@@ -43,3 +43,8 @@ CircleTrack — ROSCA/Tanda Manager. pnpm workspace monorepo using TypeScript. E
 - **Dependencies**: `expo-auth-session` (required by `@clerk/clerk-expo` for SSO), `expo-haptics`, `@expo-google-fonts/inter`
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+
+## User Preferences
+
+- **NEVER touch Shirley's circle** — the rosca named "Shirley SAN 1" (id=10) and its members/payments are real-world data belonging to a real user. Never delete, modify, reset, or run any destructive operation against it under any circumstances.
+- **Never run unscoped DELETE/UPDATE on production** — any destructive database operation must be scoped to a specific user ID or record ID, and confirmed before execution.
